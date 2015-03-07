@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src="javascripts/threejs/Three.js")
+    script(src="javascripts/js/controls/MouseControls.js")
+    script(src="javascripts/js/libs/stats.min.js")
+    script(src="javascripts/js/Detector.js")
+    script(src="javascripts/js/loaders/BinaryLoader.js")
+    script(src="javascripts/js/shaders/FresnelShader.js")
+    script(src="javascripts/js/libs/dat.gui.min.js")
+    script(src="javascripts/js/effects/VREffect.js")
+    script(src="javascripts/js/controls/VRControls.js")
+    script(src='/socket.io/socket.io.js')
+    script(src='javascripts/jquery-2.1.3.min.js')
+  body
+    block content
