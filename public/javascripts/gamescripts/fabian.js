@@ -28,11 +28,12 @@ var faceSorted3;
 var selected = true;
 var numSelected;
 var perSelected;
+var decision;
 
 var totalSelectable = 0;
 
 var selectedStrings = [];
-var deselectedStrings;
+var deselectedStrings = [];
 
 var selectionRadius = 250;
 
@@ -41,6 +42,8 @@ var intersPoint;
 var scale = 75;
 
 var selectedVertices;
+
+var selectAllDecision;
 
 //End Global Variables\\
 
@@ -510,7 +513,8 @@ function onDocumentMouseDown( event ) {
 
     var intersections = raycaster.intersectObjects( car.children );
     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
-
+    selectedStrings = [];
+    deselectedStrings = [];
     if (intersection != null) {
         intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
         car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
@@ -521,8 +525,14 @@ function onDocumentMouseDown( event ) {
         //selectedVertices = [];
         //selectNeighboringFaces4(intersection.faceIndex);
         car.children[0].geometry.colorsNeedUpdate = true;
+        if (selected == true) {
+            selectedStrings[selectedStrings.length] = 1;
+            socket.emit('selection', JSON.stringify(selectedStrings));
+        } else if (selected == false) {
+            deselectedStrings[deselectedStrings.length] = 0;
+            socket.emit('selection', JSON.stringify(deselectedStrings));
+        }
 
-        socket.emit('selection', JSON.stringify(selectedStrings));
     }
 
 
@@ -531,12 +541,29 @@ function onDocumentMouseDown( event ) {
 
 socket.on('selection', function(sig){
     var selections = JSON.parse(sig);
-    for (i = 0 ; i < selections.length; i++ ) {
-        car.children[0].geometry.faces[selections[i]].color.setHex( 0x000000);
-        car.children[0].geometry.faces[selections[i]].selected = true;
+    for (var i = 0 ; i < selections.length-1; i++ ) {
+        if (selections[selections.length - 1] == 1) {
+            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+            car.children[0].geometry.faces[selections[i]].selected = true;
+        } else {
+            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+            car.children[0].geometry.faces[selections[i]].selected = false;
+        }
     }
+
     car.children[0].geometry.colorsNeedUpdate = true;
 });
+
+
+socket2.on('all', function(sig){
+    decision = JSON.parse(sig);
+    if (decision == true) {
+        selectAll(true);
+    } else {
+        selectAll(false);
+    }
+});
+
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // 4rd iteration of the mesh selection algorithm
@@ -627,13 +654,13 @@ function selectNeighboringFaces3(a,b,c,iteration,faceindex) {
 // 2nd iteration of the selection algorithm that works with the 3rd
 function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
     if (selected == true&&scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0){
-        if (car.children[0].geometry.faces[faceIndex].color.getHex() != 0) {
+        if (car.children[0].geometry.faces[faceIndex].selected == false) {
             selectedStrings[selectedStrings.length] = faceIndex;
         }
         car.children[0].geometry.faces[faceIndex].color.setHex( 0x000000);
         car.children[0].geometry.faces[faceIndex].selected = true;
     } else if (scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0)  {
-        if (car.children[0].geometry.faces[faceIndex].color.getHex() != 0) {
+        if (car.children[0].geometry.faces[faceIndex].selected == true) {
             deselectedStrings[deselectedStrings.length] = faceIndex;
         }
         car.children[0].geometry.faces[faceIndex].color.setHex( 0xffffff);
@@ -821,18 +848,14 @@ function handleKeyDown(event) {
         selected = true;
     } else if (event.keyCode == 65) {
         //a key select all
-        for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
-            car.children[0].geometry.faces[j].color.setHex( 0x000000 );
-            car.children[0].geometry.faces[j]["selected"] = true;
-        }
-        car.children[0].geometry.colorsNeedUpdate = true;
+        selectAll(true);
+        var s = true;
+        socket2.emit('all', JSON.stringify(s));
     } else if (event.keyCode == 85) {
         //u key unselect all
-        for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
-            car.children[0].geometry.faces[j].color.setHex( 0xffffff );
-            car.children[0].geometry.faces[j]["selected"] = false;
-        }
-        car.children[0].geometry.colorsNeedUpdate = true;
+        selectAll(false);
+        var s = false;
+        socket2.emit('all', JSON.stringify(s));
     } else if (event.keyCode == 67) {
         //c key counts number of faces selected
         numSelected = 0;
@@ -844,6 +867,23 @@ function handleKeyDown(event) {
         perSelected = numSelected/totalSelectable;
     }
 
+}
+
+
+function selectAll(s) {
+    if (s == true) {
+        for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
+            car.children[0].geometry.faces[j].color.setHex( 0x000000 );
+            car.children[0].geometry.faces[j]["selected"] = true;
+        }
+    } else {
+        for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
+            car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+            car.children[0].geometry.faces[j]["selected"] = false;
+        }
+    }
+
+    car.children[0].geometry.colorsNeedUpdate = true;
 }
 
 
