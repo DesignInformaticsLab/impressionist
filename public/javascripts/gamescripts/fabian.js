@@ -1,9 +1,9 @@
-/**
- * Created by Max Yi Ren on 3/7/2015.
- */
+
 //Global Variables\\
 var container, stats;
 var camera, scene, raycaster, renderer;
+var vrEffect;
+var vrControls;
 var mouseControls;
 var headControls;
 
@@ -23,12 +23,24 @@ var signGeometry;
 var cylinder, cylinderSmall, line;
 var faceSorted;
 var faceSorted2;
+var faceSorted3;
 
 var selected = true;
 var numSelected;
 var perSelected;
 
 var totalSelectable = 0;
+
+var selectedStrings = [];
+var deselectedStrings;
+
+var selectionRadius = 250;
+
+var intersPoint;
+
+var scale = 75;
+
+var selectedVertices;
 
 //End Global Variables\\
 
@@ -98,6 +110,7 @@ function init() {
     testVar = [[],[]];
     faceSorted = [[],[],[],[],[],[]];
     faceSorted2 = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+    faceSorted3 = [[],[],[]];
     raycaster = new THREE.Raycaster();
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -187,7 +200,7 @@ function render() {
 
     car.rotateY(theta);
 
-    camera.position.x = -0;
+    camera.position.x = 0;
     camera.position.y = HEIGHT; //don't change
     camera.position.z = radius;
 
@@ -456,39 +469,22 @@ function onDocumentMouseMove(event) {
 
     if (intersection != null) {
 
-        //
-
-
-        var z = intersection.point.z +1 ;
-
-        if (z < 0) { z = 0; }
 
 
 
-        cylinder.position.x = intersection.point.x;
-        cylinder.position.y = intersection.point.y;
-        cylinder.position.z = z;
-
-        cylinderSmall.position.x = intersection.point.x;
-        cylinderSmall.position.y = intersection.point.y;
-        cylinderSmall.position.z = z;
+        var lambda = (cylinder.position.z- intersection.point.z) / (camera.position.z - intersection.point.z);
 
 
+        testVar[0][0] = lambda;
+        var xPos = intersection.point.x + lambda * ( camera.position.x - intersection.point.x);
+        var yPos = intersection.point.y + lambda * ( camera.position.y - intersection.point.y);
 
-        var lambda = cylinder.position.z/(camera.position.z - intersection.point.z);
-
-        //leave this code for future debugging maybe create a sub routine
-
-        //testVar[0][0] = lambda;
-        //var xPos = -lambda * ( camera.position.x - intersection.point.x);
-        //var yPos = -lambda * ( camera.position.y - intersection.point.y) + 300;
-
-        //cylinder.position.x = xPos;
-        //cylinder.position.y = yPos;
+        cylinder.position.x = xPos;
+        cylinder.position.y = yPos;
 
 
-        //cylinderSmall.position.x = xPos;
-        //cylinderSmall.position.y = yPos;
+        cylinderSmall.position.x = xPos;
+        cylinderSmall.position.y = yPos;
 
 
         //scene.getObjectByName("RaycasterLine").geometry.vertices[0] = camera.position;
@@ -516,30 +512,74 @@ function onDocumentMouseDown( event ) {
     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 
     if (intersection != null) {
+        intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
         car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
         selectNeighboringFaces3(
             car.children[0].geometry.faces[intersection.faceIndex].a,
             car.children[0].geometry.faces[intersection.faceIndex].b,
             car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex)
-
+        //selectedVertices = [];
+        //selectNeighboringFaces4(intersection.faceIndex);
         car.children[0].geometry.colorsNeedUpdate = true;
 
-        socket.emit('selection', JSON.stringify(intersection));
+        socket.emit('selection', JSON.stringify(selectedStrings));
     }
+
+
 }
 
-socket.on('selection', function(sig){
-    var intersection = JSON.parse(sig);
-    if (intersection != null && typeof(car) != "undefined" ) {
-        car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
-        selectNeighboringFaces3(
-            car.children[0].geometry.faces[intersection.faceIndex].a,
-            car.children[0].geometry.faces[intersection.faceIndex].b,
-            car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex)
 
-        car.children[0].geometry.colorsNeedUpdate = true;
+socket.on('selection', function(sig){
+    var selections = JSON.parse(sig);
+    for (i = 0 ; i < selections.length; i++ ) {
+        car.children[0].geometry.faces[selections[i]].color.setHex( 0x000000);
+        car.children[0].geometry.faces[selections[i]].selected = true;
     }
+    car.children[0].geometry.colorsNeedUpdate = true;
 });
+
+//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// 4rd iteration of the mesh selection algorithm
+function selectNeighboringFaces4(faceIndex) {
+    if (selected == true&&scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0){
+        car.children[0].geometry.faces[faceIndex].color.setHex( 0x000000);
+        car.children[0].geometry.faces[faceIndex].selected = true;
+    } else if (scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0)  {
+        car.children[0].geometry.faces[faceIndex].color.setHex( 0xffffff);
+        car.children[0].geometry.faces[faceIndex].selected = false;
+    }
+
+    for (i = 0; i<3; i++) {
+        distanceCheck(faceSorted3[i][faceIndex]);
+        if (distanceCheck(faceSorted3[i][faceIndex]) == true) {
+            j = 0;
+            while (faceSorted2[j][faceSorted3[i][faceIndex]]!= undefined) {
+                if (selectedVertices[faceSorted3[i][faceIndex]] == undefined) {
+                    selectedVertices[faceSorted3[i][faceIndex]] = true;
+                    selectNeighboringFaces4(faceSorted2[j][faceSorted3[i][faceIndex]]);
+                }
+                j++;
+            }
+        }
+    }
+
+
+
+}
+
+
+function distanceCheck(vertexIndex) {
+    x = car.children[0].geometry.vertices[vertexIndex].x * scale;
+    y = car.children[0].geometry.vertices[vertexIndex].y * scale;
+    z = car.children[0].geometry.vertices[vertexIndex].z * scale;
+
+
+    if (Math.sqrt((x - intersPoint[0])^2 + (y - intersPoint[1])^2 +(z - intersPoint[2])^2 ) < selectionRadius) {
+        return true;
+    } else if (1==1) {
+        return false;
+    }
+}
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // 3rd iteration of the mesh selection algorithm, works in conjunction
@@ -587,9 +627,15 @@ function selectNeighboringFaces3(a,b,c,iteration,faceindex) {
 // 2nd iteration of the selection algorithm that works with the 3rd
 function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
     if (selected == true&&scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0){
+        if (car.children[0].geometry.faces[faceIndex].color.getHex() != 0) {
+            selectedStrings[selectedStrings.length] = faceIndex;
+        }
         car.children[0].geometry.faces[faceIndex].color.setHex( 0x000000);
         car.children[0].geometry.faces[faceIndex].selected = true;
     } else if (scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0)  {
+        if (car.children[0].geometry.faces[faceIndex].color.getHex() != 0) {
+            deselectedStrings[deselectedStrings.length] = faceIndex;
+        }
         car.children[0].geometry.faces[faceIndex].color.setHex( 0xffffff);
         car.children[0].geometry.faces[faceIndex].selected = false;
     }
@@ -650,41 +696,6 @@ function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
 
 }
 
-//	function selectNeigboringFaces(a, b, c, iteration) {
-//		var stopper = 0;
-//		for (var i = 0; i < car.children[0].geometry.faces.length; i++) {
-//			if (car.children[0].geometry.faces[i].a == a || car.children[0].geometry.faces[i].b == b || car.children[0].geometry.faces[i].c == c){
-//				if (car.children[0].geometry.faces[i].a == a ) {
-//					stopper = stopper + 1;
-//					car.children[0].geometry.faces[i].color.setHex( 0x00ffff );
-//
-//					if (iteration != 0) {
-//						selectNeigboringFaces(car.children[0].geometry.faces[i].a,car.children[0].geometry.faces[i].b,car.children[0].geometry.faces[i].c,iteration - 1);
-//					}
-//				} else if (car.children[0].geometry.faces[i].b == b) {
-//					stopper = stopper + 1;
-//					car.children[0].geometry.faces[i].color.setHex( 0x00ffff );
-//
-//					if (iteration != 0) {
-//						selectNeigboringFaces(car.children[0].geometry.faces[i].a,car.children[0].geometry.faces[i].b,car.children[0].geometry.faces[i].c,iteration - 1);
-//					}
-//
-//				} else if (car.children[0].geometry.faces[i].c == c ) {
-//					stopper = stopper + 1;
-//					car.children[0].geometry.faces[i].color.setHex( 0x00ffff );
-//
-//					if (iteration != 0) {
-//						selectNeigboringFaces(car.children[0].geometry.faces[i].a,car.children[0].geometry.faces[i].b,car.children[0].geometry.faces[i].c,iteration - 1);
-//					}
-//				}
-//
-//				if (stopper == 3) {break}
-//
-//
-//
-//			}
-//		}
-//	}
 
 
 
@@ -715,7 +726,7 @@ function createButtons( materials, faceMaterial ) {
 function createScene( geometry, materials ) {
 
     visibleGeo = geometry;
-    var s = 75, m = new THREE.MeshFaceMaterial();
+    m = new THREE.MeshFaceMaterial();
 
     m.materials[ 0 ] = materials.body[ "Orange" ]; // car body
     m.materials[ 1 ] = materials.chrome; // wheels chrome
@@ -729,7 +740,7 @@ function createScene( geometry, materials ) {
 
     var mesh = new THREE.Mesh( geometry, m );
     mesh.rotation.y = 1;
-    mesh.scale.set( s, s, s );
+    mesh.scale.set( scale,scale,scale );
     mesh.castShadow  = true;
 
     mesh.position.y = 40;
@@ -749,7 +760,7 @@ function createScene( geometry, materials ) {
         //cube.faces[i].a;
         sortFaceInformation(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
         sortFaceInformation2(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
-
+        sortFaceInformation3(j);
         car.children[0].geometry.faces[j].color.setHex( 0xffffff );
         car.children[0].geometry.faces[j]["selected"] = false;
 
@@ -951,6 +962,7 @@ function sortFaceInformation2(a,b,c,faceNum) {
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // does the actual storing for the above function ///////////////////
+// indexed by vertex
 function sortRightWay(vertex, face) {
     if (faceSorted2[0][vertex] == undefined) {
         faceSorted2[0][vertex]= face;
@@ -1000,3 +1012,10 @@ function sortRightWay(vertex, face) {
     }
 
 }
+
+function sortFaceInformation3(faceIndex) {
+    faceSorted3[0][faceIndex] = car.children[0].geometry.faces[faceIndex].a;
+    faceSorted3[1][faceIndex] = car.children[0].geometry.faces[faceIndex].b;
+    faceSorted3[2][faceIndex] = car.children[0].geometry.faces[faceIndex].c;
+}
+
