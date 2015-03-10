@@ -112,7 +112,6 @@
                 <element signature="n#!!block;n#selectNeighboringFaces3#0" expanded="false" />
                 <element signature="n#!!block;n#createButtons#0" expanded="false" />
                 <element signature="n#!!block;n#createScene#0" expanded="false" />
-                <element signature="n#!!block;n#handleKeyDown#0" expanded="false" />
                 <element signature="n#!!block;n#handleKeyUp#0" expanded="false" />
                 <element signature="n#!!block;n#createBackground#0" expanded="false" />
                 <element signature="n#!!block;n#createLights#0" expanded="false" />
@@ -123,7 +122,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="game.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="game.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/javascripts/gamescripts/game.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="38" max-vertical-offset="152">
@@ -155,9 +154,9 @@
         <option value="$PROJECT_DIR$/routes/io.js" />
         <option value="$PROJECT_DIR$/views/layout.jade" />
         <option value="$PROJECT_DIR$/bin/www" />
-        <option value="$PROJECT_DIR$/public/javascripts/gamescripts/game.js" />
         <option value="$PROJECT_DIR$/io.js" />
         <option value="$PROJECT_DIR$/public/javascripts/gamescripts/fabian.js" />
+        <option value="$PROJECT_DIR$/public/javascripts/gamescripts/game.js" />
       </list>
     </option>
   </component>
@@ -528,7 +527,6 @@
             <element signature="n#!!block;n#selectNeighboringFaces3#0" expanded="false" />
             <element signature="n#!!block;n#createButtons#0" expanded="false" />
             <element signature="n#!!block;n#createScene#0" expanded="false" />
-            <element signature="n#!!block;n#handleKeyDown#0" expanded="false" />
             <element signature="n#!!block;n#handleKeyUp#0" expanded="false" />
             <element signature="n#!!block;n#createBackground#0" expanded="false" />
             <element signature="n#!!block;n#createLights#0" expanded="false" />
@@ -542,9 +540,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="136">
           <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#45#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -617,16 +613,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/javascripts/gamescripts/game.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="152">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#45#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="158" max-vertical-offset="1235">
@@ -690,7 +676,6 @@
             <element signature="n#!!block;n#selectNeighboringFaces3#0" expanded="false" />
             <element signature="n#!!block;n#createButtons#0" expanded="false" />
             <element signature="n#!!block;n#createScene#0" expanded="false" />
-            <element signature="n#!!block;n#handleKeyDown#0" expanded="false" />
             <element signature="n#!!block;n#handleKeyUp#0" expanded="false" />
             <element signature="n#!!block;n#createBackground#0" expanded="false" />
             <element signature="n#!!block;n#createLights#0" expanded="false" />
