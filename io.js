@@ -1,14 +1,13 @@
 var io = require('socket.io')();
+var game = require('./routes/game');
 
 io.sockets.on('connection', function(socket){
     console.log('connected');
-    socket.on('selection', function(sig){
-        console.log('selection received...');
-        io.emit('selection', sig);
-        console.log('selection emitted...');
+    game.initGame(io, socket);
+    socket.on('disconnect', function() {
+        var roomid = socket.gameId;
+        io.sockets.in(roomid).emit('playerLeft', {gameId: roomid, mySocketId: socket.id});
     });
 });
-
-//asdfajsdhfasldfj
 
 module.exports = io;

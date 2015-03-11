@@ -47,27 +47,21 @@ var selectAllDecision;
 
 //End Global Variables\\
 
-
-
-
-init();
-animate();
-
 ////////////////////////////INITIALIZING\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //////////////////////////////FUNCTION\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // sets up the environment \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 function init() {
-    container = document.createElement( 'div' );
-    document.body.appendChild( container );
+    //container = document.createElement( 'div' );
+    //document.body.appendChild( container );
+    container = $('#game')[0];
 
-
-    var info = document.createElement( 'div' );
-    info.style.position = 'absolute';
-    info.style.top = '10px';
-    info.style.width = '100%';
-    info.style.textAlign = 'center';
-    info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> webgl - interactive cubes';
-    container.appendChild( info );
+    //var info = document.createElement( 'div' );
+    //info.style.position = 'absolute';
+    //info.style.top = '10px';
+    //info.style.width = '100%';
+    //info.style.textAlign = 'center';
+    //info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> webgl - interactive cubes';
+    //container.appendChild( info );
 
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 
@@ -527,10 +521,10 @@ function onDocumentMouseDown( event ) {
         car.children[0].geometry.colorsNeedUpdate = true;
         if (selected == true) {
             selectedStrings[selectedStrings.length] = 1;
-            socket.emit('selection', JSON.stringify(selectedStrings));
+            GAME.IO.socket.emit('selection', JSON.stringify(selectedStrings));
         } else if (selected == false) {
             deselectedStrings[deselectedStrings.length] = 0;
-            socket.emit('selection', JSON.stringify(deselectedStrings));
+            GAME.IO.socket.emit('selection', JSON.stringify(deselectedStrings));
         }
 
     }
@@ -538,31 +532,14 @@ function onDocumentMouseDown( event ) {
 
 }
 
-
-socket.on('selection', function(sig){
-    var selections = JSON.parse(sig);
-    for (var i = 0 ; i < selections.length-1; i++ ) {
-        if (selections[selections.length - 1] == 1) {
-            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
-            car.children[0].geometry.faces[selections[i]].selected = true;
-        } else {
-            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
-            car.children[0].geometry.faces[selections[i]].selected = false;
-        }
-    }
-
-    car.children[0].geometry.colorsNeedUpdate = true;
-});
-
-
-socket2.on('all', function(sig){
-    decision = JSON.parse(sig);
-    if (decision == true) {
-        selectAll(true);
-    } else {
-        selectAll(false);
-    }
-});
+//socket2.on('all', function(sig){
+//    decision = JSON.parse(sig);
+//    if (decision == true) {
+//        selectAll(true);
+//    } else {
+//        selectAll(false);
+//    }
+//});
 
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
