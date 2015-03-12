@@ -31,7 +31,7 @@ var GAME = (function($){
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
             IO.socket.on('playerLeft',IO.playerLeft );
             IO.socket.on('beginNewGame', IO.beginNewGame );
-            IO.socket.on('newObjData', IO.onNewWordData);
+            IO.socket.on('newObjData', IO.onNewObjData);
             IO.socket.on('checkAnswer', IO.hostCheckAnswer);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
@@ -64,22 +64,11 @@ var GAME = (function($){
          * @param data {{playerName: string, gameId: int, mySocketId: int}}
          */
         playerJoinedRoom : function(data) {
-            // When a player joins a room, do the updateWaitingScreen funciton.
-            // There are two versions of this function: one for the 'host' and
-            // another for the 'player'.
-            //
-            // So on the 'host' browser window, the App.Host.updateWiatingScreen function is called.
-            // And on the player's browser, App.Player.updateWaitingScreen is called.
-            //App[App.myRole].updateWaitingScreen(data);
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
             $('#playerWaiting').hide();
             $('#game').show();
             init();
             animate();
-        },
-
-        startGame: function(){
-
         },
 
         playerLeft: function(data){
@@ -94,23 +83,25 @@ var GAME = (function($){
                 var selections = JSON.parse(sig);
                 for (var i = 0 ; i < selections.length-1; i++ ) {
                     if (selections[selections.length - 1] == 1) {
-                        car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+                        if((App.myRole=='Host')){
+                            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+                        }
+                        else{ // if player
+                            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+                        }
                         car.children[0].geometry.faces[selections[i]].selected = true;
                     } else {
-                        car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+                        if((App.myRole=='Host')){
+                            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+                        }
+                        else{ // if player
+                            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+                        }
                         car.children[0].geometry.faces[selections[i]].selected = false;
                     }
                 }
                 car.children[0].geometry.colorsNeedUpdate = true;
             }
-        },
-
-        /**
-         * Both players have joined the game.
-         * @param data
-         */
-        beginNewGame : function(data) {
-            App[App.myRole].gameCountdown(data);
         },
 
         /**
@@ -246,11 +237,6 @@ var GAME = (function($){
         Host : {
 
             /**
-             * Contains references to player data
-             */
-            players : [],
-
-            /**
              * Flag to indicate if a new game is starting.
              * This is used after the first game ends, and players initiate a new game
              * without refreshing the browser windows.
@@ -272,7 +258,7 @@ var GAME = (function($){
              */
             onCreateClick: function () {
                 // console.log('Clicked "Create A Game"');
-                IO.socket.emit('hostCreateNewGame');
+                IO.socket.emit('createNewGame');
             },
 
             /**
@@ -489,7 +475,7 @@ var GAME = (function($){
                 };
 
                 // Send the gameId and playerName to the server
-                IO.socket.emit('playerJoinGame', data);
+                IO.socket.emit('joinGame', data);
 
                 // Set the appropriate properties for the current player.
                 App.myRole = 'Player';

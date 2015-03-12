@@ -97,9 +97,6 @@ function init() {
     createLights();
     createCar(createTextureCube(  ));
 
-
-
-
     scene.add(background);
     createBackground()
 
@@ -754,6 +751,10 @@ function createScene( geometry, materials ) {
 
     car.add( mesh );
 
+    // if player, hide the geometry
+
+    car.children[0].geometry.colorsNeedUpdate = true;
+
     car.castShadow = true;
 
     scene.add(car);
@@ -765,7 +766,14 @@ function createScene( geometry, materials ) {
         sortFaceInformation(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
         sortFaceInformation2(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
         sortFaceInformation3(j);
-        car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+
+        if(GAME.App.myRole=='Host'){
+            car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+        }
+        else{
+            car.children[0].geometry.faces[j].color.setHex( 0x000000 );
+        }
+
         car.children[0].geometry.faces[j]["selected"] = false;
 
 
