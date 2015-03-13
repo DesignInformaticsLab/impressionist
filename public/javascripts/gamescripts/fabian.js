@@ -49,27 +49,21 @@ var PRESSED;
 
 //End Global Variables\\
 
-
-
-
-init();
-animate();
-
 ////////////////////////////INITIALIZING\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 //////////////////////////////FUNCTION\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // sets up the environment \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 function init() {
-    container = document.createElement( 'div' );
-    document.body.appendChild( container );
+    //container = document.createElement( 'div' );
+    //document.body.appendChild( container );
+    container = $('#game')[0];
 
-
-    var info = document.createElement( 'div' );
-    info.style.position = 'absolute';
-    info.style.top = '10px';
-    info.style.width = '100%';
-    info.style.textAlign = 'center';
-    info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> webgl - interactive cubes';
-    container.appendChild( info );
+    //var info = document.createElement( 'div' );
+    //info.style.position = 'absolute';
+    //info.style.top = '10px';
+    //info.style.width = '100%';
+    //info.style.textAlign = 'center';
+    //info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> webgl - interactive cubes';
+    //container.appendChild( info );
 
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
 
@@ -105,9 +99,6 @@ function init() {
 
     createLights();
     createCar(createTextureCube(  ));
-
-
-
 
     scene.add(background);
     createBackground()
@@ -592,10 +583,10 @@ function onDocumentMouseDownDelete( event ) {
         car.children[0].geometry.colorsNeedUpdate = true;
         if (selected == true) {
             selectedStrings[selectedStrings.length] = 1;
-            socket.emit('selection', JSON.stringify(selectedStrings));
+            GAME.IO.socket.emit('selection', JSON.stringify(selectedStrings));
         } else if (selected == false) {
             deselectedStrings[deselectedStrings.length] = 0;
-            socket.emit('selection', JSON.stringify(deselectedStrings));
+            GAME.IO.socket.emit('selection', JSON.stringify(deselectedStrings));
         }
 
     }
@@ -603,6 +594,7 @@ function onDocumentMouseDownDelete( event ) {
 
 }
 
+<<<<<<< HEAD
 
 socket.on('selection', function(sig){
     var selections = JSON.parse(sig);
@@ -619,6 +611,16 @@ socket.on('selection', function(sig){
     car.children[0].geometry.colorsNeedUpdate = true;
 });
 
+=======
+//socket2.on('all', function(sig){
+//    decision = JSON.parse(sig);
+//    if (decision == true) {
+//        selectAll(true);
+//    } else {
+//        selectAll(false);
+//    }
+//});
+>>>>>>> 96cdfb791317368df04e3b74d812a2da068a9188
 
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -833,6 +835,10 @@ function createScene( geometry, materials ) {
 
     car.add( mesh );
 
+    // if player, hide the geometry
+
+    car.children[0].geometry.colorsNeedUpdate = true;
+
     car.castShadow = true;
 
     scene.add(car);
@@ -844,7 +850,14 @@ function createScene( geometry, materials ) {
         sortFaceInformation(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
         sortFaceInformation2(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
         sortFaceInformation3(j);
-        car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+
+        if(GAME.App.myRole=='Host'){
+            car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+        }
+        else{
+            car.children[0].geometry.faces[j].color.setHex( 0x000000 );
+        }
+
         car.children[0].geometry.faces[j]["selected"] = false;
 
 
