@@ -1,6 +1,6 @@
 {
 
-    "metadata" :
+    "metadata:" :
     {
         "formatVersion" : 3.1,
         "sourceFile"    : "CamaroNoUv.obj",

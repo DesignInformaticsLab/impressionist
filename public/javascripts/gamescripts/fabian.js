@@ -553,10 +553,10 @@ function select() {
 
         if (selected == true) {
             selectedStrings[selectedStrings.length] = 1;
-            socket.emit('selection', JSON.stringify(selectedStrings));
+            GAME.IO.socket('selection', JSON.stringify(selectedStrings));
         } else if (selected == false) {
             deselectedStrings[deselectedStrings.length] = 0;
-            socket.emit('selection', JSON.stringify(deselectedStrings));
+            GAME.IO.socket('selection', JSON.stringify(deselectedStrings));
         }
     }
 
@@ -594,9 +594,9 @@ function onDocumentMouseDownDelete( event ) {
 
 }
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 
-socket.on('selection', function(sig){
+GAME.IO.socket.on('selection', function(sig){
     var selections = JSON.parse(sig);
     for (var i = 0 ; i < selections.length-1; i++ ) {
         if (selections[selections.length - 1] == 1) {
@@ -611,7 +611,7 @@ socket.on('selection', function(sig){
     car.children[0].geometry.colorsNeedUpdate = true;
 });
 
-=======
+//=======
 //socket2.on('all', function(sig){
 //    decision = JSON.parse(sig);
 //    if (decision == true) {
@@ -620,7 +620,7 @@ socket.on('selection', function(sig){
 //        selectAll(false);
 //    }
 //});
->>>>>>> 96cdfb791317368df04e3b74d812a2da068a9188
+//>>>>>>> 96cdfb791317368df04e3b74d812a2da068a9188
 
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -1012,21 +1012,21 @@ function createLights() {
     var ambient = new THREE.AmbientLight( 0x020202 );
     scene.add( ambient );
 
-    directionalLight1 = new THREE.DirectionalLight( 0x808080 );
-    directionalLight1.position.set( -1000, 1000, 1000 ).normalize();
+    directionalLight1 = new THREE.DirectionalLight( 0xffffff );
+    directionalLight1.position.set( -1000, 300, 1000 ).normalize();
 
     directionalLight2 = new THREE.DirectionalLight( 0x808080 );
-    directionalLight2.position.set( -1000, 1000, -1000 ).normalize();
+    directionalLight2.position.set( -1000, 1000, 0 ).normalize();
 
-    directionalLight3 = new THREE.DirectionalLight( 0x808080 );
-    directionalLight3.position.set( 1000, 1000, -1000 ).normalize();
+   // directionalLight3 = new THREE.DirectionalLight( 0x808080 );
+    //directionalLight3.position.set( 1000, 1000, -1000 ).normalize();
 
-    directionalLight4 = new THREE.DirectionalLight( 0x808080 );
-    directionalLight4.position.set( 1000, 1000, 1000 ).normalize();
+   // directionalLight4 = new THREE.DirectionalLight( 0x808080 );
+    //directionalLight4.position.set( 1000, 1000, 1000 ).normalize();
 
     //i removed this light from the environment
-    var light = new THREE.DirectionalLight( 0xffffff, 1 );
-    light.position.set( 1000, -1000, 1000 ).normalize();
+    //var light = new THREE.DirectionalLight( 0xffffff, 1 );
+    //light.position.set( 1000, -1000, 1000 ).normalize();
 
     //scene.add( light );
     scene.add( directionalLight1 );
