@@ -1,7 +1,7 @@
 
 //Global Variables\\
 var container, stats;
-var camera, scene, raycaster, renderer;
+var camera, scene, raycaster, renderer, clock;
 var vrEffect;
 var vrControls;
 var mouseControls;
@@ -45,6 +45,8 @@ var selectedVertices;
 
 var selectAllDecision;
 
+var PRESSED;
+
 //End Global Variables\\
 
 
@@ -73,6 +75,7 @@ function init() {
 
 
     scene = new THREE.Scene();
+    clock = new THREE.Clock();
     background = new THREE.Scene();
     background.name = "background";
     car = new THREE.Scene();
@@ -170,6 +173,7 @@ function init() {
 
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+    document.addEventListener( 'mouseup', onDocumentMouseUp, false );
     document.addEventListener('keyup', handleKeyUp, false);
     document.addEventListener('keydown', handleKeyDown, false);
     //
@@ -196,7 +200,18 @@ function animate() {
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // rotates car and camera position based on input\\\\\\\\\\\\\\\\\\\\
+var toggle = 0;
 function render() {
+    toggle += clock.getDelta();
+
+
+
+    var timer = -0.0002 * Date.now();
+
+    if (PRESSED == true && toggle > 0.1) {
+        toggle = 0;
+        select();
+    }
 
 
     headControls.update();
@@ -466,8 +481,14 @@ function onDocumentMouseMove(event) {
 
 
     raycaster.setFromCamera( mouse, camera );
+    var intersections=[];
 
-    var intersections = raycaster.intersectObjects( [scene.getObjectByName("car").getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
+    try {
+        intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
+    } catch (e) {
+        intersections[0] = null ;
+    }
+
     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 
     if (intersection != null) {
@@ -489,23 +510,67 @@ function onDocumentMouseMove(event) {
         cylinderSmall.position.x = xPos;
         cylinderSmall.position.y = yPos;
 
-
-        //scene.getObjectByName("RaycasterLine").geometry.vertices[0] = camera.position;
-        //scene.getObjectByName("RaycasterLine").geometry.vertices[0].x = camera.position.x;
-        //scene.getObjectByName("RaycasterLine").geometry.vertices[0].y = camera.position.y+0.001;
-        //scene.getObjectByName("RaycasterLine").geometry.vertices[0].z = camera.position.z;
-        //scene.getObjectByName("RaycasterLine").geometry.vertices[1] = intersection.point;
-        //scene.getObjectByName("RaycasterLine").geometry.verticesNeedUpdate = true;
-
     }
+
+}
+
+//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+// Picks up down click of the mouse and selects the meshes \\\\\\\\\\
+function onDocumentMouseDown( event ) {
+
+    event.preventDefault();
+
+    PRESSED = true;
 
 
 }
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Picks up down click of the mouse and selects the meshes \\\\\\\\\\
+function onDocumentMouseUp( event ) {
 
-function onDocumentMouseDown( event ) {
+    event.preventDefault();
+
+    PRESSED = false;
+
+
+}
+
+function select() {
+    raycaster.setFromCamera( mouse, camera );
+
+    var intersections=[];
+
+    try {
+        intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
+    } catch (e) {
+        intersections[0] = null ;
+    }
+
+    var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
+
+    if (intersection != null) {
+        intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
+        car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
+        selectNeighboringFaces3(
+            car.children[0].geometry.faces[intersection.faceIndex].a,
+            car.children[0].geometry.faces[intersection.faceIndex].b,
+            car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex)
+        //selectedVertices = [];
+        //selectNeighboringFaces4(intersection.faceIndex);
+        car.children[0].geometry.colorsNeedUpdate = true;
+
+        if (selected == true) {
+            selectedStrings[selectedStrings.length] = 1;
+            socket.emit('selection', JSON.stringify(selectedStrings));
+        } else if (selected == false) {
+            deselectedStrings[deselectedStrings.length] = 0;
+            socket.emit('selection', JSON.stringify(deselectedStrings));
+        }
+    }
+
+}
+function onDocumentMouseDownDelete( event ) {
 
     event.preventDefault();
 
@@ -554,15 +619,6 @@ socket.on('selection', function(sig){
     car.children[0].geometry.colorsNeedUpdate = true;
 });
 
-
-socket2.on('all', function(sig){
-    decision = JSON.parse(sig);
-    if (decision == true) {
-        selectAll(true);
-    } else {
-        selectAll(false);
-    }
-});
 
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

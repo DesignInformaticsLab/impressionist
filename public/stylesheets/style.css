@@ -1,14 +1,14 @@
 body {
     font-family: Monospace;
-    background-color: #f0f0f0;
+    background-color: #0000ff;
     margin: 0px;
     overflow: hidden;
     cursor: none;
 }
 .menu {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
 }
 .button {
     display: inline-block;
