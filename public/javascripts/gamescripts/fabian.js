@@ -95,7 +95,7 @@ function init() {
     renderer.shadowMapEnabled = true;
 
 
-    container.appendChild( renderer.domElement );
+    //container.appendChild( renderer.domElement );
 
     createLights();
     createCar(createTextureCube(  ));
@@ -553,10 +553,10 @@ function select() {
 
         if (selected == true) {
             selectedStrings[selectedStrings.length] = 1;
-            GAME.IO.socket('selection', JSON.stringify(selectedStrings));
+            GAME.IO.socket.emit('selection', JSON.stringify(selectedStrings));
         } else if (selected == false) {
             deselectedStrings[deselectedStrings.length] = 0;
-            GAME.IO.socket('selection', JSON.stringify(deselectedStrings));
+            GAME.IO.socket.emit('selection', JSON.stringify(deselectedStrings));
         }
     }
 
@@ -571,7 +571,7 @@ function onDocumentMouseDownDelete( event ) {
     intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
     selectedStrings = [];
     deselectedStrings = [];
-    if (intersection != null) {
+    if (intersection != null && GAME.App.myRole == 'Host') {
         intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
         car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
         selectNeighboringFaces3(
@@ -600,10 +600,22 @@ GAME.IO.socket.on('selection', function(sig){
     var selections = JSON.parse(sig);
     for (var i = 0 ; i < selections.length-1; i++ ) {
         if (selections[selections.length - 1] == 1) {
-            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+            if(GAME.App.myRole=='Player'){
+                car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+            }
+            else{
+                car.children[0].geometry.faces[j].color.setHex( 0x000000 );
+            }
+            //car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
             car.children[0].geometry.faces[selections[i]].selected = true;
         } else {
-            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+            if(GAME.App.myRole=='Host'){
+                car.children[0].geometry.faces[j].color.setHex( 0x000000 );
+            }
+            else{
+                car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+            }
+            //car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
             car.children[0].geometry.faces[selections[i]].selected = false;
         }
     }

@@ -74,6 +74,8 @@ var GAME = (function($){
         playerLeft: function(data){
             $('#playerWaiting').show();
             $('#game').hide();
+            $('#game').html('');
+            App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
         },
 
