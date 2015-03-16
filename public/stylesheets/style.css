@@ -3,7 +3,7 @@ body {
     background-color: #0000ff;
     margin: 0px;
     overflow: hidden;
-    cursor: none;
+    /*cursor: none;*/
 }
 .menu {
     position: fixed;
