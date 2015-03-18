@@ -67,6 +67,12 @@ var GAME = (function($){
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
             $('#playerWaiting').hide();
             $('#game').show();
+            if(GAME.App.myRole == 'Host'){
+                $('#select').show();
+            }
+            else{
+                $('#select').hide();
+            }
             init();
             animate();
         },
@@ -74,7 +80,7 @@ var GAME = (function($){
         playerLeft: function(data){
             $('#playerWaiting').show();
             $('#game').hide();
-            $('#game').html('');
+            $('#model').html('');
             App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
         },

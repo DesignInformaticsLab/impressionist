@@ -45,13 +45,13 @@ var selectionRadius = 250;
 
 var intersPoint;
 
-var scale = 75;
+var scale = 100, zheight = 120;
 
 var selectedVertices;
 
 var selectAllDecision;
 
-var PRESSED;
+var PRESSED = false, SELECT = false;
 
 var VRMODE = false; //VR mode
 
@@ -65,7 +65,7 @@ var VRMODE = false; //VR mode
 function init() {
     //container = document.createElement( 'div' );
     //document.body.appendChild( container );
-    container = $('#game')[0];
+    container = $('#model')[0];
 
     //var info = document.createElement( 'div' );
     //info.style.position = 'absolute';
@@ -179,10 +179,10 @@ function init() {
     renderer.sortObjects = false;
     container.appendChild( renderer.domElement );
 
-    stats = new Stats();
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.top = '0px';
-    container.appendChild( stats.domElement );
+    //stats = new Stats();
+    //stats.domElement.style.position = 'absolute';
+    //stats.domElement.style.top = '0px';
+    //container.appendChild( stats.domElement );
 
     //document.addEventListener( 'mousemove', onDocumentMouseMove, false );
     //document.addEventListener( 'mousedown', onDocumentMouseDown, false );
@@ -281,26 +281,9 @@ function onWindowResize() {
 function createCar(textureCube) {
     material_lib = {
         body: {
-
-            Orange: new THREE.MeshLambertMaterial( {
-                color: 0xff6600,
-                //envMap: textureCube,
-                combine: THREE.MixOperation,
-                reflectivity: 0.3,
-                vertexColors: THREE.FaceColors
-            } ),
-
-            Blue: new THREE.MeshLambertMaterial( {
-                color: 0x226699,
-                //envMap: textureCube,
-                combine: THREE.MixOperation,
-                reflectivity: 0.3,
-                vertexColors: THREE.FaceColors
-            } ),
-
             Red: new THREE.MeshLambertMaterial( {
                 color: 0x660000,
-                //envMap: textureCube,
+                envMap: textureCube,
                 combine: THREE.MixOperation,
                 reflectivity: 0.5,
                 vertexColors: THREE.FaceColors
@@ -308,7 +291,7 @@ function createCar(textureCube) {
 
             Black: new THREE.MeshLambertMaterial( {
                 color: 0x000000,
-                //envMap: textureCube,
+                envMap: textureCube,
                 combine: THREE.MixOperation,
                 reflectivity: 0.5,
                 vertexColors: THREE.FaceColors
@@ -316,64 +299,28 @@ function createCar(textureCube) {
 
             White: new THREE.MeshLambertMaterial( {
                 color: 0xffffff,
-                //envMap: textureCube,
+                envMap: textureCube,
                 combine: THREE.MixOperation,
                 reflectivity: 0.5,
-                vertexColors: THREE.FaceColors
-            } ),
-
-            Carmine: new THREE.MeshPhongMaterial( {
-                color: 0x770000,
-                specular: 0xffaaaa,
-                //envMap: textureCube,
-                combine: THREE.MultiplyOperation,
-                vertexColors: THREE.FaceColors
-            } ),
-
-            Gold: new THREE.MeshPhongMaterial( {
-                color: 0xaa9944,
-                specular: 0xbbaa99,
-                shininess: 50,
-                //envMap: textureCube,
-                combine: THREE.MultiplyOperation,
-                vertexColors: THREE.FaceColors
-            } ),
-
-            Bronze: new THREE.MeshPhongMaterial( {
-                color: 0x150505,
-                specular: 0xee6600,
-                shininess: 10,
-                //envMap: textureCube,
-                combine: THREE.MixOperation,
-                reflectivity: 0.5,
-                vertexColors: THREE.FaceColors
-            } ),
-
-            Chrome: new THREE.MeshPhongMaterial( {
-                color: 0xffffff,
-                specular:0xffffff,
-                //envMap: textureCube,
-                combine: THREE.MultiplyOperation,
                 vertexColors: THREE.FaceColors
             } )
-
         },
 
         chrome: new THREE.MeshLambertMaterial( {
             color: 0xffffff,
-            //envMap: textureCube,
+            envMap: textureCube,
             vertexColors: THREE.FaceColors
         } ),
 
         darkchrome: new THREE.MeshLambertMaterial( {
             color: 0x444444,
-            //envMap: textureCube,
+            envMap: textureCube,
             vertexColors: THREE.FaceColors
         } ),
 
         glass: new THREE.MeshBasicMaterial( {
             color: 0x223344,
-            //envMap: textureCube,
+            envMap: textureCube,
             opacity: 0.25,
             combine: THREE.MixOperation,
             reflectivity: 0.25,
@@ -411,18 +358,15 @@ function createCar(textureCube) {
 // create texture cube  in this case all black\\\\\\\\\\\\\\\\\\\\\\\
 function createTextureCube(  ) {
 
-    //var r = "textures/fabian/blackCube/";
-    //var urls = [ r + "posx.jpg", r + "negx.jpg",
-    //    r + "posy.jpg", r + "negy.jpg",
-    //    r + "posz.jpg", r + "negz.jpg" ];
-    //
-    //textureCube = THREE.ImageUtils.loadTextureCube( urls );
-    //
-    //
-    //
-    ///////////////////////////////////
-    //textureCube.format = THREE.RGBFormat;
-    //
+    var r = "textures/bridge/";
+    var urls = [ r + "posx.jpg", r + "negx.jpg",
+        r + "posy.jpg", r + "negy.jpg",
+        r + "posz.jpg", r + "negz.jpg" ];
+
+    textureCube = THREE.ImageUtils.loadTextureCube( urls );
+    textureCube.format = THREE.RGBFormat;
+    textureCube.mapping = THREE.CubeReflectionMapping;
+
     //var shader = THREE.FresnelShader;
     //var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
     //
@@ -430,8 +374,8 @@ function createTextureCube(  ) {
     //
     //var parameters = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShader, uniforms: uniforms };
     //var material = new THREE.ShaderMaterial( parameters );
-    //
-    //
+
+
     //scene.matrixAutoUpdate = false;
 
     //// Skybox
@@ -480,7 +424,7 @@ function createTextureCube(  ) {
     //scene.add( cylinderSmall );
 
     ///////////////////////////////
-    //return textureCube;
+    return textureCube;
 }
 
 
@@ -491,10 +435,6 @@ function createTextureCube(  ) {
 $('#game').mousemove(function(event){
 
     event.preventDefault();
-    //if (!isJqmGhostClick(event)){
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    //
     //cylinder.position.x =  mouse.x;
     //cylinder.position.y = mouse.y;
     //
@@ -520,9 +460,19 @@ $('#game').mousemove(function(event){
     //    var xPos = intersection.point.x + lambda * ( camera.position.x - intersection.point.x);
     //    var yPos = intersection.point.y + lambda * ( camera.position.y - intersection.point.y);
     //}
-    if (PRESSED == true) {
-        select();
+
+    var tempx = mouse.x;
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    if (PRESSED == true){
+        if (SELECT == true) {
+            select();
+        }
+        else {
+            theta = (mouse.x - tempx)*0.5;
+        }
     }
+
     //}
 });
 
@@ -533,7 +483,7 @@ $('#game').mousedown(function(event){
     event.preventDefault();
     if (!isJqmGhostClick(event)) {
         PRESSED = true;
-        if (PRESSED == true) {
+        if (PRESSED == true && SELECT == true) {
             select();
         }
     }
@@ -546,6 +496,7 @@ $('#game').mouseup(function(event) {
     event.preventDefault();
     //if (!isJqmGhostClick(event)) {
     PRESSED = false;
+    theta = 0;
     //}
 });
 
@@ -661,7 +612,7 @@ function createMesh(selection){
             mesh.scale.set( scale,scale,scale );
             mesh.castShadow  = true;
 
-            mesh.position.y = 40;
+            mesh.position.y = zheight;
             emptycar.add(mesh);
         }
         else{
@@ -873,7 +824,7 @@ function createScene( geometry, materials ) {
     mesh.scale.set( scale,scale,scale );
     mesh.castShadow  = true;
 
-    mesh.position.y = 40;
+    mesh.position.y = zheight;
 
     mesh.name = "camaro";
 
@@ -933,53 +884,58 @@ function createScene( geometry, materials ) {
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Handles corresponding tasks if the corresponding key is pressed \\
 function handleKeyDown(event) {
+    if (event.keyCode == 83){
+        SELECT = true;
+        $('#select').addClass('active');
+    }
+
     //You can uncomment the next line to find out each key's code
     //alert(event.keyCode);
-    scene.remove(background);
-    if (event.keyCode == 37) {
-        //Left Arrow Key  turn car cw
-        theta = -0.01;
-    } else if (event.keyCode == 38) {
-        //Up Arrow Key  zoom out
-        radius += -10;
-    } else if (event.keyCode == 39) {
-        //Right Arrow Key  turn car ccw
-        theta = 0.01;
-    } else if (event.keyCode == 40) {
-        //Down Arrow Key  Zoom in
-        radius += 10;
-    } else if (event.keyCode == 90) {
-        //z Key zero Sensor
-        if (VRMODE){
-            headControls.zeroSensor();
-        }
-
-    } else if (event.keyCode == 68) {
-        //d Key deselection mode on cursor
-        //selected = false;
-    } else if (event.keyCode == 83) {
-        //s key selection mode on cursor
-        selected = true;
-    } else if (event.keyCode == 65) {
-        //a key select all
-        selectAll(true);
-        var s = true;
-        socket2.emit('all', JSON.stringify(s));
-    } else if (event.keyCode == 85) {
-        //u key unselect all
-        selectAll(false);
-        var s = false;
-        socket2.emit('all', JSON.stringify(s));
-    } else if (event.keyCode == 67) {
-        //c key counts number of faces selected
-        numSelected = 0;
-        for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
-            if (scene.getObjectByName("camaro").geometry.faces[j].materialIndex == 0) {
-                if (car.children[0].geometry.faces[j]["selected"] == true) { numSelected++}
-            }
-        }
-        perSelected = numSelected/totalSelectable;
-    }
+    //scene.remove(background);
+    //if (event.keyCode == 37) {
+    //    //Left Arrow Key  turn car cw
+    //    theta = -0.01;
+    //} else if (event.keyCode == 38) {
+    //    //Up Arrow Key  zoom out
+    //    radius += -10;
+    //} else if (event.keyCode == 39) {
+    //    //Right Arrow Key  turn car ccw
+    //    theta = 0.01;
+    //} else if (event.keyCode == 40) {
+    //    //Down Arrow Key  Zoom in
+    //    radius += 10;
+    //} else if (event.keyCode == 90) {
+    //    //z Key zero Sensor
+    //    if (VRMODE){
+    //        headControls.zeroSensor();
+    //    }
+    //
+    //} else if (event.keyCode == 68) {
+    //    //d Key deselection mode on cursor
+    //    //selected = false;
+    //} else if (event.keyCode == 83) {
+    //    //s key selection mode on cursor
+    //    selected = true;
+    //} else if (event.keyCode == 65) {
+    //    //a key select all
+    //    selectAll(true);
+    //    var s = true;
+    //    socket2.emit('all', JSON.stringify(s));
+    //} else if (event.keyCode == 85) {
+    //    //u key unselect all
+    //    selectAll(false);
+    //    var s = false;
+    //    socket2.emit('all', JSON.stringify(s));
+    //} else if (event.keyCode == 67) {
+    //    //c key counts number of faces selected
+    //    numSelected = 0;
+    //    for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
+    //        if (scene.getObjectByName("camaro").geometry.faces[j].materialIndex == 0) {
+    //            if (car.children[0].geometry.faces[j]["selected"] == true) { numSelected++}
+    //        }
+    //    }
+    //    perSelected = numSelected/totalSelectable;
+    //}
 
 }
 
@@ -1007,21 +963,23 @@ function handleKeyUp(event) {
     //You can uncomment the next line to find out each key's code
     //alert(event.keyCode);
 
-    if (event.keyCode == 37) {
-        //Left Arrow Key
-        theta = 0;
-    } else if (event.keyCode == 38) {
-        //Up Arrow Key
-
-    } else if (event.keyCode == 39) {
-        //Right Arrow Key
-        theta = 0;
-    } else if (event.keyCode == 40) {
-        //Down Arrow Key
-
+    //if (event.keyCode == 37) {
+    //    //Left Arrow Key
+    //    theta = 0;
+    //} else if (event.keyCode == 38) {
+    //    //Up Arrow Key
+    //
+    //} else if (event.keyCode == 39) {
+    //    //Right Arrow Key
+    //    theta = 0;
+    //} else if (event.keyCode == 40) {
+    //    //Down Arrow Key
+    //
+    //}
+    if (event.keyCode == 83){
+        SELECT = false;
+        $('#select').removeClass('active');
     }
-
-
 }
 
 
@@ -1192,7 +1150,7 @@ function diff(a, b) {
 var lastTapTime;
 function isJqmGhostClick(event) {
     var currTapTime = new Date().getTime();
-    if(lastTapTime == null || currTapTime > (lastTapTime + 1000)) {
+    if(lastTapTime == null || currTapTime > (lastTapTime + 300)) {
         lastTapTime = currTapTime;
         return false;
     }
