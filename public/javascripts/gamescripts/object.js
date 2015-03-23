@@ -285,12 +285,12 @@ function createCar(textureCube) {
                 color: 0x660000,
                 envMap: textureCube,
                 combine: THREE.MixOperation,
-                reflectivity: 0.5,
+                reflectivity: 0.05,
                 vertexColors: THREE.FaceColors
             } ),
 
             Black: new THREE.MeshLambertMaterial( {
-                color: 0x000000,
+                color: 0x888888,
                 envMap: textureCube,
                 combine: THREE.MixOperation,
                 reflectivity: 0.5,
@@ -301,7 +301,7 @@ function createCar(textureCube) {
                 color: 0xffffff,
                 envMap: textureCube,
                 combine: THREE.MixOperation,
-                reflectivity: 0.5,
+                reflectivity: 0.05,
                 vertexColors: THREE.FaceColors
             } )
         },
@@ -881,12 +881,56 @@ function createScene( geometry, materials ) {
 
 }
 
+function colorFaces() {
+    var r, g, b;
+    var col;
+    for (var i = 0; i < scene.children[3].children[0].geometry.faces.length; i++) {
+        col = getRGB(Math.max(
+            scene.children[3].children[0].geometry.vertices[faceSorted3[0][i]].y,
+            scene.children[3].children[0].geometry.vertices[faceSorted3[1][i]].y,
+            scene.children[3].children[0].geometry.vertices[faceSorted3[2][i]].y));
+        scene.children[3].children[0].geometry.faces[i].color.r = col[0]/255;
+        scene.children[3].children[0].geometry.faces[i].color.g = col[1]/255;
+        scene.children[3].children[0].geometry.faces[i].color.b = col[2]/255;
+    }
+
+}
+
+function getRGB(val) {
+    var min = -2;
+    var max = 3;
+
+    if (val>max) {
+        val = max;
+    } else if (val < min) {
+        val = min;
+    }
+
+    var half = (max + min)/2 ;
+    var col = [0,0,0];
+
+    if (val < half) {
+        col[0] = 0;
+        col[1]= 255/(half - min) * (val - min);
+        col[2] =  255 - 255/(half - min)  * (val - min);
+    } else if (half < val) {
+        col[0] = 255/(max - half) * (val - half);
+        col[1] = 255 + -255/(max - half)  * (val - half);
+        col[2] = 0;
+    }
+
+
+    return (col);
+}
+
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Handles corresponding tasks if the corresponding key is pressed \\
 function handleKeyDown(event) {
     if (event.keyCode == 83){
         SELECT = true;
         $('#select').addClass('active');
+    } else if ( event.keyCode == 90) {
+        colorFaces();
     }
 
     //You can uncomment the next line to find out each key's code
@@ -1015,11 +1059,12 @@ function createLights() {
     var ambient = new THREE.AmbientLight( 0x020202 );
     scene.add( ambient );
 
-    directionalLight1 = new THREE.DirectionalLight( 0xffffff );
-    directionalLight1.position.set( -1000, 300, 1000 ).normalize();
+    directionalLight1 = new THREE.DirectionalLight( 0xaaaaaa );
+    directionalLight1.position.set( camera.position.z + 50, camera.position.y, -camera.position.x );//.normalize();
 
-    directionalLight2 = new THREE.DirectionalLight( 0x808080 );
-    directionalLight2.position.set( -1000, 1000, 0 ).normalize();
+    directionalLight2 = new THREE.DirectionalLight( 0xffffff );
+    directionalLight2.position.set( 1000, 500,-1000 );//.normalize();
+    //directionalLight2.setScale(1000);
 
     // directionalLight3 = new THREE.DirectionalLight( 0x808080 );
     //directionalLight3.position.set( 1000, 1000, -1000 ).normalize();

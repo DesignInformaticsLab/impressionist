@@ -639,7 +639,7 @@ GAME.IO.socket.on('selection', function(sig){
 // 4rd iteration of the mesh selection algorithm
 function selectNeighboringFaces4(faceIndex) {
     if (selected == true&&scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0){
-        car.children[0].geometry.faces[faceIndex].color.setHex( 0x000000);
+        car.children[0].geometry.faces[faceIndex].color.setHex( 0x00ff00);
         car.children[0].geometry.faces[faceIndex].selected = true;
     } else if (scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0)  {
         car.children[0].geometry.faces[faceIndex].color.setHex( 0xffffff);
