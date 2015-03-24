@@ -705,7 +705,8 @@ function selectNeighboringFaces3(a,b,c,iteration,faceindex, callback) {
 // 2nd iteration of the selection algorithm that works with the 3rd
 function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
     if (selected == true &&
-        scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0 &&
+        scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex != 5
+        &&
         allSelectedID.indexOf(faceIndex)==-1 ){
         if (car.children[0].geometry.faces[faceIndex].selected == false) {
             selectedStrings[selectedStrings.length] = faceIndex;
