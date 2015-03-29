@@ -98,8 +98,11 @@ function joinGame(data) {
         sock.gameId = thisGameId; // assign room id to sock
         data.mySocketId = sock.id;
 
+        // create new game data
+        var correctAnswer = ['camaro'];
+
         // Emit an event notifying the clients that the player has joined the room.
-        io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
+        io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id, correctAnswer: correctAnswer});
     }
 }
 
@@ -128,9 +131,14 @@ function selection(data) {
  * @param data gameId
  */
 function checkAnswer(data) {
-    // console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
-
-    //io.sockets.in(data.gameId).emit('hostCheckAnswer', data);
+    var roomid = this.gameId;
+    if (data.correct){
+        //data.obj = getObjData(data.played);
+        io.sockets.in(roomid).emit('answerCorrect', data);
+    }
+    else{
+        io.sockets.in(roomid).emit('answerWrong', data);
+    }
 }
 
 function sendObj(objPoolIndex, gameId) {

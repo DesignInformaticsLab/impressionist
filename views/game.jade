@@ -7,11 +7,17 @@ block content
     //      | Enable Mouse Look
     //    .button.full-screen
     //      | Start VR Mode
-    #playerWaiting
     #game
+        #wait
+        #title
+            | impressionist
+        #menu
+            #bar
+            #select
+                | S
+            input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
+            #guessoutput
         #model
-        #select
-            | S
     script(src="javascripts/gamescripts/game.js")
     script(src="javascripts/gamescripts/object.js")
     //script(src="javascripts/gamescripts/test.js")
