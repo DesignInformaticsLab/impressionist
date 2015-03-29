@@ -588,6 +588,10 @@ GAME.IO.socket.on('selection', function(sig){
         // update selection capacity
         GAME.App.selection_capacity = GAME.App.selection_capacity - selections.length;
         $('#bar').css('opacity', GAME.App.selection_capacity/1000*progressbar_size);
+        $('#bar').css('background-color', '#333333');
+        //setInterval(function () {
+        //    $('#bar').css('background-color', '#f5f5ff');
+        //},1000);
     }
     else if(GAME.App.myRole=='Host'){
         $.each(selections, function(index, s){

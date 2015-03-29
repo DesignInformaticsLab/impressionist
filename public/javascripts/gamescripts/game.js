@@ -79,7 +79,6 @@ var GAME = (function($){
             }
             else{
                 $('#menu').show();
-                $('#bar').addClass('active');
                 $('#guessoutput').hide();
                 $('#guessinput').show();
             }
@@ -131,16 +130,16 @@ var GAME = (function($){
         onAnswerWrong : function(data) {
             if(GAME.App.myRole == 'Host'){
                 $('#guessoutput').html(data.answer+'?');
-                setInterval(function () {
-                    $('#guessoutput').html('');
-                },1000);
+                //setInterval(function () {
+                //    $('#guessoutput').html('');
+                //},1500);
 
             }
             else if (GAME.App.myRole == 'Player'){
                 $('#guessinput').css('background-color', '#000000');
                 setInterval(function () {
                     $('#guessinput').css('background-color', '#f5f5ff');
-                },1000);
+                },800);
 
             }
         },
