@@ -55,7 +55,8 @@ var PRESSED = false, SELECT = false;
 
 var VRMODE = false; //VR mode
 
-
+var progressbar_size = $('#select').css('opacity')/1;
+//var progressbar_size = progressbar_size_string.substr(0, progressbar_size_string.length-2)/1;
 
 //End Global Variables\\
 
@@ -432,7 +433,7 @@ function createTextureCube(  ) {
 // Picks up movement of the mouse and changes the position of the cursor
 //function onDocumentMouseMove(event) {
 //
-$('#game').mousemove(function(event){
+$('#model').mousemove(function(event){
 
     event.preventDefault();
     //cylinder.position.x =  mouse.x;
@@ -479,7 +480,7 @@ $('#game').mousemove(function(event){
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Picks up down click of the mouse and selects the meshes \\\\\\\\\\
 //function onDocumentMouseDown( event ) {
-$('#game').mousedown(function(event){
+$('#model').mousedown(function(event){
     event.preventDefault();
     if (!isJqmGhostClick(event)) {
         PRESSED = true;
@@ -492,7 +493,7 @@ $('#game').mousedown(function(event){
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Picks up down click of the mouse and selects the meshes \\\\\\\\\\
 //function onDocumentMouseUp( event ) {
-$('#game').mouseup(function(event) {
+$('#model').mouseup(function(event) {
     event.preventDefault();
     //if (!isJqmGhostClick(event)) {
     PRESSED = false;
@@ -501,48 +502,52 @@ $('#game').mouseup(function(event) {
 });
 
 function select() {
-    raycaster.setFromCamera( mouse, camera );
+    if (GAME.App.selection_capacity>0){ // if still can select
+        raycaster.setFromCamera( mouse, camera );
 
-    var intersections=[];
+        var intersections=[];
 
-    try {
-        //intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
-        intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro")] );
+        try {
+            //intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
+            intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro")] );
 
-    } catch (e) {
-        intersections[0] = null ;
-    }
+        } catch (e) {
+            intersections[0] = null ;
+        }
 
-    var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
+        var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 
-    if (intersection != null) {
-        if(allSelectedID.indexOf(intersection.faceIndex)==-1){//if not selected
-            intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
-            //car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x000000 );
-            //allSelectedID.push(intersection.faceIndex);
-            selectNeighboringFaces3(
-                car.children[0].geometry.faces[intersection.faceIndex].a,
-                car.children[0].geometry.faces[intersection.faceIndex].b,
-                car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex);
-            //selectedVertices = [];
-            //selectNeighboringFaces4(intersection.faceIndex);
-            //car.children[0].geometry.colorsNeedUpdate = true;
+        if (intersection != null) {
+            if(allSelectedID.indexOf(intersection.faceIndex)==-1){//if not selected
+                intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
+                //car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x000000 );
+                //allSelectedID.push(intersection.faceIndex);
+                selectNeighboringFaces3(
+                    car.children[0].geometry.faces[intersection.faceIndex].a,
+                    car.children[0].geometry.faces[intersection.faceIndex].b,
+                    car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex);
+                //selectedVertices = [];
+                //selectNeighboringFaces4(intersection.faceIndex);
+                //car.children[0].geometry.colorsNeedUpdate = true;
 
-            selectedStrings = diff(selectedStrings, allSelectedID); // only emit new selection
-            allSelectedID = allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
-            //if (selected == true) {
-            //    selectedStrings[selectedStrings.length] = 1;
+                selectedStrings = diff(selectedStrings, allSelectedID); // only emit new selection
+                allSelectedID = allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
+                //if (selected == true) {
+                //    selectedStrings[selectedStrings.length] = 1;
 
+                // update selection capacity
+                GAME.App.selection_capacity = GAME.App.selection_capacity - selectedStrings.length;
+                $('#bar').css('opacity', GAME.App.selection_capacity/1000*progressbar_size);
 
-            GAME.IO.socket.emit('selection', JSON.stringify(selectedStrings));
-            selectedStrings = [];
-            //} else if (selected == false) {
-            //    deselectedStrings[deselectedStrings.length] = 0;
-            //    GAME.IO.socket.emit('selection', JSON.stringify(deselectedStrings));
-            //}
+                GAME.IO.socket.emit('selection', JSON.stringify(selectedStrings));
+                selectedStrings = [];
+                //} else if (selected == false) {
+                //    deselectedStrings[deselectedStrings.length] = 0;
+                //    GAME.IO.socket.emit('selection', JSON.stringify(deselectedStrings));
+                //}
+            }
         }
     }
-
 }
 function onDocumentMouseDownDelete( event ) {
     //event.preventDefault();
@@ -577,7 +582,16 @@ function onDocumentMouseDownDelete( event ) {
 GAME.IO.socket.on('selection', function(sig){
     var selections = JSON.parse(sig);
     if(GAME.App.myRole=='Player') {
+        // create meshes on fly
         createMesh(selections);
+
+        // update selection capacity
+        GAME.App.selection_capacity = GAME.App.selection_capacity - selections.length;
+        $('#bar').css('opacity', GAME.App.selection_capacity/1000*progressbar_size);
+        $('#bar').css('background-color', '#333333');
+        //setInterval(function () {
+        //    $('#bar').css('background-color', '#f5f5ff');
+        //},1000);
     }
     else if(GAME.App.myRole=='Host'){
         $.each(selections, function(index, s){
@@ -705,7 +719,8 @@ function selectNeighboringFaces3(a,b,c,iteration,faceindex, callback) {
 // 2nd iteration of the selection algorithm that works with the 3rd
 function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
     if (selected == true &&
-        scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0 &&
+        scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex != 5
+        &&
         allSelectedID.indexOf(faceIndex)==-1 ){
         if (car.children[0].geometry.faces[faceIndex].selected == false) {
             selectedStrings[selectedStrings.length] = faceIndex;
@@ -926,11 +941,15 @@ function getRGB(val) {
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Handles corresponding tasks if the corresponding key is pressed \\
 function handleKeyDown(event) {
-    if (event.keyCode == 83){
+    if (event.keyCode == 83 && GAME.App.myRole =='Host'){
         SELECT = true;
+<<<<<<< HEAD
         $('#select').addClass('active');
     } else if ( event.keyCode == 90) {
         colorFaces();
+=======
+        $('#bar').addClass('active');
+>>>>>>> 336cda14c7165e9e510dd35eb03f6c5da6f36b74
     }
 
     //You can uncomment the next line to find out each key's code
@@ -1020,9 +1039,9 @@ function handleKeyUp(event) {
     //    //Down Arrow Key
     //
     //}
-    if (event.keyCode == 83){
+    if (event.keyCode == 83 && GAME.App.myRole =='Host' ){
         SELECT = false;
-        $('#select').removeClass('active');
+        $('#bar').removeClass('active');
     }
 }
 

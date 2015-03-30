@@ -28,6 +28,7 @@ body {
     background-color: red;
 }
 
+/***************** INTERFACE *******************/
 #game {
     position: absolute;
     display: none;
@@ -37,36 +38,91 @@ body {
 
  }
 
-#playerWaiting {
+#wait {
     position: absolute;
     display: none;
     width: 100%;
     height: 100%;
-    background-color: #000000;
-    color: white;
+    background-color: #f5f5ff;
+    color: #333333;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+}
+
+#title {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    z-index: 5;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+}
+
+#menu {
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    top: 50px;
 }
 
 #select {
-    position: relative;
+    position: absolute;
     width: 50px;
     height: 50px;
-    top: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #f5f5ff;
+    background-color: transparent;
     color: #cccccc;
-    /*border: solid 2px #e5e5ee;*/
     border-radius: 5px;
-    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
-    transition: background-color 0.5s, transform 0.5s;
-    z-index: 5;
     font-size: 40px;
     line-height: 50px;
     text-align: center;
+    z-index: 5;
 }
-#select.active {
+
+#bar {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #f5f5ff;
+    color: #cccccc;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+    z-index: 5;
+}
+
+#bar.active {
     background-color: #333333;
 }
+
+#guessinput, #guessoutput {
+    position: absolute;
+    width: 300px;
+    height: 50px;
+    background-color: #f5f5ff;
+    color: #333333;
+    border-radius: 5px;
+    border: 0;
+    padding: 0;
+    font-size: 40px;
+    line-height: 50px;
+    text-align: center;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+}
+
+#guessinput {
+    z-index: 5;
+}
+#guessinput:focus {
+    outline: none !important;
+    border: 0;
+    box-shadow: inset 0 0 5px #333333;
+}
+#guessoutput {
+    z-index: 2;
+}
+
 
 #model {
     position: absolute;

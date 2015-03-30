@@ -32,7 +32,9 @@ var GAME = (function($){
             IO.socket.on('playerLeft',IO.playerLeft );
             IO.socket.on('beginNewGame', IO.beginNewGame );
             IO.socket.on('newObjData', IO.onNewObjData);
-            IO.socket.on('checkAnswer', IO.hostCheckAnswer);
+            IO.socket.on('checkAnswer', IO.checkAnswer);
+            IO.socket.on('answerCorrect', IO.onAnswerCorrect);
+            IO.socket.on('answerWrong', IO.onAnswerWrong);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
 
@@ -54,6 +56,7 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             App.myRole = 'Host';
+            App.correctAnswer = data.correctAnswer;
             //App.Host.gameInit(data);
             $('#playerWaiting').show();
             console.log('my id:'+data.mySocketId);
@@ -65,20 +68,26 @@ var GAME = (function($){
          */
         playerJoinedRoom : function(data) {
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
-            $('#playerWaiting').hide();
+            $('#wait').hide();
             $('#game').show();
-            if(GAME.App.myRole == 'Host'){
-                $('#select').show();
+            App.selection_capacity = 1000; // assign player selection capacity
+
+            if(App.myRole == 'Host'){
+                $('#menu').show();
+                $('#guessoutput').show();
+                $('#guessinput').hide();
             }
             else{
-                $('#select').hide();
+                $('#menu').show();
+                $('#guessoutput').hide();
+                $('#guessinput').show();
             }
             init();
             animate();
         },
 
         playerLeft: function(data){
-            $('#playerWaiting').show();
+            $('#wait').show();
             $('#game').hide();
             $('#model').html('');
             App.myRole = 'Host';
@@ -112,6 +121,29 @@ var GAME = (function($){
             }
         },
 
+        // on correct guess
+        onAnswerCorrect : function() {
+
+        },
+
+        // on wrong guess
+        onAnswerWrong : function(data) {
+            if(GAME.App.myRole == 'Host'){
+                $('#guessoutput').html(data.answer+'?');
+                //setInterval(function () {
+                //    $('#guessoutput').html('');
+                //},1500);
+
+            }
+            else if (GAME.App.myRole == 'Player'){
+                $('#guessinput').css('background-color', '#000000');
+                setInterval(function () {
+                    $('#guessinput').css('background-color', '#f5f5ff');
+                },800);
+
+            }
+        },
+
         /**
          * A new obj for the round is returned from the server.
          * @param data
@@ -129,9 +161,7 @@ var GAME = (function($){
          * @param data
          */
         checkAnswer : function(data) {
-            if(App.myRole === 'Host') {
-                App.Host.checkAnswer(data);
-            }
+
         },
 
         /**
@@ -255,11 +285,6 @@ var GAME = (function($){
              * Keep track of the number of players that have joined the game.
              */
             numPlayersInRoom: 0,
-
-            /**
-             * A reference to the correct answer for the current round.
-             */
-            currentCorrectAnswer: '',
 
             /**
              * Handler for the "Start" button on the Title Screen.
@@ -493,20 +518,16 @@ var GAME = (function($){
             /**
              *  Click handler for the Player hitting a word in the word list.
              */
-            onPlayerAnswerClick: function() {
-                // console.log('Clicked Answer Button');
-                //var $btn = $(this);      // the tapped button
-                //var answer = $btn.val(); // The tapped word
-                //
-                //// Send the player info and tapped word to the server so
-                //// the host can check the answer.
-                //var data = {
-                //    gameId: App.gameId,
-                //    playerId: App.mySocketId,
-                //    answer: answer,
-                //    round: App.currentRound
-                //}
-                //IO.socket.emit('playerAnswer',data);
+            onSubmitAnswer: function() {
+                var answer = $('#guessinput')[0].value;
+                var data = {
+                    gameId: App.gameId,
+                    playerId: App.mySocketId,
+                    answer: answer,
+                    correct: $.inArray(answer.toLowerCase(), GAME.App.correctAnswer)>=0,
+                    round: App.currentRound
+                };
+                IO.socket.emit('checkAnswer',data);
             },
 
             /**
@@ -535,7 +556,7 @@ var GAME = (function($){
                     //$('#playerWaitingMessage')
                     //    .append('<p/>')
                     //    .text('Joined Game ' + data.gameId + '. Please wait for game to begin.');
-                    $('#playerWaiting').show();
+                    $('#wait').show();
                 }
             },
 
@@ -659,3 +680,23 @@ var GAME = (function($){
 
 GAME.IO.init();
 GAME.App.init();
+
+// interface
+var margin_left = ($(window).width()-$('#select').width()-$('#guessinput').width()-10)*.5;
+$('#select').css('marginLeft',margin_left+'px');
+$('#bar').css('marginLeft',margin_left+'px');
+$('#guessinput').css('marginLeft',margin_left+10+$('#select').width()+'px');
+$('#guessoutput').css('marginLeft',margin_left+10+$('#select').width()+'px');
+//$('#guess').submit(function(event){
+//    GAME.App.Player.onSubmitAnswer();
+//    return false;
+//});
+$('#guessinput').keypress(function(e) {
+    if(e.which == 13) {// log in
+        if ($('#guessinput')[0].value!='your guess' && $('#guessinput')[0].value!=''){
+            GAME.App.Player.onSubmitAnswer();
+        }
+        else{
+        }
+    }
+});
