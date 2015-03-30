@@ -943,13 +943,13 @@ function getRGB(val) {
 function handleKeyDown(event) {
     if (event.keyCode == 83 && GAME.App.myRole =='Host'){
         SELECT = true;
-<<<<<<< HEAD
+//<<<<<<< HEAD
         $('#select').addClass('active');
     } else if ( event.keyCode == 90) {
         colorFaces();
-=======
-        $('#bar').addClass('active');
->>>>>>> 336cda14c7165e9e510dd35eb03f6c5da6f36b74
+//=======
+//        $('#bar').addClass('active');
+//>>>>>>> 336cda14c7165e9e510dd35eb03f6c5da6f36b74
     }
 
     //You can uncomment the next line to find out each key's code
