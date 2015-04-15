@@ -365,8 +365,6 @@ function createTextureCube(  ) {
         r + "posz.jpg", r + "negz.jpg" ];
 
     textureCube = THREE.ImageUtils.loadTextureCube( urls );
-    textureCube.format = THREE.RGBFormat;
-    textureCube.mapping = THREE.CubeReflectionMapping;
 
     //var shader = THREE.FresnelShader;
     //var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
