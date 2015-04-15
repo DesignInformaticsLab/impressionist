@@ -11,4 +11,9 @@ router.get('/game', function(req, res, next) {
     res.render('game', { title: 'Model Selection Test'});
 });
 
+
+/* try sketchy output */
+router.get('/game_sketch', function(req, res, next) {
+    res.render('sketch', { title: 'Model Selection Test'});
+});
 module.exports = router;

@@ -1,0 +1,18 @@
+//
+   Created by Max Yi Ren on 3/7/2015.
+extends layout
+block content
+    #game
+        #wait
+        #title
+            | impressionist
+        #menu
+            #bar
+            #select
+                | S
+            input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
+            #guessoutput
+        #model
+    script(src="javascripts/gamescripts/game.js")
+    script(src="javascripts/gamescripts/object_sketch.js")
+    //script(src="javascripts/gamescripts/test.js")
