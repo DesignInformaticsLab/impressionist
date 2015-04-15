@@ -70,7 +70,7 @@ var GAME = (function($){
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
             $('#wait').hide();
             $('#game').show();
-            App.selection_capacity = 1000; // assign player selection capacity
+            App.selection_capacity = 10000; // assign player selection capacity
 
             if(App.myRole == 'Host'){
                 $('#menu').show();

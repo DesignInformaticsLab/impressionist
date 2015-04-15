@@ -365,7 +365,7 @@ function createTextureCube(  ) {
         r + "posz.jpg", r + "negz.jpg" ];
 
     textureCube = THREE.ImageUtils.loadTextureCube( urls );
-    textureCube.format = THREE.Format;
+    textureCube.format = THREE.RGBFormat;
     textureCube.mapping = THREE.CubeReflectionMapping;
 
     //var shader = THREE.FresnelShader;
@@ -595,7 +595,11 @@ GAME.IO.socket.on('selection', function(sig){
     }
     else if(GAME.App.myRole=='Host'){
         $.each(selections, function(index, s){
-            car.children[0].geometry.faces[s].color.setHex( 0x000000);
+            //car.children[0].geometry.faces[s].color.setHex( 0x000000);
+            car.children[0].geometry.faces[s].color.r = 1.0;
+            car.children[0].geometry.faces[s].color.g = 0.6;
+            car.children[0].geometry.faces[s].color.b = 0.6;
+
         });
         car.children[0].geometry.colorsNeedUpdate = true;
     }
@@ -899,16 +903,16 @@ function createScene( geometry, materials ) {
 function colorFaces() {
     var r, g, b;
     var col;
-    for (var i = 0; i < scene.children[3].children[0].geometry.faces.length; i++) {
-        col = getRGB(Math.max(
-            scene.children[3].children[0].geometry.vertices[faceSorted3[0][i]].y,
-            scene.children[3].children[0].geometry.vertices[faceSorted3[1][i]].y,
-            scene.children[3].children[0].geometry.vertices[faceSorted3[2][i]].y));
+    $.each(scene.children[3].children[0].geometry.faces, function(i,f){
+        //col = getRGB(Math.max(
+        //    scene.children[3].children[0].geometry.vertices[faceSorted3[0][i]].y,
+        //    scene.children[3].children[0].geometry.vertices[faceSorted3[1][i]].y,
+        //    scene.children[3].children[0].geometry.vertices[faceSorted3[2][i]].y));
+
         scene.children[3].children[0].geometry.faces[i].color.r = col[0]/255;
         scene.children[3].children[0].geometry.faces[i].color.g = col[1]/255;
         scene.children[3].children[0].geometry.faces[i].color.b = col[2]/255;
-    }
-
+    });
 }
 
 function getRGB(val) {
@@ -941,12 +945,50 @@ function getRGB(val) {
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Handles corresponding tasks if the corresponding key is pressed \\
 function handleKeyDown(event) {
-    if (event.keyCode == 83 && GAME.App.myRole =='Host'){
+    if (event.keyCode == 83 && GAME.App.myRole =='Host'){ //s: selection
         SELECT = true;
-        $('#select').addClass('active');
-    } else if ( event.keyCode == 90) {
-        colorFaces();
-
+        $('#bar').addClass('active');
+    } else if ( event.keyCode == 90 && GAME.App.myRole =='Host') { //z: show heatmap
+        var weight = new Array(scene.children[3].children[0].geometry.faces.length);
+        var mesh_id_array, weight_array;
+        $.post('/read_selection',{},function(response){
+                $.each(response, function(i,r){
+                    mesh_id_array = r.mesh_id;
+                    weight_array = r.weight;
+                    $.each(mesh_id_array, function(j,mesh_id){
+                        if(!weight[mesh_id]){
+                            weight[mesh_id] = weight_array[j];
+                        }
+                        else{
+                            weight[mesh_id] += weight_array[j];
+                        }
+                    })
+                });
+                var max_weight = Math.max.apply(Math,weight_array)
+                $.each(weight, function(i,w){
+                    if(w){
+                        scene.children[3].children[0].geometry.faces[i].color.r = Math.max(w/max_weight,0.7);
+                        scene.children[3].children[0].geometry.faces[i].color.g = Math.max(w/max_weight/5,0.2);
+                        scene.children[3].children[0].geometry.faces[i].color.b = Math.max(w/max_weight/5,0.2);
+                    }
+                    else{
+                        scene.children[3].children[0].geometry.faces[i].color.r = 0.2;
+                        scene.children[3].children[0].geometry.faces[i].color.g = 0.2;
+                        scene.children[3].children[0].geometry.faces[i].color.b = 0.2;
+                    }
+                });
+            }
+        );
+    } else if (event.keyCode == 85 && GAME.App.myRole =='Host'){ //u: upload selection
+        var weight = [];
+        $.each(allSelectedID, function(i,d){
+            weight.push(1-weight.length/allSelectedID.length);
+        })
+        $.post('/store_selection',{
+                'obj_id': 'camaro',
+                'mesh_id': JSON.stringify(allSelectedID),
+                'weight': JSON.stringify(weight)}
+        );
     }
 
     //You can uncomment the next line to find out each key's code
@@ -1075,7 +1117,7 @@ function createLights() {
     var ambient = new THREE.AmbientLight( 0x020202 );
     scene.add( ambient );
 
-    directionalLight1 = new THREE.DirectionalLight( 0xaaaaaa );
+    directionalLight1 = new THREE.DirectionalLight( 0xffffff );
     directionalLight1.position.set( camera.position.z + 50, camera.position.y, -camera.position.x );//.normalize();
 
     directionalLight2 = new THREE.DirectionalLight( 0xffffff );
