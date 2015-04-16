@@ -12,6 +12,8 @@ var vrControls;
 var mouseControls;
 var headControls;
 
+var car;
+
 var mouse = new THREE.Vector2(), INTERSECTED;
 var raycaster, intersects;
 
@@ -26,9 +28,8 @@ var directionalLight1, directionalLight2, directionalLight3, directionalLight4, 
 var signGeometry;
 
 var cylinder, cylinderSmall, line;
-var faceSorted;
-var faceSorted2;
-var faceSorted3;
+
+
 
 var selected = true;
 var numSelected;
@@ -83,8 +84,15 @@ function init() {
     clock = new THREE.Clock();
     background = new THREE.Scene();
     background.name = "background";
-    car = new THREE.Scene();
-    car.name = "car";
+    //var car = new THREE.Scene();
+    //car.name = "car";
+
+    emptycar = new THREE.Scene();
+    emptycar.name = "emptycar";
+    emptycar.castShadow  = true;
+
+
+    car = new THREE.SceneLoad;
 
     if(GAME.App.myRole=='Player'){
         emptycar = new THREE.Scene();
@@ -94,6 +102,18 @@ function init() {
     else{
         car.castShadow  = true;
     }
+
+
+    if(GAME.App.myRole == 'Host'){
+        scene.add(car);
+        car.castShadow = true;
+        //car.children[0].colorsNeedUpdate = true;
+    }
+    else{
+        scene.add(emptycar);
+    }
+
+    //scene.add(car);
 
     //lighting from Car.html
 
@@ -116,7 +136,7 @@ function init() {
     createLights();
 
     // create the object for both host and player, but only show for host
-    createCar(createTextureCube(  ));
+    //createCar(createTextureCube(  ));
 
 
 
@@ -125,9 +145,7 @@ function init() {
 
 
     testVar = [[],[]];
-    faceSorted = [[],[],[],[],[],[]];
-    faceSorted2 = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
-    faceSorted3 = [[],[],[]];
+
     raycaster = new THREE.Raycaster();
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -252,8 +270,8 @@ function render() {
     }
     else{
         renderer.render( scene, camera);
-        if(typeof(car.children[0])!='undefined'){
-            car.children[0].geometry.colorsNeedUpdate = true;
+        if(typeof(car.getObjectByName("selectable"))!='undefined'){
+            car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
         }
     }
 
@@ -276,7 +294,7 @@ function onWindowResize() {
 
 }
 
-
+/*
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // creates the car geometry and add it to the car scene\\\\\\\\\\\\\\
 function createCar(textureCube) {
@@ -355,6 +373,8 @@ function createCar(textureCube) {
 
 }
 
+*/
+
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // create texture cube  in this case all black\\\\\\\\\\\\\\\\\\\\\\\
 function createTextureCube(  ) {
@@ -365,6 +385,8 @@ function createTextureCube(  ) {
         r + "posz.jpg", r + "negz.jpg" ];
 
     textureCube = THREE.ImageUtils.loadTextureCube( urls );
+    textureCube.format = THREE.RGBFormat;
+    textureCube.mapping = THREE.CubeReflectionMapping;
 
     //var shader = THREE.FresnelShader;
     //var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
@@ -507,7 +529,7 @@ function select() {
 
         try {
             //intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
-            intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro")] );
+            intersections = raycaster.intersectObjects( [car.getObjectByName("selectable")] );
 
         } catch (e) {
             intersections[0] = null ;
@@ -518,15 +540,15 @@ function select() {
         if (intersection != null) {
             if(allSelectedID.indexOf(intersection.faceIndex)==-1){//if not selected
                 intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
-                //car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x000000 );
+                car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].color.setHex( 0x000000 );
                 //allSelectedID.push(intersection.faceIndex);
                 selectNeighboringFaces3(
-                    car.children[0].geometry.faces[intersection.faceIndex].a,
-                    car.children[0].geometry.faces[intersection.faceIndex].b,
-                    car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex);
+                    car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].a,
+                    car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].b,
+                    car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex);
                 //selectedVertices = [];
                 //selectNeighboringFaces4(intersection.faceIndex);
-                //car.children[0].geometry.colorsNeedUpdate = true;
+                //car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
 
                 selectedStrings = diff(selectedStrings, allSelectedID); // only emit new selection
                 allSelectedID = allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
@@ -558,14 +580,14 @@ function onDocumentMouseDownDelete( event ) {
     //deselectedStrings = [];
     //if (intersection != null && GAME.App.myRole == 'Host') {
     //    intersPoint = [intersection.point.x, intersection.point.y, intersection.point.z];
-    //    car.children[0].geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
+    //    car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].color.setHex( 0x0000 );
     //    selectNeighboringFaces3(
-    //        car.children[0].geometry.faces[intersection.faceIndex].a,
-    //        car.children[0].geometry.faces[intersection.faceIndex].b,
-    //        car.children[0].geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex)
+    //        car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].a,
+    //        car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].b,
+    //        car.getObjectByName("selectable").geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex)
     //    //selectedVertices = [];
     //    //selectNeighboringFaces4(intersection.faceIndex);
-    //    car.children[0].geometry.colorsNeedUpdate = true;
+    //    car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
     //    if (selected == true) {
     //        selectedStrings[selectedStrings.length] = 1;
     //        GAME.IO.socket.emit('selection', JSON.stringify(selectedStrings));
@@ -593,9 +615,13 @@ GAME.IO.socket.on('selection', function(sig){
     }
     else if(GAME.App.myRole=='Host'){
         $.each(selections, function(index, s){
-            car.children[0].geometry.faces[s].color.setHex( 0x000000);
+            //car.getObjectByName("selectable").geometry.faces[s].color.setHex( 0x000000);
+            car.getObjectByName("selectable").geometry.faces[s].color.r = 1.0;
+            car.getObjectByName("selectable").geometry.faces[s].color.g = 0.6;
+            car.getObjectByName("selectable").geometry.faces[s].color.b = 0.6;
+
         });
-        car.children[0].geometry.colorsNeedUpdate = true;
+        car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
     }
 });
 
@@ -608,10 +634,10 @@ function createMesh(selection){
 
             var geom = new THREE.Geometry();
 
-            var f = car.children[0].geometry.faces[s];
-            var v1 = car.children[0].geometry.vertices[f.a];
-            var v2 = car.children[0].geometry.vertices[f.b];
-            var v3 = car.children[0].geometry.vertices[f.c];
+            var f = car.getObjectByName("selectable").geometry.faces[s];
+            var v1 = car.getObjectByName("selectable").geometry.vertices[f.a];
+            var v2 = car.getObjectByName("selectable").geometry.vertices[f.b];
+            var v3 = car.getObjectByName("selectable").geometry.vertices[f.c];
 
             geom.vertices.push(v1, v2, v3);
             var nf = new THREE.Face3( 0, 1, 2 );
@@ -634,80 +660,41 @@ function createMesh(selection){
 }
 
 
-//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// 4rd iteration of the mesh selection algorithm
-function selectNeighboringFaces4(faceIndex) {
-    //if (selected == true&&scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0){
-    //    car.children[0].geometry.faces[faceIndex].color.setHex( 0x000000);
-    //    car.children[0].geometry.faces[faceIndex].selected = true;
-    //} else if (scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0)  {
-    //    car.children[0].geometry.faces[faceIndex].color.setHex( 0xffffff);
-    //    car.children[0].geometry.faces[faceIndex].selected = false;
-    //}
-    //
-    //for (i = 0; i<3; i++) {
-    //    distanceCheck(faceSorted3[i][faceIndex]);
-    //    if (distanceCheck(faceSorted3[i][faceIndex]) == true) {
-    //        j = 0;
-    //        while (faceSorted2[j][faceSorted3[i][faceIndex]]!= undefined) {
-    //            if (selectedVertices[faceSorted3[i][faceIndex]] == undefined) {
-    //                selectedVertices[faceSorted3[i][faceIndex]] = true;
-    //                selectNeighboringFaces4(faceSorted2[j][faceSorted3[i][faceIndex]]);
-    //            }
-    //            j++;
-    //        }
-    //    }
-    //}
-}
-
-
-function distanceCheck(vertexIndex) {
-    x = car.children[0].geometry.vertices[vertexIndex].x * scale;
-    y = car.children[0].geometry.vertices[vertexIndex].y * scale;
-    z = car.children[0].geometry.vertices[vertexIndex].z * scale;
-
-
-    if (Math.sqrt((x - intersPoint[0])^2 + (y - intersPoint[1])^2 +(z - intersPoint[2])^2 ) < selectionRadius) {
-        return true;
-    } else if (1==1) {
-        return false;
-    }
-}
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // 3rd iteration of the mesh selection algorithm, works in conjunction
 // with the second version
 function selectNeighboringFaces3(a,b,c,iteration,faceindex, callback) {
     for (i=0; i<13; i++) {
-        if (faceSorted2[i][a] != undefined) {
+        if (car.getObjectByName("selectable").sorted[1][i][a] != undefined) {
             if (iteration!=0) {
 
                 selectNeigboringFaces2(
-                    car.children[0].geometry.faces[faceSorted2[i][a]].a,
-                    car.children[0].geometry.faces[faceSorted2[i][a]].b,
-                    car.children[0].geometry.faces[faceSorted2[i][a]].c, iteration-1,faceSorted2[i][a]);
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][a]].a,
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][a]].b,
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][a]].c, iteration-1,car.getObjectByName("selectable").sorted[1][i][a]);
             }
 
         }
 
-        if (faceSorted2[i][b] != undefined) {
+        if (car.getObjectByName("selectable").sorted[1][i][b] != undefined) {
             if (iteration!=0) {
 
                 selectNeigboringFaces2(
-                    car.children[0].geometry.faces[faceSorted2[i][b]].a,
-                    car.children[0].geometry.faces[faceSorted2[i][b]].b,
-                    car.children[0].geometry.faces[faceSorted2[i][b]].c, iteration-1,faceSorted2[i][b]);
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][b]].a,
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][b]].b,
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][b]].c, iteration-1,car.getObjectByName("selectable").sorted[1][i][b]);
             }
         }
 
 
-        if (faceSorted2[i][c] != undefined) {
+        if (car.getObjectByName("selectable").sorted[1][i][c] != undefined) {
             if (iteration!=0) {
 
                 selectNeigboringFaces2(
-                    car.children[0].geometry.faces[faceSorted2[i][c]].a,
-                    car.children[0].geometry.faces[faceSorted2[i][c]].b,
-                    car.children[0].geometry.faces[faceSorted2[i][c]].c, iteration-1,faceSorted2[i][c]);
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][c]].a,
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][c]].b,
+                    car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[1][i][c]].c, iteration-1,car.getObjectByName("selectable").sorted[1][i][c]);
             }
         }
     }
@@ -717,73 +704,73 @@ function selectNeighboringFaces3(a,b,c,iteration,faceindex, callback) {
 // 2nd iteration of the selection algorithm that works with the 3rd
 function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
     if (selected == true &&
-        scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex != 5
+        car.getObjectByName("selectable").geometry.faces[faceIndex].materialIndex != 5
         &&
         allSelectedID.indexOf(faceIndex)==-1 ){
-        if (car.children[0].geometry.faces[faceIndex].selected == false) {
+        if (car.getObjectByName("selectable").geometry.faces[faceIndex].selected == false) {
             selectedStrings[selectedStrings.length] = faceIndex;
         }
-        //car.children[0].geometry.faces[faceIndex].color.setHex( 0x000000);
-        car.children[0].geometry.faces[faceIndex].selected = true;
-        //car.children[0].geometry.colorsNeedUpdate = true;
+        car.getObjectByName("selectable").geometry.faces[faceIndex].color.setHex( 0x000000);
+        car.getObjectByName("selectable").geometry.faces[faceIndex].selected = true;
+        //car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
         //} else if (scene.getObjectByName("camaro").geometry.faces[faceIndex].materialIndex == 0)  {
-        //    if (car.children[0].geometry.faces[faceIndex].selected == true) {
+        //    if (car.getObjectByName("selectable").geometry.faces[faceIndex].selected == true) {
         //        deselectedStrings[deselectedStrings.length] = faceIndex;
         //    }
-        //    car.children[0].geometry.faces[faceIndex].color.setHex( 0xffffff);
-        //    car.children[0].geometry.faces[faceIndex].selected = false;
+        //    car.getObjectByName("selectable").geometry.faces[faceIndex].color.setHex( 0xffffff);
+        //    car.getObjectByName("selectable").geometry.faces[faceIndex].selected = false;
     }
     //scene.getObjectByName("camaro").material.materials[6].needsUpdate = true;
 
-    if (faceSorted[0][a] == faceIndex) {
+    if (car.getObjectByName("selectable").sorted[0][0][a] == faceIndex) {
 
         if (iteration!=0) {
             selectNeigboringFaces2(
-                car.children[0].geometry.faces[faceSorted[1][a]].a,
-                car.children[0].geometry.faces[faceSorted[1][a]].b,
-                car.children[0].geometry.faces[faceSorted[1][a]].c, iteration-1,faceSorted[1][a])
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][1][a]].a,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][1][a]].b,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][1][a]].c, iteration-1,car.getObjectByName("selectable").sorted[0][1][a])
         }
-    } else if (faceSorted[1][a] == faceIndex) {
+    } else if (car.getObjectByName("selectable").sorted[0][1][a] == faceIndex) {
         if (iteration!=0) {
             selectNeigboringFaces2(
-                car.children[0].geometry.faces[faceSorted[0][a]].a,
-                car.children[0].geometry.faces[faceSorted[0][a]].b,
-                car.children[0].geometry.faces[faceSorted[0][a]].c, iteration-1,faceSorted[0][a])
-        }
-
-    }
-
-    if (faceSorted[2][b] == faceIndex) {
-        if (iteration!=0) {
-            selectNeigboringFaces2(
-                car.children[0].geometry.faces[faceSorted[3][b]].a,
-                car.children[0].geometry.faces[faceSorted[3][b]].b,
-                car.children[0].geometry.faces[faceSorted[3][b]].c, iteration-1,faceSorted[3][b])
-        }
-    } else if (faceSorted[3][b] == faceIndex) {
-        if (iteration!=0) {
-            selectNeigboringFaces2(
-                car.children[0].geometry.faces[faceSorted[2][b]].a,
-                car.children[0].geometry.faces[faceSorted[2][b]].b,
-                car.children[0].geometry.faces[faceSorted[2][b]].c, iteration-1,faceSorted[2][b])
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][0][a]].a,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][0][a]].b,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][0][a]].c, iteration-1,car.getObjectByName("selectable").sorted[0][0][a])
         }
 
     }
 
-    if (faceSorted[4][c] == faceIndex) {
+    if (car.getObjectByName("selectable").sorted[0][2][b] == faceIndex) {
+        if (iteration!=0) {
+            selectNeigboringFaces2(
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][3][b]].a,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][3][b]].b,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][3][b]].c, iteration-1,car.getObjectByName("selectable").sorted[0][3][b])
+        }
+    } else if (car.getObjectByName("selectable").sorted[0][3][b] == faceIndex) {
+        if (iteration!=0) {
+            selectNeigboringFaces2(
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][2][b]].a,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][2][b]].b,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][2][b]].c, iteration-1,car.getObjectByName("selectable").sorted[0][2][b])
+        }
+
+    }
+
+    if (car.getObjectByName("selectable").sorted[0][4][c] == faceIndex) {
 
         if (iteration!=0) {
             selectNeigboringFaces2(
-                car.children[0].geometry.faces[faceSorted[5][c]].a,
-                car.children[0].geometry.faces[faceSorted[5][c]].b,
-                car.children[0].geometry.faces[faceSorted[5][c]].c, iteration-1,faceSorted[5][c])
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][5][c]].a,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][5][c]].b,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][5][c]].c, iteration-1,car.getObjectByName("selectable").sorted[0][5][c])
         }
-    } else if (faceSorted[5][c] == faceIndex) {
+    } else if (car.getObjectByName("selectable").sorted[0][5][c] == faceIndex) {
         if (iteration!=0) {
             selectNeigboringFaces2(
-                car.children[0].geometry.faces[faceSorted[4][c]].a,
-                car.children[0].geometry.faces[faceSorted[4][c]].b,
-                car.children[0].geometry.faces[faceSorted[4][c]].c, iteration-1,faceSorted[4][c])
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][4][c]].a,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][4][c]].b,
+                car.getObjectByName("selectable").geometry.faces[car.getObjectByName("selectable").sorted[0][4][c]].c, iteration-1,car.getObjectByName("selectable").sorted[0][4][c])
         }
 
     }
@@ -791,7 +778,7 @@ function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
 }
 
 
-
+/*
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Creates the buttons to differentiate between mouse view/VR modes\\
@@ -843,24 +830,24 @@ function createScene( geometry, materials ) {
 
 
     car.add( mesh );
-    car.children[0].geometry.colorsNeedUpdate = true;
+    car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
 
     // loops through all of the faces and sorts them so no loops are necessary for mesh selection
-    for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
-        //faceSorted[0][car.children[0].geometry.faces[j].a]= j;
+    for (var j = 0; j < car.getObjectByName("selectable").geometry.faces.length; j++) {
+        //faceSorted[0][car.getObjectByName("selectable").geometry.faces[j].a]= j;
         //cube.faces[i].a;
-        sortFaceInformation(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
-        sortFaceInformation2(car.children[0].geometry.faces[j].a,car.children[0].geometry.faces[j].b,car.children[0].geometry.faces[j].c,j)
+        sortFaceInformation(car.getObjectByName("selectable").geometry.faces[j].a,car.getObjectByName("selectable").geometry.faces[j].b,car.getObjectByName("selectable").geometry.faces[j].c,j)
+        sortFaceInformation2(car.getObjectByName("selectable").geometry.faces[j].a,car.getObjectByName("selectable").geometry.faces[j].b,car.getObjectByName("selectable").geometry.faces[j].c,j)
         sortFaceInformation3(j);
 
         //if(GAME.App.myRole=='Host'){
-        car.children[0].geometry.faces[j].color.setHex( 0xffffff );
+        car.getObjectByName("selectable").geometry.faces[j].color.setHex( 0xffffff );
         //}
         //else{
-        //    car.children[0].geometry.faces[j].color.setHex( 0x000000 );
+        //    car.getObjectByName("selectable").geometry.faces[j].color.setHex( 0x000000 );
         //}
 
-        car.children[0].geometry.faces[j]["selected"] = false;
+        car.getObjectByName("selectable").geometry.faces[j]["selected"] = false;
 
 
         //if (scene.getObjectByName("camaro").geometry.faces[j].materialIndex == 0)  {
@@ -873,7 +860,7 @@ function createScene( geometry, materials ) {
     if(GAME.App.myRole == 'Host'){
         scene.add(car);
         car.castShadow = true;
-        car.children[0].colorsNeedUpdate = true;
+        car.getObjectByName("selectable").colorsNeedUpdate = true;
     }
     else{
         scene.add(emptycar);
@@ -892,21 +879,21 @@ function createScene( geometry, materials ) {
     //cylinder.position.y = -200;
     //car.add( cylinder );
 
-}
+}*/
 
 function colorFaces() {
     var r, g, b;
     var col;
-    for (var i = 0; i < scene.children[3].children[0].geometry.faces.length; i++) {
-        col = getRGB(Math.max(
-            scene.children[3].children[0].geometry.vertices[faceSorted3[0][i]].y,
-            scene.children[3].children[0].geometry.vertices[faceSorted3[1][i]].y,
-            scene.children[3].children[0].geometry.vertices[faceSorted3[2][i]].y));
-        scene.children[3].children[0].geometry.faces[i].color.r = col[0]/255;
-        scene.children[3].children[0].geometry.faces[i].color.g = col[1]/255;
-        scene.children[3].children[0].geometry.faces[i].color.b = col[2]/255;
-    }
+    $.each(car.getObjectByName("selectable").geometry.faces, function(i,f){
+        //col = getRGB(Math.max(
+        //    scene.children[3].children[0].geometry.vertices[car.getObjectByName("selectable").sorted[2][0][i]].y,
+        //    scene.children[3].children[0].geometry.vertices[car.getObjectByName("selectable").sorted[2][1][i]].y,
+        //    scene.children[3].children[0].geometry.vertices[car.getObjectByName("selectable").sorted[2][2][i]].y));
 
+        car.getObjectByName("selectable").geometry.faces[i].color.r = col[0]/255;
+        car.getObjectByName("selectable").geometry.faces[i].color.g = col[1]/255;
+        car.getObjectByName("selectable").geometry.faces[i].color.b = col[2]/255;
+    });
 }
 
 function getRGB(val) {
@@ -939,12 +926,50 @@ function getRGB(val) {
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // Handles corresponding tasks if the corresponding key is pressed \\
 function handleKeyDown(event) {
-    if (event.keyCode == 83 && GAME.App.myRole =='Host'){
+    if (event.keyCode == 83 && GAME.App.myRole =='Host'){ //s: selection
         SELECT = true;
-        $('#select').addClass('active');
-    } else if ( event.keyCode == 90) {
-        colorFaces();
-
+        $('#bar').addClass('active');
+    } else if ( event.keyCode == 90 && GAME.App.myRole =='Host') { //z: show heatmap
+        var weight = new Array(scene.children[3].children[0].geometry.faces.length);
+        var mesh_id_array, weight_array;
+        $.post('/read_selection',{},function(response){
+                $.each(response, function(i,r){
+                    mesh_id_array = r.mesh_id;
+                    weight_array = r.weight;
+                    $.each(mesh_id_array, function(j,mesh_id){
+                        if(!weight[mesh_id]){
+                            weight[mesh_id] = weight_array[j];
+                        }
+                        else{
+                            weight[mesh_id] += weight_array[j];
+                        }
+                    })
+                });
+                var max_weight = Math.max.apply(Math,weight_array)
+                $.each(weight, function(i,w){
+                    if(w){
+                        car.getObjectByName("selectable").geometry.faces[i].color.r = Math.max(w/max_weight,0.7);
+                        car.getObjectByName("selectable").geometry.faces[i].color.g = Math.max(w/max_weight/5,0.2);
+                        car.getObjectByName("selectable").geometry.faces[i].color.b = Math.max(w/max_weight/5,0.2);
+                    }
+                    else{
+                        car.getObjectByName("selectable").geometry.faces[i].color.r = 0.2;
+                        car.getObjectByName("selectable").geometry.faces[i].color.g = 0.2;
+                        car.getObjectByName("selectable").geometry.faces[i].color.b = 0.2;
+                    }
+                });
+            }
+        );
+    } else if (event.keyCode == 85 && GAME.App.myRole =='Host'){ //u: upload selection
+        var weight = [];
+        $.each(allSelectedID, function(i,d){
+            weight.push(1-weight.length/allSelectedID.length);
+        })
+        $.post('/store_selection',{
+                'obj_id': 'camaro',
+                'mesh_id': JSON.stringify(allSelectedID),
+                'weight': JSON.stringify(weight)}
+        );
     }
 
     //You can uncomment the next line to find out each key's code
@@ -987,9 +1012,9 @@ function handleKeyDown(event) {
     //} else if (event.keyCode == 67) {
     //    //c key counts number of faces selected
     //    numSelected = 0;
-    //    for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
+    //    for (var j = 0; j < car.getObjectByName("selectable").geometry.faces.length; j++) {
     //        if (scene.getObjectByName("camaro").geometry.faces[j].materialIndex == 0) {
-    //            if (car.children[0].geometry.faces[j]["selected"] == true) { numSelected++}
+    //            if (car.getObjectByName("selectable").geometry.faces[j]["selected"] == true) { numSelected++}
     //        }
     //    }
     //    perSelected = numSelected/totalSelectable;
@@ -1000,18 +1025,18 @@ function handleKeyDown(event) {
 
 function selectAll(s) {
     //if (s == true) {
-    //    for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
-    //        car.children[0].geometry.faces[j].color.setHex( 0x000000 );
-    //        car.children[0].geometry.faces[j]["selected"] = true;
+    //    for (var j = 0; j < car.getObjectByName("selectable").geometry.faces.length; j++) {
+    //        car.getObjectByName("selectable").geometry.faces[j].color.setHex( 0x000000 );
+    //        car.getObjectByName("selectable").geometry.faces[j]["selected"] = true;
     //    }
     //} else {
-    //    for (var j = 0; j < car.children[0].geometry.faces.length; j++) {
-    //        car.children[0].geometry.faces[j].color.setHex( 0xffffff );
-    //        car.children[0].geometry.faces[j]["selected"] = false;
+    //    for (var j = 0; j < car.getObjectByName("selectable").geometry.faces.length; j++) {
+    //        car.getObjectByName("selectable").geometry.faces[j].color.setHex( 0xffffff );
+    //        car.getObjectByName("selectable").geometry.faces[j]["selected"] = false;
     //    }
     //}
     //
-    //car.children[0].geometry.colorsNeedUpdate = true;
+    //car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
 }
 
 
@@ -1073,7 +1098,7 @@ function createLights() {
     var ambient = new THREE.AmbientLight( 0x020202 );
     scene.add( ambient );
 
-    directionalLight1 = new THREE.DirectionalLight( 0xaaaaaa );
+    directionalLight1 = new THREE.DirectionalLight( 0xffffff );
     directionalLight1.position.set( camera.position.z + 50, camera.position.y, -camera.position.x );//.normalize();
 
     directionalLight2 = new THREE.DirectionalLight( 0xffffff );
@@ -1100,95 +1125,7 @@ function createLights() {
 }
 
 
-//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// sorts the vertex information for sorting algorithm 2 /////////////
-function sortFaceInformation(a,b,c,faceNum) {
-    if (faceSorted[0][a] == undefined) {
-        faceSorted[0][a]= faceNum;
-    } else {
-        faceSorted[1][a]= faceNum;
-    }
 
-    if (faceSorted[2][b] == undefined) {
-        faceSorted[2][b]= faceNum;
-    } else {
-        faceSorted[3][b]= faceNum;
-    }
-
-    if (faceSorted[4][c] == undefined) {
-        faceSorted[4][c]= faceNum;
-    } else {
-        faceSorted[5][c]= faceNum;
-    }
-}
-
-//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// sorts the vertex information for sorting algorithm 3\\\\\\\\\\\\\\
-function sortFaceInformation2(a,b,c,faceNum) {
-    sortRightWay(a, faceNum);
-    sortRightWay(b, faceNum);
-    sortRightWay(c, faceNum);
-}
-
-
-//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// does the actual storing for the above function ///////////////////
-// indexed by vertex
-function sortRightWay(vertex, face) {
-    if (faceSorted2[0][vertex] == undefined) {
-        faceSorted2[0][vertex]= face;
-
-    } else if (faceSorted2[1][vertex] == undefined) {
-        faceSorted2[1][vertex]= face;
-
-    } else if (faceSorted2[2][vertex] == undefined) {
-        faceSorted2[2][vertex]= face;
-
-    } else if (faceSorted2[3][vertex] == undefined) {
-        faceSorted2[3][vertex]= face;
-
-    } else if (faceSorted2[4][vertex] == undefined) {
-        faceSorted2[4][vertex]= face;
-
-    } else if (faceSorted2[5][vertex] == undefined) {
-        faceSorted2[5][vertex]= face;
-
-    } else if (faceSorted2[6][vertex] == undefined) {
-        faceSorted2[6][vertex]= face;
-
-    } else if (faceSorted2[7][vertex] == undefined) {
-        faceSorted2[7][vertex]= face;
-
-    } else if (faceSorted2[8][vertex] == undefined) {
-        faceSorted2[8][vertex]= face;
-
-    } else if (faceSorted2[9][vertex] == undefined) {
-        faceSorted2[9][vertex]= face;
-
-    } else if (faceSorted2[10][vertex] == undefined) {
-        faceSorted2[10][vertex]= face;
-
-    } else if (faceSorted2[11][vertex] == undefined) {
-        faceSorted2[11][vertex]= face;
-
-    } else if (faceSorted2[12][vertex] == undefined) {
-        faceSorted2[12][vertex]= face;
-
-    } else if (faceSorted2[13][vertex] == undefined) {
-        faceSorted2[13][vertex]= face;
-
-    } else if (faceSorted2[14][vertex] == undefined) {
-        faceSorted2[14][vertex]= face;
-
-    }
-
-}
-
-function sortFaceInformation3(faceIndex) {
-    faceSorted3[0][faceIndex] = car.children[0].geometry.faces[faceIndex].a;
-    faceSorted3[1][faceIndex] = car.children[0].geometry.faces[faceIndex].b;
-    faceSorted3[2][faceIndex] = car.children[0].geometry.faces[faceIndex].c;
-}
 
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
@@ -1198,7 +1135,7 @@ function diff(a, b) {
     return a.filter(function(i) {return b.indexOf(i) < 0;});
 };
 
-//Object.observe(car.children[0].geometry.faces, function (changes){
+//Object.observe(car.getObjectByName("selectable").geometry.faces, function (changes){
 //    console.log("Changes:");
 //    console.log(changes);
 //    debugger;

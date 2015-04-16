@@ -70,7 +70,7 @@ var GAME = (function($){
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
             $('#wait').hide();
             $('#game').show();
-            App.selection_capacity = 1000; // assign player selection capacity
+            App.selection_capacity = 10000; // assign player selection capacity
 
             if(App.myRole == 'Host'){
                 $('#menu').show();
@@ -101,23 +101,23 @@ var GAME = (function($){
                 for (var i = 0 ; i < selections.length-1; i++ ) {
                     if (selections[selections.length - 1] == 1) {
                         if((App.myRole=='Host')){
-                            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
                         }
                         else{ // if player
-                            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
                         }
-                        car.children[0].geometry.faces[selections[i]].selected = true;
+                        car.getObjectByName("selectable").geometry.faces[selections[i]].selected = true;
                     } else {
                         if((App.myRole=='Host')){
-                            car.children[0].geometry.faces[selections[i]].color.setHex(0xffffff);
+                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
                         }
                         else{ // if player
-                            car.children[0].geometry.faces[selections[i]].color.setHex(0x000000);
+                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
                         }
-                        car.children[0].geometry.faces[selections[i]].selected = false;
+                        car.getObjectByName("selectable").geometry.faces[selections[i]].selected = false;
                     }
                 }
-                car.children[0].geometry.colorsNeedUpdate = true;
+                car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
             }
         },
 
