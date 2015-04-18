@@ -325,7 +325,7 @@ function JSONMeshParser(object) {
         	color 		 : new THREE.Color(object.materials[0].color),
         	emissive 	 : object.materials[0].emissive,
         	name 		 : object.materials[0].name,
-        	shininess 	 : object.materials[0].shininess,
+        	//shininess 	 : object.materials[0].shininess,
         	specular 	 : object.materials[0].specular,
         	uuid 		 : object.materials[0].uuid,
         	vertexColors : object.materials[0].vertexColors,
@@ -333,7 +333,11 @@ function JSONMeshParser(object) {
 
 		});	
 	}
-	
+
+    if (material.name == "Body") {
+        material.reflectivity = 0.15;
+    }
+
 	var mesh = new THREE.Mesh(geometry, material);
 
 
