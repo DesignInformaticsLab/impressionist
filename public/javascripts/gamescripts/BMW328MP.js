@@ -249,7 +249,7 @@ THREE.SceneLoad = function () {
 
         } );}
 
-    THREEScene.position.y = 120;
+    THREEScene.position.y = 150;
     return THREEScene;
 
 }
@@ -295,6 +295,12 @@ function JSONMeshParser(object) {
             object.geometries[0].data.vertices[3][geometry.faces[i].c],
             object.geometries[0].data.vertices[4][geometry.faces[i].c],
             object.geometries[0].data.vertices[5][geometry.faces[i].c]) );
+    }
+
+
+    for (var i =0; i< geometry.faces.length; i++) {
+        geometry.faces[i].selected = false;
+
     }
 
     //diff

@@ -3,6 +3,7 @@ THREE.SceneLoad = function () {
 
 
 
+
     var r = "textures/bridge/";
     var urls = [ r + "posx.jpg", r + "negx.jpg",
         r + "posy.jpg", r + "negy.jpg",
@@ -11,6 +12,9 @@ THREE.SceneLoad = function () {
     textureCube = THREE.ImageUtils.loadTextureCube( urls );
 
 
+
+
+    THREEScene.name = 'BMW328';
 
     scale =140;
 	var test = true; 
@@ -260,7 +264,7 @@ THREE.SceneLoad = function () {
 			
 		} );}
 	
-	THREEScene.position.y = -120;
+	THREEScene.position.y = 0;
 	return THREEScene;
 
 }
@@ -307,7 +311,12 @@ function JSONMeshParser(object) {
 			object.geometries[0].data.vertices[4][geometry.faces[i].c],
 			object.geometries[0].data.vertices[5][geometry.faces[i].c]) );        		
 	}
-	
+
+    for (var i =0; i< geometry.faces.length; i++) {
+        geometry.faces[i].selected = false;
+
+    }
+
 	//diff
 	if (object.materials[0].type == "MeshPhongMaterial") {
 			

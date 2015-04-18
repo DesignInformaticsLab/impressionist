@@ -45,8 +45,8 @@ router.post('/store_selection', function(req,res){
 router.post('/read_selection', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
-        var query = 'SELECT * FROM impressionist_selection_table';
-        client.query(query, function(err, result) {
+        var query = 'SELECT * FROM impressionist_selection_table WHERE obj_id=$1';
+        client.query(query, [req.body.obj_id], function(err, result) {
             if(err) {
                 console.error(err); res.send("Error " + err);
             }
