@@ -1,6 +1,17 @@
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
 
+
+
+    var r = "textures/bridge/";
+    var urls = [ r + "posx.jpg", r + "negx.jpg",
+        r + "posy.jpg", r + "negy.jpg",
+        r + "posz.jpg", r + "negz.jpg" ];
+
+    textureCube = THREE.ImageUtils.loadTextureCube( urls );
+
+
+
     scale =140;
 	var test = true; 
 	
@@ -308,7 +319,9 @@ function JSONMeshParser(object) {
         	shininess 	 : object.materials[0].shininess,
         	specular 	 : object.materials[0].specular,
         	uuid 		 : object.materials[0].uuid,
-        	vertexColors : object.materials[0].vertexColors
+        	vertexColors : object.materials[0].vertexColors,
+            envMap       : textureCube
+
 		});	
 	}
 	

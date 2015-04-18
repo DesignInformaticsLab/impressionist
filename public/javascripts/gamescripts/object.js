@@ -600,6 +600,7 @@ function onDocumentMouseDownDelete( event ) {
 }
 
 GAME.IO.socket.on('selection', function(sig){
+    console.log
     var selections = JSON.parse(sig);
     if(GAME.App.myRole=='Player') {
         // create meshes on fly
