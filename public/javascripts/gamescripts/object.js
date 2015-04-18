@@ -65,32 +65,17 @@ var progressbar_size = $('#select').css('opacity')/1;
 //////////////////////////////FUNCTION\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // sets up the environment \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 function init() {
-    //container = document.createElement( 'div' );
-    //document.body.appendChild( container );
     container = $('#model')[0];
-
-    //var info = document.createElement( 'div' );
-    //info.style.position = 'absolute';
-    //info.style.top = '10px';
-    //info.style.width = '100%';
-    //info.style.textAlign = 'center';
-    //info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> webgl - interactive cubes';
-    //container.appendChild( info );
-
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-
 
     scene = new THREE.Scene();
     clock = new THREE.Clock();
     background = new THREE.Scene();
     background.name = "background";
-    //var car = new THREE.Scene();
-    //car.name = "car";
 
     emptycar = new THREE.Scene();
     emptycar.name = "emptycar";
     emptycar.castShadow  = true;
-
 
     car = new THREE.SceneLoad;
 
@@ -490,7 +475,7 @@ $('#model').mousemove(function(event){
             select();
         }
         else {
-            theta = (mouse.x - tempx)*0.5;
+            theta = (mouse.x - tempx)*1.0;
         }
     }
 
@@ -645,7 +630,7 @@ function createMesh(selection){
             nf.normal = f.normal;
             geom.faces.push(nf);
 
-            var mesh= new THREE.Mesh( geom, material_lib.body[ "White" ]);
+            var mesh= new THREE.Mesh( geom, car.getObjectByName("selectable").material);
             mesh.rotation.y = 1;
             mesh.scale.set( scale,scale,scale );
             mesh.castShadow  = true;
@@ -704,8 +689,6 @@ function selectNeighboringFaces3(a,b,c,iteration,faceindex, callback) {
 // 2nd iteration of the selection algorithm that works with the 3rd
 function selectNeigboringFaces2(a, b, c, iteration, faceIndex) {
     if (selected == true &&
-        car.getObjectByName("selectable").geometry.faces[faceIndex].materialIndex != 5
-        &&
         allSelectedID.indexOf(faceIndex)==-1 ){
         if (car.getObjectByName("selectable").geometry.faces[faceIndex].selected == false) {
             selectedStrings[selectedStrings.length] = faceIndex;
@@ -930,9 +913,9 @@ function handleKeyDown(event) {
         SELECT = true;
         $('#bar').addClass('active');
     } else if ( event.keyCode == 90 && GAME.App.myRole =='Host') { //z: show heatmap
-        var weight = new Array(scene.children[3].children[0].geometry.faces.length);
+        var weight = new Array(car.getObjectByName('selectable').geometry.faces.length);
         var mesh_id_array, weight_array;
-        $.post('/read_selection',{},function(response){
+        $.post('/read_selection',{'obj_id':car.name},function(response){
                 $.each(response, function(i,r){
                     mesh_id_array = r.mesh_id;
                     weight_array = r.weight;
@@ -966,7 +949,7 @@ function handleKeyDown(event) {
             weight.push(1-weight.length/allSelectedID.length);
         })
         $.post('/store_selection',{
-                'obj_id': 'camaro',
+                'obj_id': car.name,
                 'mesh_id': JSON.stringify(allSelectedID),
                 'weight': JSON.stringify(weight)}
         );
