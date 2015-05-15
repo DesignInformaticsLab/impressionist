@@ -1,17 +1,20 @@
+var scale = 100;
+var zheight = -60;
+var answer = ['dinosaur','dino']; // this needs to be an array
+
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
 	
 	var test = true; 
-	var  scale = 45;
+
 	
 	if (test == true) {
 		$.getJSON("obj/Dino/body.json", function( object) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			objects.selectable = true;
 			THREEScene.add(objects);
-			
+			objects.name = ("selectable");
 		} );
 		
 		$.getJSON("obj/Dino/teeth.json", function( object) {
@@ -19,7 +22,7 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
-			
+			//objects.name = ("selectable");
 		} );
 		
 		$.getJSON("obj/Dino/eyes.json", function( object) {
@@ -27,22 +30,21 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
-			
+			//objects.name = ("selectable");
 		} );
 		$.getJSON("obj/Dino/tongue.json", function( object) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
-			
-			
+			//objects.name = ("selectable");
 		} );
 		
 	} else {
 		
 	}
 	
-	THREEScene.position.y = -60;
+	THREEScene.position.y = zheight;
 	return THREEScene;
 
 }

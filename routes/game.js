@@ -98,11 +98,8 @@ function joinGame(data) {
         sock.gameId = thisGameId; // assign room id to sock
         data.mySocketId = sock.id;
 
-        // create new game data
-        var correctAnswer = ['camaro'];
-
         // Emit an event notifying the clients that the player has joined the room.
-        io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id, correctAnswer: correctAnswer});
+        io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
     }
 }
 

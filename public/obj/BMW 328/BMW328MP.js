@@ -1,3 +1,6 @@
+var scale = 140;
+var zheight = 0;
+
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
 
@@ -16,8 +19,7 @@ THREE.SceneLoad = function () {
 
     THREEScene.name = 'BMW328';
 
-    scale =140;
-	var test = true; 
+	var test = true;
 	
 	if (test == true) {
 		$.getJSON("obj/BMW 328/chassis.json", function( object) {
@@ -264,7 +266,7 @@ THREE.SceneLoad = function () {
 			
 		} );}
 	
-	THREEScene.position.y = 0;
+	THREEScene.position.y = zheight;
 	return THREEScene;
 
 }

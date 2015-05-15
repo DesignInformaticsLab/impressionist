@@ -79,6 +79,44 @@ body {
     z-index: 5;
 }
 
+#time {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    color: #cccccc;
+    border-radius: 5px;
+    font-size: 40px;
+    line-height: 50px;
+    text-align: center;
+    z-index: 5;
+}
+
+#timebar {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #333333;
+    color: #cccccc;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+    z-index: 5;
+}
+
+#score {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    color: #cccccc;
+    border-radius: 5px;
+    font-size: 40px;
+    line-height: 50px;
+    text-align: center;
+    z-index: 5;
+}
+
 #bar {
     position: absolute;
     width: 50px;

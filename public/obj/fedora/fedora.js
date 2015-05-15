@@ -1,9 +1,11 @@
+var scale = 160;
+var zheight = -120;
+
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
 
 	var test = false; 
-	var  scale = 160;
-	
+
 	if (test == false) {
 		$.getJSON("obj/fedora/data (44).json", function( object) {
 			parsedFile = object;
@@ -13,8 +15,7 @@ THREE.SceneLoad = function () {
             objects.name = "selectable";
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x303030);
-			
-			
+			objects.name = ("selectable");
 		} );
 		
 		$.getJSON("obj/fedora/data (47).json", function( object) {
@@ -47,7 +48,7 @@ THREE.SceneLoad = function () {
 		} );
 	}
 	
-	THREEScene.position.y = -120;
+	THREEScene.position.y = zheight;
 	return THREEScene;
 
 }

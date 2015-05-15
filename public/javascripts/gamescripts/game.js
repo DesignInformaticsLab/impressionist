@@ -32,7 +32,6 @@ var GAME = (function($){
             IO.socket.on('playerLeft',IO.playerLeft );
             IO.socket.on('beginNewGame', IO.beginNewGame );
             IO.socket.on('newObjData', IO.onNewObjData);
-            IO.socket.on('checkAnswer', IO.checkAnswer);
             IO.socket.on('answerCorrect', IO.onAnswerCorrect);
             IO.socket.on('answerWrong', IO.onAnswerWrong);
             IO.socket.on('gameOver', IO.gameOver);
@@ -56,8 +55,6 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             App.myRole = 'Host';
-            App.correctAnswer = data.correctAnswer;
-            //App.Host.gameInit(data);
             $('#playerWaiting').show();
             console.log('my id:'+data.mySocketId);
         },
@@ -70,20 +67,10 @@ var GAME = (function($){
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
             $('#wait').hide();
             $('#game').show();
-            App.selection_capacity = 10000; // assign player selection capacity
 
-            if(App.myRole == 'Host'){
-                $('#menu').show();
-                $('#guessoutput').show();
-                $('#guessinput').hide();
-            }
-            else{
-                $('#menu').show();
-                $('#guessoutput').hide();
-                $('#guessinput').show();
-            }
-            init();
-            animate();
+            App.totalTime = 5; // total game time is 5 min
+            // create a new object and start the game
+            IO.onNewObjData();
         },
 
         playerLeft: function(data){
@@ -92,55 +79,58 @@ var GAME = (function($){
             $('#model').html('');
             App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
+            IO.gameOver();
         },
 
         // on player selection
         onSelection: function(sig){
-            if(car != undefined){ // if model exists
+            if(object != undefined){ // if model exists
                 var selections = JSON.parse(sig);
                 for (var i = 0 ; i < selections.length-1; i++ ) {
                     if (selections[selections.length - 1] == 1) {
                         if((App.myRole=='Host')){
-                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
+                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
                         }
                         else{ // if player
-                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
+                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
                         }
-                        car.getObjectByName("selectable").geometry.faces[selections[i]].selected = true;
+                        object.getObjectByName("selectable").geometry.faces[selections[i]].selected = true;
                     } else {
                         if((App.myRole=='Host')){
-                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
+                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
                         }
                         else{ // if player
-                            car.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
+                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
                         }
-                        car.getObjectByName("selectable").geometry.faces[selections[i]].selected = false;
+                        object.getObjectByName("selectable").geometry.faces[selections[i]].selected = false;
                     }
                 }
-                car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
+                object.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
             }
         },
 
         // on correct guess
         onAnswerCorrect : function() {
-
+            App.score += 1; // this needs to change depending on the difficulty of the object
+            App.currentRound += 1;
+            $('#score').html(App.score); // update score
+            IO.onNewObjData(); // get a new object and start a new round
         },
 
         // on wrong guess
         onAnswerWrong : function(data) {
-            if(GAME.App.myRole == 'Host'){
+            if(App.myRole == 'Host'){
                 $('#guessoutput').html(data.answer+'?');
                 //setInterval(function () {
                 //    $('#guessoutput').html('');
                 //},1500);
 
             }
-            else if (GAME.App.myRole == 'Player'){
+            else if (App.myRole == 'Player'){
                 $('#guessinput').css('background-color', '#000000');
                 setInterval(function () {
                     $('#guessinput').css('background-color', '#f5f5ff');
                 },800);
-
             }
         },
 
@@ -149,27 +139,40 @@ var GAME = (function($){
          * @param data
          */
         onNewObjData : function(data) {
-            // Update the current round
-            App.currentRound = data.round;
+            var objectstring = "obj/Dino/Dino.js"; // this should be randomly chosen from the server
+            $.getScript( objectstring, function( data, textStatus, jqxhr ) {
+                console.log( "New object loaded." );
 
-            // Change the obj for the Host and Player
-            App[App.myRole].newObj(data);
-        },
+                // reset game
+                App.selection_capacity = 10000; // assign player selection capacity for current obj
+                App.correct_answer = answer; // get correct answers
 
-        /**
-         * A player answered. If this is the host, check the answer.
-         * @param data
-         */
-        checkAnswer : function(data) {
-
+                $('#model').html('');
+                if(App.myRole == 'Host'){
+                    $('#menu').show();
+                    $('#guessoutput').show();
+                    $('#guessoutput')[0].value='';
+                    $('#guessinput').hide();
+                }
+                else{
+                    $('#menu').show();
+                    $('#guessoutput').hide();
+                    $('#guessinput').show();
+                    $('#guessinput')[0].value='';
+                }
+                App.currentTime = Date.now();
+                init();
+                animate();
+            });
         },
 
         /**
          * Let everyone know the game has ended.
          * @param data
          */
-        gameOver : function(data) {
-            App[App.myRole].endGame(data);
+        gameOver : function() {
+            //App[App.myRole].endGame(data);
+
         },
 
         /**
@@ -204,10 +207,12 @@ var GAME = (function($){
         mySocketId: '',
 
         /**
-         * Identifies the current round. Starts at 0 because it corresponds
-         * to the array of word data stored on the server.
+         * Identifies the current round.
          */
         currentRound: 0,
+
+        // current score
+        score: 0,
 
         /* *************************************
          *                Setup                *
@@ -524,7 +529,7 @@ var GAME = (function($){
                     gameId: App.gameId,
                     playerId: App.mySocketId,
                     answer: answer,
-                    correct: $.inArray(answer.toLowerCase(), GAME.App.correctAnswer)>=0,
+                    correct: $.inArray(answer.toLowerCase(), App.correct_answer)>=0,
                     round: App.currentRound
                 };
                 IO.socket.emit('checkAnswer',data);
@@ -682,11 +687,17 @@ GAME.IO.init();
 GAME.App.init();
 
 // interface
-var margin_left = ($(window).width()-$('#select').width()-$('#guessinput').width()-10)*.5;
-$('#select').css('marginLeft',margin_left+'px');
-$('#bar').css('marginLeft',margin_left+'px');
-$('#guessinput').css('marginLeft',margin_left+10+$('#select').width()+'px');
-$('#guessoutput').css('marginLeft',margin_left+10+$('#select').width()+'px');
+var margin_left = ($(window).width()-$('#select').width()-$('#guessinput').width()
+    -$('#time').width()-$('#score').width()-30)*.5;
+$('#time').css('marginLeft',margin_left+'px');
+$('#timebar').css('marginLeft',margin_left+'px');
+$('#score').css('marginLeft',margin_left+10+$('#time').width()+'px');
+$('#select').css('marginLeft',margin_left+20+$('#time').width()+$('#score').width()+'px');
+$('#bar').css('marginLeft',margin_left+20+$('#time').width()+$('#score').width()+'px');
+$('#guessinput').css('marginLeft',margin_left+30+$('#select').width()
+    +$('#time').width()+$('#score').width()+'px');
+$('#guessoutput').css('marginLeft',margin_left+30+$('#select').width()
+    +$('#time').width()+$('#score').width()+'px');
 //$('#guess').submit(function(event){
 //    GAME.App.Player.onSubmitAnswer();
 //    return false;

@@ -1,9 +1,10 @@
+var scale = 35;
+var zheight = -350;
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
 	
 	var test = true; 
-	var  scale = 35;
-	
+
 	if (test == true) {
 		
 		$.getJSON("obj/Lampost/Lampost.json", function( object) {
@@ -25,7 +26,7 @@ THREE.SceneLoad = function () {
 			
 		} );}
 	
-	THREEScene.position.y = -150;
+	THREEScene.position.y = zheight;
 	return THREEScene;
 
 }
