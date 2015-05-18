@@ -1,8 +1,8 @@
 var scale = 160;
 var zheight = -120;
-
+var answer = ['fedora'];
 THREE.SceneLoad = function () {
-	THREEScene  = new THREE.Scene();
+	var THREEScene  = new THREE.Scene();
 
 	var test = false; 
 
@@ -11,23 +11,25 @@ THREE.SceneLoad = function () {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
             objects.name = "selectable";
+			THREEScene.add(objects);
+
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x303030);
-			objects.name = ("selectable");
+
 		} );
 		
 		$.getJSON("obj/fedora/data (47).json", function( object) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+
 			THREEScene.add(objects);
 			
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x252525);
 			
-			
+
 		} );
 		
 		
@@ -98,17 +100,17 @@ function JSONMeshParser(object) {
 	
 	//diff
 	//if (object.materials[0].type == "MeshPhongMaterial") {
-			
-		var material = new THREE.MeshPhongMaterial({
-    		ambient	 	 : new THREE.Color(object.materials[0].ambient.toString(16)),
-        	color 		 : new THREE.Color(object.materials[0].color.toString(16)),
-        	emissive 	 : new THREE.Color(object.materials[0].emissive.toString(16)),
-        	name 		 : object.materials[0].name,
-        	shininess 	 : new THREE.Color(object.materials[0].shininess.toString(16)),
-        	specular 	 : new THREE.Color(object.materials[0].specular.toString(16)),
-        	uuid 		 : object.materials[0].uuid,
-        	vertexColors : THREE.FaceColors
-		});	
+
+        var material = new THREE.MeshPhongMaterial({
+            color	 	 : new THREE.Color(object.materials[0].color),
+            ambient 	 : new THREE.Color(object.materials[0].ambient),
+            emissive 	 : object.materials[0].emissive,
+            name 		 : object.materials[0].name,
+            shininess 	 : object.materials[0].shininess,
+            specular 	 : new THREE.Color(object.materials[0].specular),
+            vertexColors : THREE.FaceColors,
+            side         : THREE.DoubleSide
+        });
 	//}
 	
 	var mesh = new THREE.Mesh(geometry, material);
