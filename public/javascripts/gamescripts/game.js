@@ -139,7 +139,7 @@ var GAME = (function($){
          * @param data
          */
         onNewObjData : function(data) {
-            var objectstring = "obj/Helmet/helmet.js"; // this should be randomly chosen from the server
+            var objectstring = "obj/Dino/Dino.js"; // this should be randomly chosen from the server
             $.getScript( objectstring, function( data, textStatus, jqxhr ) {
                 console.log( "New object loaded." );
 
