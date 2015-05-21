@@ -6,15 +6,14 @@ THREE.SceneLoad = function () {
 
 	var test = false; 
 
-	$.getJSON("obj/TeaPot/TeaPot.json", function( object) {
+	$.getJSON("obj/TeaPot/data(1).json", function( object) {
 		parsedFile = object;
 		objects = JSONMeshParser(object);
 		objects.scale.set(scale,scale,scale);
         objects.name = "selectable";
 		THREEScene.add(objects);
 
-		for (var i =0; i<objects.geometry.faces.length; i++)
-			objects.geometry.faces[i].color.setHex( 0x303030);
+
 
 	} );
 		

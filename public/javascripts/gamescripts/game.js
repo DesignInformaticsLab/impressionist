@@ -86,26 +86,37 @@ var GAME = (function($){
         onSelection: function(sig){
             if(object != undefined){ // if model exists
                 var selections = JSON.parse(sig);
+                console.log('obj ln 602');
+
+                var childnumber = selections.shift();
+                console.log(selections);
                 for (var i = 0 ; i < selections.length-1; i++ ) {
                     if (selections[selections.length - 1] == 1) {
                         if((App.myRole=='Host')){
-                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
+                            object.children[childnumber].geometry.faces[selections[i]].color = 0x000000;
                         }
                         else{ // if player
-                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
+                            object.children[childnumber].geometry.faces[selections[i]].color = 0xffffff;
                         }
-                        object.getObjectByName("selectable").geometry.faces[selections[i]].selected = true;
+                        object.children[childnumber].geometry.faces[selections[i]].selected = true;
                     } else {
-                        if((App.myRole=='Host')){
-                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0xffffff);
+                        try {
+                            if((App.myRole=='Host')){
+                                object.children[childnumber].geometry.faces[selections[i]].color = 0xffffff;
+                            } else { // if player
+                                object.children[childnumber].geometry.faces[selections[i]].color = 0x000000;
+                            }
+
+                        } catch (e) {
+                            console.log('error');
+                            console.log(selections[i]);
+                            console.log(childnumber);
                         }
-                        else{ // if player
-                            object.getObjectByName("selectable").geometry.faces[selections[i]].color.setHex(0x000000);
-                        }
-                        object.getObjectByName("selectable").geometry.faces[selections[i]].selected = false;
+                        object.children[childnumber].geometry.faces[selections[i]].selected = false;
                     }
                 }
-                object.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
+                object.children[childnumber].geometry.colorsNeedUpdate = true;
+            selections.unshift(childnumber);
             }
         },
 

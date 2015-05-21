@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var connection = "postgres://postgres:KVTWN78mpostgres@localhost:5432/postgres"; //for local postgres server
+var connection = "postgres://postgres:GWC464doi@localhost:5432/postgres"; //for local postgres server
 var connection_online = process.env.DATABASE_URL; //for online version
 function handle_error(res, err) {
     console.error(err);

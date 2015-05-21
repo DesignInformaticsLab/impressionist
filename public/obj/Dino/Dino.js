@@ -1,49 +1,55 @@
 var scale = 100;
 var zheight = -60;
 var answer = ['dinosaur','dino']; // this needs to be an array
-
+var offset
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
-	
-	var test = true; 
+    THREEScene.FaceArray = [];
+    offset = 0;
+    $.getJSON("obj/Dino/body.json", function( object) {
+        parsedFile = object;
+        objects = JSONMeshParser(object);
+        objects.scale.set(scale,scale,scale);
+        THREEScene.add(objects);
+        objects.name = ("1");
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
 
-	
-	if (test == true) {
-		$.getJSON("obj/Dino/body.json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-			objects.name = ("selectable");
-		} );
-		
-		$.getJSON("obj/Dino/teeth.json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-			//objects.name = ("selectable");
-		} );
-		
-		$.getJSON("obj/Dino/eyes.json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-			//objects.name = ("selectable");
-		} );
-		$.getJSON("obj/Dino/tongue.json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-			//objects.name = ("selectable");
-		} );
-		
-	} else {
-		
-	}
-	
+    } );
+
+    $.getJSON("obj/Dino/teeth.json", function( object) {
+        parsedFile = object;
+        objects = JSONMeshParser(object);
+        objects.scale.set(scale,scale,scale);
+        THREEScene.add(objects);
+        objects.name = ("2");
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
+
+    } );
+
+    $.getJSON("obj/Dino/eyes.json", function( object) {
+        parsedFile = object;
+        objects = JSONMeshParser(object);
+        objects.scale.set(scale,scale,scale);
+        THREEScene.add(objects);
+        objects.name = ("3");
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
+
+    } );
+    $.getJSON("obj/Dino/tongue.json", function( object) {
+        parsedFile = object;
+        objects = JSONMeshParser(object);
+        objects.scale.set(scale,scale,scale);
+        THREEScene.add(objects);
+        objects.name = ("4");
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
+
+    } );
+
+
 	THREEScene.position.y = zheight;
 	return THREEScene;
 
@@ -77,19 +83,19 @@ function JSONMeshParser(object) {
 			object.geometries[0].data.faces[5][i]);
 			
 		geometry.faces[i].vertexNormals.push(new THREE.Vector3(
-			object.geometries[0].data.vertices[3][geometry.faces[i].a], 
+			object.geometries[0].data.vertices[3][geometry.faces[i].a],
 			object.geometries[0].data.vertices[4][geometry.faces[i].a],
-			object.geometries[0].data.vertices[5][geometry.faces[i].a]) ); 
+			object.geometries[0].data.vertices[5][geometry.faces[i].a]) );
 			
 		geometry.faces[i].vertexNormals.push(new THREE.Vector3(
-			object.geometries[0].data.vertices[3][geometry.faces[i].b], 
+			object.geometries[0].data.vertices[3][geometry.faces[i].b],
 			object.geometries[0].data.vertices[4][geometry.faces[i].b],
-			object.geometries[0].data.vertices[5][geometry.faces[i].b]) ); 
+			object.geometries[0].data.vertices[5][geometry.faces[i].b]) );
 			
 		geometry.faces[i].vertexNormals.push(new THREE.Vector3(
-			object.geometries[0].data.vertices[3][geometry.faces[i].c], 
+			object.geometries[0].data.vertices[3][geometry.faces[i].c],
 			object.geometries[0].data.vertices[4][geometry.faces[i].c],
-			object.geometries[0].data.vertices[5][geometry.faces[i].c]) );        		
+			object.geometries[0].data.vertices[5][geometry.faces[i].c]) );
 	}
 	
 	//diff
