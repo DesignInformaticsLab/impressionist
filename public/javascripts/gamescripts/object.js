@@ -72,7 +72,7 @@ function init() {
     clock = new THREE.Clock();
     background = new THREE.Scene();
     background.name = "background";
-
+    createTextureCube();
     object = new THREE.SceneLoad;
     object.name = GAME.App.correct_answer[0]; // use the first answer as the object name
 
@@ -282,86 +282,7 @@ function onWindowResize() {
 
 }
 
-/*
-//////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-// creates the car geometry and add it to the car scene\\\\\\\\\\\\\\
-function createCar(textureCube) {
-    material_lib = {
-        body: {
-            Red: new THREE.MeshLambertMaterial( {
-                color: 0x660000,
-                envMap: textureCube,
-                combine: THREE.MixOperation,
-                reflectivity: 0.05,
-                vertexColors: THREE.FaceColors
-            } ),
 
-            Black: new THREE.MeshLambertMaterial( {
-                color: 0x888888,
-                envMap: textureCube,
-                combine: THREE.MixOperation,
-                reflectivity: 0.5,
-                vertexColors: THREE.FaceColors
-            } ),
-
-            White: new THREE.MeshLambertMaterial( {
-                color: 0xffffff,
-                envMap: textureCube,
-                combine: THREE.MixOperation,
-                reflectivity: 0.05,
-                vertexColors: THREE.FaceColors
-            } )
-        },
-
-        chrome: new THREE.MeshLambertMaterial( {
-            color: 0xffffff,
-            envMap: textureCube,
-            vertexColors: THREE.FaceColors
-        } ),
-
-        darkchrome: new THREE.MeshLambertMaterial( {
-            color: 0x444444,
-            envMap: textureCube,
-            vertexColors: THREE.FaceColors
-        } ),
-
-        glass: new THREE.MeshBasicMaterial( {
-            color: 0x223344,
-            envMap: textureCube,
-            opacity: 0.25,
-            combine: THREE.MixOperation,
-            reflectivity: 0.25,
-            transparent: true,
-            vertexColors: THREE.FaceColors
-        } ),
-
-        tire: new THREE.MeshLambertMaterial( {
-            color: 0x050505,
-            vertexColors: THREE.FaceColors
-        } ),
-
-        interior: new THREE.MeshPhongMaterial( {
-            //color: 0x050505,
-            //shininess: 20,
-            color: 0x000000,
-            opacity: 0,
-            vertexColors: THREE.FaceColors
-        } ),
-
-        black: new THREE.MeshLambertMaterial( {
-            color: 0x000000,
-            vertexColors: THREE.FaceColors
-        } )
-
-    };
-
-    var loader = new THREE.BinaryLoader();
-    loader.load( "obj/camaro/CamaroNoUv_bin.js",
-        function( geometry ) { createScene( geometry, material_lib ) } );
-
-}
-
-*/
 
 //////////////////////////////function\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 // create texture cube  in this case all black\\\\\\\\\\\\\\\\\\\\\\\
@@ -444,31 +365,7 @@ function onDocumentMouseMove(event) {
 //$('#model').mousemove(function(event){
 
     event.preventDefault();
-    //cylinder.position.x =  mouse.x;
-    //cylinder.position.y = mouse.y;
-    //
-    //cylinderSmall.position.x = mouse.x;
-    //cylinderSmall.position.y = mouse.y;
-    //
-    //raycaster.setFromCamera( mouse, camera );
-    //var intersections=[];
-    //
-    //try {
-    //    intersections = raycaster.intersectObjects( [scene.getObjectByName("camaro"), scene.getObjectByName("backdrop")] );
-    //} catch (e) {
-    //    intersections[0] = null ;
-    //}
-    //
-    //intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
-    //
-    //if (intersection != null) {
-    //    var lambda = (cylinder.position.z- intersection.point.z) / (camera.position.z - intersection.point.z);
-    //
-    //
-    //    testVar[0][0] = lambda;
-    //    var xPos = intersection.point.x + lambda * ( camera.position.x - intersection.point.x);
-    //    var yPos = intersection.point.y + lambda * ( camera.position.y - intersection.point.y);
-    //}
+
 
     var tempx = mouse.x;
     var tempy = mouse.y;
@@ -634,7 +531,7 @@ GAME.IO.socket.on('selection', function(sig){
     }
     else if(GAME.App.myRole=='Host'){
         for (var i = 0; i< selections.length; i++)
-            object.children[childnumber].geometry.faces[selections[i]].color = 0x111111;
+            object.children[childnumber].geometry.faces[selections[i]].color.setHex(0xff7777);
 
 
         /*$.each(selections, function(s){
@@ -954,8 +851,8 @@ function handleKeyDown(event) {
         SELECT = true;
         $('#bar').addClass('active');
     } else if ( event.keyCode == 90 && GAME.App.myRole =='Host') { //z: show heatmap
-        var weight = new Array(object.getObjectByName('selectable').geometry.faces.length);
-        var mesh_id_array, weight_array;
+        //var weight = new Array(object.getObjectByName('selectable').geometry.faces.length);
+        //var mesh_id_array, weight_array;
         $.post('/read_selection',{'obj_id':object.name},function(response){
                 $.each(response, function(i,r){
                     mesh_id_array = r.mesh_id;

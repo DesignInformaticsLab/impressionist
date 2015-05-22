@@ -90,16 +90,18 @@ var GAME = (function($){
 
                 var childnumber = selections.shift();
                 console.log(selections);
-                for (var i = 0 ; i < selections.length-1; i++ ) {
-                    if (selections[selections.length - 1] == 1) {
+                for (var i = 0 ; i < selections.length; i++ ) {
+                    //if (selections[selections.length - 1] == 1) {
                         if((App.myRole=='Host')){
-                            object.children[childnumber].geometry.faces[selections[i]].color = 0x000000;
+                            //object.children[childnumber].geometry.faces[selections[i]].color.setHex(0xff0000);
+
                         }
                         else{ // if player
                             object.children[childnumber].geometry.faces[selections[i]].color = 0xffffff;
                         }
+
                         object.children[childnumber].geometry.faces[selections[i]].selected = true;
-                    } else {
+                    /*} else {
                         try {
                             if((App.myRole=='Host')){
                                 object.children[childnumber].geometry.faces[selections[i]].color = 0xffffff;
@@ -113,7 +115,7 @@ var GAME = (function($){
                             console.log(childnumber);
                         }
                         object.children[childnumber].geometry.faces[selections[i]].selected = false;
-                    }
+                    }*/
                 }
                 object.children[childnumber].geometry.colorsNeedUpdate = true;
             selections.unshift(childnumber);

@@ -109,7 +109,8 @@ function JSONMeshParser(object) {
         	shininess 	 : object.materials[0].shininess,
         	specular 	 : object.materials[0].specular,
         	uuid 		 : object.materials[0].uuid,
-        	vertexColors : object.materials[0].vertexColors
+        	vertexColors : object.materials[0].vertexColors//,
+            //envMap       : textureCube
 		});	
 	}
 	
