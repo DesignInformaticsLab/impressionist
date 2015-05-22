@@ -546,9 +546,11 @@ function select() {
                 console.log(intersection.object.name);
 
                 selectedStrings = diff(selectedStrings, object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
-                var uniqueValues = object.getObjectByName(intersection.object.name).allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
 
-                object.getObjectByName(intersection.object.name).allSelectedID = uniqueValues;
+                object.getObjectByName(intersection.object.name).allSelectedID = object.getObjectByName(intersection.object.name).allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
+                var uniqueValues = selectedStrings.filter(onlyUnique);
+
+                //selectedStrings= uniqueValues;
                 //if (selected == true) {
                 //    selectedStrings[selectedStrings.length] = 1;
 
@@ -566,6 +568,7 @@ function select() {
                 }
                 console.log('unique values:');
                 console.log(uniqueValues);
+
                 allSelectedIDMaster.push(uniqueValues);
 
 
