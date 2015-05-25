@@ -1,18 +1,20 @@
 var scale = 160;
 var zheight = -120;
-var answer = ['Tea Pot'];
+var answer = ['Teapot'];
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
+    THREEScene.name = "Teapot";
+    THREEScene.FaceArray = [];
 
-	var test = false; 
 
 	$.getJSON("obj/TeaPot/data(1).json", function( object) {
 		parsedFile = object;
 		objects = JSONMeshParser(object);
 		objects.scale.set(scale,scale,scale);
-        objects.name = "selectable";
+        objects.name = "1";
 		THREEScene.add(objects);
-
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 
 	} );
@@ -78,6 +80,7 @@ function JSONMeshParser(object) {
             shininess 	 : object.materials[0].shininess,
             specular 	 : new THREE.Color(object.materials[0].specular),
             vertexColors : THREE.FaceColors,
+            //envMap       : textureCube
             side         : THREE.DoubleSide
         });
 	//}

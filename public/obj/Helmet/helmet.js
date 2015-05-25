@@ -1,23 +1,23 @@
 var scale = 200;
 var zheight = -120;
-var answer = ['fedora'];
+var answer = ['Helmet'];
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
-
+    THREEScene.name = "Helmet";
+    THREEScene.FaceArray = [];
     //var light = new THREE.AmbientLight( 0xffffff ); // soft white light
     //scene.add( light );
 
-	var test = false; 
+
 
 	$.getJSON("obj/Helmet/data.json", function( object) {
         parsedFile = object;
         objects = JSONMeshParser(object);
         objects.scale.set(scale,scale,scale);
-        objects.name = "selectable";
+        objects.name = "1";
         THREEScene.add(objects);
-
-
-
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
     } );
 
 	THREEScene.position.y = zheight;
@@ -72,13 +72,14 @@ function JSONMeshParser(object) {
 	//if (object.materials[0].type == "MeshPhongMaterial") {
 
         var material = new THREE.MeshPhongMaterial({
-            color	 	 : new THREE.Color(object.materials[0].color * 10),
-            ambient 	 : new THREE.Color(object.materials[0].ambient),
+            ambient	 	 : object.materials[0].ambient,
+            color 		 : new THREE.Color(object.materials[0].color*10),
             emissive 	 : object.materials[0].emissive,
             name 		 : object.materials[0].name,
-            shininess 	 : object.materials[0].shininess/20,
-            specular 	 : new THREE.Color(object.materials[0].specular),
-            vertexColors : THREE.FaceColors,
+            shininess 	 : object.materials[0].shininess,
+            specular 	 : object.materials[0].specular,
+            uuid 		 : object.materials[0].uuid,
+            vertexColors : object.materials[0].vertexColors,
             side         : THREE.DoubleSide
         });
 	//}

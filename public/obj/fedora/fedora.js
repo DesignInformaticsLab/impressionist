@@ -3,16 +3,17 @@ var zheight = -120;
 var answer = ['fedora'];
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
+    THREEScene.name = "Fedora";
+    THREEScene.FaceArray = [];
 
-	var test = false; 
-
-	if (test == false) {
 		$.getJSON("obj/fedora/data (44).json", function( object) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-            objects.name = "selectable";
+            objects.name = "1";
 			THREEScene.add(objects);
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x303030);
@@ -23,6 +24,9 @@ THREE.SceneLoad = function () {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.name = "2";
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			THREEScene.add(objects);
 			
@@ -32,23 +36,7 @@ THREE.SceneLoad = function () {
 
 		} );
 		
-		
 
-
-		
-	} else {
-		$.getJSON("obj/iPhone/data (34).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-			
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0x050505);
-			
-			
-		} );
-	}
 	
 	THREEScene.position.y = zheight;
 	return THREEScene;
@@ -102,13 +90,15 @@ function JSONMeshParser(object) {
 	//if (object.materials[0].type == "MeshPhongMaterial") {
 
         var material = new THREE.MeshPhongMaterial({
-            color	 	 : new THREE.Color(object.materials[0].color),
-            ambient 	 : new THREE.Color(object.materials[0].ambient),
+            ambient	 	 : object.materials[0].ambient,
+            color 		 : new THREE.Color(object.materials[0].color),
             emissive 	 : object.materials[0].emissive,
             name 		 : object.materials[0].name,
             shininess 	 : object.materials[0].shininess,
-            specular 	 : new THREE.Color(object.materials[0].specular),
-            vertexColors : THREE.FaceColors,
+            specular 	 : object.materials[0].specular,
+            uuid 		 : object.materials[0].uuid,
+            vertexColors : object.materials[0].vertexColors,
+            //envMap       : textureCube
             side         : THREE.DoubleSide
         });
 	//}

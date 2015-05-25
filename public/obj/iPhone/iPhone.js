@@ -3,8 +3,9 @@ var zheight = 0;
 var answer = ['iPhone'];
 
 THREE.SceneLoad = function () {
-	THREEScene  = new THREE.Scene();
-
+	var THREEScene  = new THREE.Scene();
+    THREEScene.name = "iPhone";
+    THREEScene.FaceArray = [];
 
         //edge
 		$.getJSON("obj/iPhone/data (34).json", function( object) {
@@ -12,6 +13,9 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
+            objects.name = ("1");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x303030);
@@ -26,6 +30,9 @@ THREE.SceneLoad = function () {
 			objects.scale.set(scale,scale,scale);
 
             THREEScene.add(objects);
+            objects.name = ("2");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
@@ -41,6 +48,9 @@ THREE.SceneLoad = function () {
 			objects.scale.set(scale,scale,scale);
             objects.name = "selectable";
 			THREEScene.add(objects);
+            objects.name = ("3");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x252525);
@@ -54,6 +64,9 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
+            objects.name = ("4");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x252525);
@@ -67,6 +80,9 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
+            objects.name = ("5");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0xffffff);
@@ -80,6 +96,9 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
+            objects.name = ("6");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
 				objects.geometry.faces[i].color.setHex( 0x050507);
@@ -148,7 +167,9 @@ function JSONMeshParser(object) {
         	name 		 : object.materials[0].name,
         	shininess 	 : object.materials[0].shininess,
         	specular 	 : new THREE.Color(object.materials[0].specular),
-        	vertexColors : THREE.FaceColors
+        	vertexColors : THREE.FaceColors,
+            //envMap       : textureCube
+            side         : THREE.DoubleSide
 		});
 	//}
 

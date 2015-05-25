@@ -1,30 +1,25 @@
 var scale = 35;
 var zheight = -350;
+var answer = ['Lamppost'];
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
-	
-	var test = true; 
+    THREEScene.name = "Lamppost";
+    THREEScene.FaceArray = [];
 
-	if (test == true) {
+
 		
 		$.getJSON("obj/Lampost/Lampost.json", function( object) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
 			THREEScene.add(objects);
-            objects.name = ("selectable");
-			
+            objects.name = ("1");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+
 		} );
 		
-	} else {
-		
-		$.getJSON("obj/Lampost/data (4).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-			
-		} );}
+
 	
 	THREEScene.position.y = zheight;
 	return THREEScene;
@@ -85,7 +80,9 @@ function JSONMeshParser(object) {
         	shininess 	 : object.materials[0].shininess,
         	specular 	 : object.materials[0].specular,
         	uuid 		 : object.materials[0].uuid,
-        	vertexColors : object.materials[0].vertexColors
+        	vertexColors : object.materials[0].vertexColors,
+            //envMap       : textureCube
+            side         : THREE.DoubleSide
 		});	
 	}
 	

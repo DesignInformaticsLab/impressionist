@@ -724,3 +724,22 @@ $('#guessinput').keypress(function(e) {
         }
     }
 });
+
+
+function initial_obj(){
+    var objectstring_set = ["obj/BMW 328/BMW328MP.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/Helmet/Helmet.js","obj/iPhone/iPhone.js","obj/Lampost/LampPost.js","obj/Teapot/Teapot.js"];
+    //$.each(objectstring_set, function(i,string){
+    //for(var i = 0; i<objectstring_set.length; i++){
+        var string = objectstring_set[1];
+        $.getScript( string, function() {
+            THREE.SceneLoad();
+            $.post('/initial_obj',{
+                'object_name':THREEScene.name,
+                'face_per_mesh': THREEScene.FaceArray,
+                'num_selections': []
+            },function(){});
+        });
+    //}
+
+        //});
+}

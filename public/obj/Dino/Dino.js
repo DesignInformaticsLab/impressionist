@@ -1,11 +1,12 @@
 var scale = 100;
 var zheight = -60;
 var answer = ['dinosaur','dino']; // this needs to be an array
-var offset
+
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
+    THREEScene.name = "Dino";
     THREEScene.FaceArray = [];
-    offset = 0;
+
     $.getJSON("obj/Dino/body.json", function( object) {
         parsedFile = object;
         objects = JSONMeshParser(object);
@@ -109,8 +110,9 @@ function JSONMeshParser(object) {
         	shininess 	 : object.materials[0].shininess,
         	specular 	 : object.materials[0].specular,
         	uuid 		 : object.materials[0].uuid,
-        	vertexColors : object.materials[0].vertexColors//,
+        	vertexColors : object.materials[0].vertexColors,
             //envMap       : textureCube
+            side         : THREE.DoubleSide
 		});	
 	}
 	
