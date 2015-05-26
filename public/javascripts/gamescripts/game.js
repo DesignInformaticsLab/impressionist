@@ -51,7 +51,6 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             App.myRole = 'Host';
-            App.$playerwaiting.show();
             console.log('my id:'+data.mySocketId);
         },
 
@@ -249,7 +248,6 @@ var GAME = (function($){
          */
         cacheElements: function () {
             App.$doc = $(document);
-            App.$playerwaiting = $('#playerWaiting');
             App.$wait = $('#wait');
             App.$game = $('#game');
             App.$model = $('#model');
@@ -261,6 +259,9 @@ var GAME = (function($){
             App.$select = $('#select');
             App.$time = $('#time');
             App.$timebar = $('#timebar');
+            App.$entry = $('#entry');
+            App.$home = $('#home');
+            App.$wait = $('#wait');
             // interface
             var margin_left = ($(window).width()-App.$select.width()-App.$guessinput.width()
                 -App.$time.width()-App.$score.width()-30)*.5;
@@ -275,7 +276,6 @@ var GAME = (function($){
                 +App.$time.width()+App.$score.width()+'px');
 
             App.progressbar_size = App.$select.css('opacity')/1;
-
         },
 
         /**
@@ -294,6 +294,11 @@ var GAME = (function($){
 
             // Player
             App.$guessinput.on('keypress', App.Host.onGuessinputKeyPress);
+            App.$entry.click(function(){
+                App.$home.hide();
+                App.$wait.show();
+                App.Player.onJoinClick();
+            });
         },
 
         /* *************************************
@@ -307,8 +312,6 @@ var GAME = (function($){
         showInitScreen: function() {
             //App.$gameArea.html(App.$templateIntroScreen);
             //App.doTextFit('.title');
-
-            App.Player.onJoinClick();
         },
 
 
@@ -1298,8 +1301,7 @@ var GAME = (function($){
     game.Obj = Obj;
     return game;
 })(jQuery);
-
-GAME.IO.init();
 GAME.App.init();
+GAME.IO.init();
 
 

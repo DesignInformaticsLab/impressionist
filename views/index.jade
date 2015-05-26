@@ -1,5 +1,59 @@
+//
+   Created by Max Yi Ren on 3/7/2015.
 extends layout
-
 block content
-  h1= title
-  p Welcome to #{title}
+      .site-wrapper
+          .site-wrapper-inner
+              .cover-container
+                  .masthead.clearfix
+                      .inner
+                          h3.masthead-brand
+                              | Impressionist
+                          nav
+                              ul.nav.masthead-nav
+                                  li.active
+                                      a(href='#')
+                                          | Home
+                                  li
+                                      a(href='#')
+                                          | Game
+                                  li
+                                      a(href='#')
+                                          | Stats
+                  #home.inner.cover
+                      h1.cover-heading
+                          | Welcome to Impressionist
+                      p.lead
+                          | This is a collaborative game to test your knowledge about shapes
+                      #entry.btn.btn-lg.btn-default
+                          | Try it out
+                  #wait.inner.cover
+                      p.lead
+                          | Waiting ...
+                  #game.inner.cover
+                      //#menu
+                      //    .button.mouse-look
+                      //      | Enable Mouse Look
+                      //    .button.full-screen
+                      //      | Start VR Mode
+                      #wait
+                      #title
+                          | impressionist
+                      #menu
+                          #bar
+                          #timebar
+                          #time
+                              | T
+                          #score
+                              | 0
+                          #select
+                              | S
+                          input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
+                          #guessoutput
+                      #model
+                  .mastfoot
+                      .inner
+                          p
+                              | by Max Yi Ren and Fabian Gadau, Arizona State University, 2015
+      script(src="stylesheets/bootstrap/js/bootstrap.min.js")
+      script(src="javascripts/gamescripts/game.js")
