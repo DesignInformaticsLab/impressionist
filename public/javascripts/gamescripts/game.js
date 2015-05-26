@@ -99,6 +99,8 @@ var GAME = (function($){
                 var childnumber = selections.shift();
                 if (App.myRole == 'Player') {
                     // create meshes on fly
+                    console.log('...receiving');
+                    console.log(sig);
                     Obj.createMesh(selections, childnumber);
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
@@ -315,12 +317,12 @@ var GAME = (function($){
             Obj.camera.aspect = window.innerWidth / window.innerHeight;
             Obj.camera.updateProjectionMatrix();
 
-            if (VRMODE) {
+           /* if (VRMODE) {
                 Obj.vrEffect.setSize(window.innerWidth, window.innerHeight);
             }
-            else {
+            else {*/
                 Obj.renderer.setSize(window.innerWidth, window.innerHeight);
-            }
+            //}
         },
 
         /**
@@ -522,11 +524,25 @@ var GAME = (function($){
                                 Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
                                 Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
                                 Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex,intersection.object.name);
-
+                            console.log('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+                            console.log('with doubles');
+                            console.log(App.Host.selectedStrings);
+                            App.Host.selectedStrings =App.Host.selectedStrings.filter(App.onlyUnique);
+                            console.log('only unique ');
+                            console.log(App.Host.selectedStrings);
                             App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
-
-                            Obj.object.getObjectByName(intersection.object.name).allSelectedID = Obj.object.getObjectByName(intersection.object.name).allSelectedID.concat(App.Host.selectedStrings).filter( App.onlyUnique ); // update all selection
-                            var uniqueValues = App.Host.selectedStrings.filter(App.onlyUnique);
+                            console.log('only new selections');
+                            console.log(App.Host.selectedStrings);
+                            $.each(App.Host.selectedStrings, function(i, SS) {
+                                Obj.object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
+                            });
+                            console.log('allSelectedID');
+                            console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
+                            // = Obj.object.getObjectByName(intersection.object.name).allSelectedID.concat(App.Host.selectedStrings).filter( App.onlyUnique ); // update all selection
+                            var uniqueValues = [];
+                            $.each(App.Host.selectedStrings, function (i) {
+                                uniqueValues.push(App.Host.selectedStrings[i]);
+                            });//.filter(App.onlyUnique);
 
                             // update selection capacity
                             var index = -1;
@@ -541,11 +557,18 @@ var GAME = (function($){
 
                             }
 
-                            App.Host.allSelectedIDMaster.push(uniqueValues);
+
+                            $.each(uniqueValues, function(i,UV) {
+                                App.Host.allSelectedIDMaster.push(UV);
+                            });
+
+
 
                             App.Host.selectedStrings.unshift(index);
                             App.Host.selection_capacity = App.Host.selection_capacity - App.Host.selectedStrings.length + 1;
                             App.$bar.css('opacity', App.Host.selection_capacity/1000*App.progressbar_size);
+                            console.log('sending...');
+                            console.log(App.Host.selectedStrings);
                             IO.socket.emit('selection',JSON.stringify(App.Host.selectedStrings));
                         }
                     }
@@ -1105,8 +1128,8 @@ var GAME = (function($){
             //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
 
             $.each(selection, function (i, s) {
-                if (App.Player.allSelectedID.indexOf(s) == -1) {
-                    App.Player.allSelectedID.push(s);
+                //if (App.Player.allSelectedID.indexOf(s) == -1) {
+                //   App.Player.allSelectedID.push(s);
 
                     var geom = new THREE.Geometry();
 
@@ -1127,10 +1150,10 @@ var GAME = (function($){
                     mesh.castShadow = true;
                     mesh.position.y = Obj.height;
                     Obj.emptyobject.add(mesh);
-                }
-                else {
+               // }
+                //else {
 
-                }
+                //}
             });
         },
 

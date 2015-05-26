@@ -442,10 +442,13 @@ function select() {
                 //car.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
                 console.log(intersection.object.name);
 
+                selectedStrings = selectedStrings.filter(onlyUnique);//discard duplicates
+
                 selectedStrings = diff(selectedStrings, object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
 
-                object.getObjectByName(intersection.object.name).allSelectedID = object.getObjectByName(intersection.object.name).allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
-                var uniqueValues = selectedStrings.filter(onlyUnique);
+                object.getObjectByName(intersection.object.name).allSelectedID.push(selectedStrings);//object.getObjectByName(intersection.object.name).allSelectedID.concat(selectedStrings).filter( onlyUnique ); // update all selection
+
+                var uniqueValues = selectedStrings;
 
                 //selectedStrings= uniqueValues;
                 //if (selected == true) {
