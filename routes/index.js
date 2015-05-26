@@ -11,12 +11,12 @@ function handle_error(res, err) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Impressionist | Home' });
 });
 
-/* GET Fabian's model selection page. */
+/* GET game page. */
 router.get('/game', function(req, res, next) {
-    res.render('game', { title: 'Model Selection Test'});
+    res.render('game', { title: 'Impressionist | Game'});
 });
 
 
