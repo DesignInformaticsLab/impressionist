@@ -98,8 +98,7 @@ var GAME = (function($){
                 var childnumber = selections.shift();
                 if (App.myRole == 'Player') {
                     // create meshes on fly
-                    console.log('...receiving');
-                    console.log(sig);
+
                     Obj.createMesh(selections, childnumber);
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
@@ -561,6 +560,7 @@ var GAME = (function($){
                             //})
 
                             App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
+
                             //console.log('only new selections');
                             //console.log(App.Host.selectedStrings);
                             $.each(App.Host.selectedStrings, function(i, SS) {
@@ -597,8 +597,7 @@ var GAME = (function($){
                             App.Host.selectedStrings.unshift(index);
                             App.Host.selection_capacity = App.Host.selection_capacity - App.Host.selectedStrings.length + 1;
                             App.$bar.css('opacity', App.Host.selection_capacity/1000*App.progressbar_size);
-                            console.log('sending...');
-                            console.log(App.Host.selectedStrings);
+
                             IO.socket.emit('selection',JSON.stringify(App.Host.selectedStrings));
                         }
                     }
@@ -1246,10 +1245,9 @@ var GAME = (function($){
          * @param name
          */
         selectNeigboringFaces2: function(a, b, c, iteration, faceIndex, name) {
-            if (App.Host.SELECT == true &&
-                App.Host.allSelectedIDMaster.indexOf(faceIndex) == -1) {
+
                 App.Host.selectedStrings.push(faceIndex);
-            }
+
             if (Obj.object.getObjectByName(name).sorted[0][0][a] == faceIndex) {
                 if (iteration != 0) {
                     Obj.selectNeigboringFaces2(
