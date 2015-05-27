@@ -254,7 +254,7 @@ var GAME = (function($){
             App.$score = $('#score');
             App.$guessoutput = $('#guessoutput');
             App.$guessinput = $('#guessinput');
-            App.$menu = $('#div_menu');
+            App.$menu = $('#menu');
             App.$bar = $('#bar');
             App.$select = $('#select');
             App.$time = $('#time');
@@ -262,19 +262,23 @@ var GAME = (function($){
             App.$entry = $('#entry');
             App.$home = $('#home');
             App.$wait = $('#wait');
+
             // interface
-            var margin_left = ($(window).width()-App.$select.width()-App.$guessinput.width()
+            var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
+            var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
                 -App.$time.width()-App.$score.width()-30)*.5;
+            var menu_bottom = $('.mastfoot').height();
+            App.$menu.css('bottom',menu_bottom);
+            App.$game.height(game_height);
             App.$time.css('marginLeft',margin_left+'px');
             App.$timebar.css('marginLeft',margin_left+'px');
             App.$score.css('marginLeft',margin_left+10+App.$time.width()+'px');
             App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
             App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
-            App.$guessinput.css('marginLeft',margin_left+30+App.$select.width()
-                +App.$time.width()+App.$score.width()+'px');
             App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
                 +App.$time.width()+App.$score.width()+'px');
-
+            App.$guessinput.css('left',margin_left+30+App.$select.width()
+                +App.$time.width()+App.$score.width()+'px');
             App.progressbar_size = App.$select.css('opacity')/1;
         },
 
@@ -317,14 +321,29 @@ var GAME = (function($){
 
 
         onWindowResize: function() {
-            Obj.camera.aspect = window.innerWidth / window.innerHeight;
+            // interface
+            var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
+                -App.$time.width()-App.$score.width()-30)*.5;
+            var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
+            App.$game.height(game_height);
+            App.$time.css('marginLeft',margin_left+'px');
+            App.$timebar.css('marginLeft',margin_left+'px');
+            App.$score.css('marginLeft',margin_left+10+App.$time.width()+'px');
+            App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
+            App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
+            App.$guessinput.css('marginLeft',margin_left+30+App.$select.width()
+                +App.$time.width()+App.$score.width()+'px');
+            App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
+                +App.$time.width()+App.$score.width()+'px');
+
+            Obj.camera.aspect = App.$model.width() / App.$model.height();
             Obj.camera.updateProjectionMatrix();
 
-           /* if (VRMODE) {
-                Obj.vrEffect.setSize(window.innerWidth, window.innerHeight);
-            }
-            else {*/
-                Obj.renderer.setSize(window.innerWidth, window.innerHeight);
+            /* if (VRMODE) {
+             Obj.vrEffect.setSize(window.innerWidth, window.innerHeight);
+             }
+             else {*/
+            Obj.renderer.setSize(App.$model.width(), App.$model.height());
             //}
         },
 
@@ -973,7 +992,7 @@ var GAME = (function($){
 
         init: function() {
             var container = App.$model[0];
-            Obj.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+            Obj.camera = new THREE.PerspectiveCamera( 70, App.$model.width() / App.$model.height(), 1, 10000 );
 
             Obj.scene = new THREE.Scene();
             var background = new THREE.Scene();
@@ -1049,8 +1068,8 @@ var GAME = (function($){
             //    }
             //}
 
-            Obj.renderer.setClearColor( 0xf0f0f0 );
-            Obj.renderer.setSize( window.innerWidth, window.innerHeight );
+            Obj.renderer.setClearColor( 0xeeeeee );
+            Obj.renderer.setSize( App.$model.width(), App.$model.height());
             Obj.renderer.sortObjects = false;
             container.appendChild( Obj.renderer.domElement );
         },

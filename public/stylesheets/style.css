@@ -24,8 +24,7 @@
 /***************** INTERFACE *******************/
 #game {
     /*position: absolute;*/
-    /*display: none;*/
-    /*width: 100%;*/
+    width: 100%;
     /*height: 100%;*/
     /*background-color: white;*/
     display: none;
@@ -44,7 +43,7 @@
 
 #title {
     position: absolute;
-    width: 100%;
+    /*width: 100%;*/
     height: 30px;
     z-index: 5;
     font-size: 20px;
@@ -56,7 +55,6 @@
     position: absolute;
     width: 100%;
     height: 50px;
-    top: 50px;
 }
 
 #select {
@@ -156,7 +154,7 @@
 
 
 #model {
-    position: absolute;
+    position: relative;
     width: 100%;
     height: 100%;
     left: 0px;
@@ -203,7 +201,7 @@ body {
 body {
     color: #222;
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,.25);
+    /*text-shadow: 0 1px 3px rgba(0,0,0,.25);*/
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -328,8 +326,9 @@ body {
 @media (min-width: 992px) {
     .masthead,
     .mastfoot,
-    .cover-container {
-        width: 700px;
+    .cover-container,
+    #game {
+        width: 900px;
     }
 }
 /* From bootstrap cover template */
