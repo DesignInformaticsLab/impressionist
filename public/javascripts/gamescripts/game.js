@@ -264,12 +264,12 @@ var GAME = (function($){
             App.$wait = $('#wait');
 
             // interface
-            var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
+            //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
             var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
                 -App.$time.width()-App.$score.width()-30)*.5;
             var menu_bottom = $('.mastfoot').height();
             App.$menu.css('bottom',menu_bottom);
-            App.$game.height(game_height);
+            //App.$game.height(game_height);
             App.$time.css('marginLeft',margin_left+'px');
             App.$timebar.css('marginLeft',margin_left+'px');
             App.$score.css('marginLeft',margin_left+10+App.$time.width()+'px');
@@ -322,19 +322,22 @@ var GAME = (function($){
 
         onWindowResize: function() {
             // interface
+            //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
             var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
                 -App.$time.width()-App.$score.width()-30)*.5;
-            var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
-            App.$game.height(game_height);
+            var menu_bottom = $('.mastfoot').height();
+            App.$menu.css('bottom',menu_bottom);
+            //App.$game.height(game_height);
             App.$time.css('marginLeft',margin_left+'px');
             App.$timebar.css('marginLeft',margin_left+'px');
             App.$score.css('marginLeft',margin_left+10+App.$time.width()+'px');
             App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
             App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
-            App.$guessinput.css('marginLeft',margin_left+30+App.$select.width()
-                +App.$time.width()+App.$score.width()+'px');
             App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
                 +App.$time.width()+App.$score.width()+'px');
+            App.$guessinput.css('left',margin_left+30+App.$select.width()
+                +App.$time.width()+App.$score.width()+'px');
+            App.progressbar_size = App.$select.css('opacity')/1;
 
             Obj.camera.aspect = App.$model.width() / App.$model.height();
             Obj.camera.updateProjectionMatrix();
@@ -355,8 +358,8 @@ var GAME = (function($){
             e.preventDefault();
             var tempx = App.mouse.x;
             var tempy = App.mouse.y;
-            App.mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-            App.mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+            App.mouse.x = ( e.clientX / App.$model.width()) * 2 - 1;
+            App.mouse.y = - ( e.clientY / App.$model.height() ) * 2 + 1;
             if (App.PRESSED == true){
                 if (App.Host.SELECT == true) {
                     App.Host.select();
