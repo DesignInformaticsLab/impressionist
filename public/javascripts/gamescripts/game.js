@@ -549,20 +549,25 @@ var GAME = (function($){
                                 Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
                                 Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
                                 Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex,intersection.object.name);
-                            console.log('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-                            console.log('with doubles');
-                            console.log(App.Host.selectedStrings);
+                            //console.log('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+                            //console.log('with doubles');
+                            //console.log(App.Host.selectedStrings);
                             App.Host.selectedStrings =App.Host.selectedStrings.filter(App.onlyUnique);
-                            console.log('only unique ');
-                            console.log(App.Host.selectedStrings);
+                            //console.log('only unique ');
+                            //console.log(App.Host.selectedStrings);
+
+                            //$.each(selectedStrings, function(i,ss){
+                            //
+                            //})
+
                             App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
-                            console.log('only new selections');
-                            console.log(App.Host.selectedStrings);
+                            //console.log('only new selections');
+                            //console.log(App.Host.selectedStrings);
                             $.each(App.Host.selectedStrings, function(i, SS) {
                                 Obj.object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
                             });
-                            console.log('allSelectedID');
-                            console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
+                            //console.log('allSelectedID');
+                            //console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
                             // = Obj.object.getObjectByName(intersection.object.name).allSelectedID.concat(App.Host.selectedStrings).filter( App.onlyUnique ); // update all selection
                             var uniqueValues = [];
                             $.each(App.Host.selectedStrings, function (i) {
