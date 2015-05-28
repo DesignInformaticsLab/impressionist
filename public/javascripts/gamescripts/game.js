@@ -5,6 +5,7 @@
 var GAME = (function($){
     'use strict';
     var game = {};
+
     /**
      * All the code relevant to Socket.IO is collected in the IO namespace.
      *
@@ -34,7 +35,7 @@ var GAME = (function($){
             IO.socket.on('answerWrong', IO.onAnswerWrong);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
-            IO.socket.on('selection', IO.onSelection); // when faces are selected
+            IO.socket.on('selection', IO.onSelection); // when faces    selected
         },
 
         /**
@@ -51,6 +52,10 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             App.myRole = 'Host';
+
+            // this should be randomly chosen from the server
+
+
             console.log('my id:'+data.mySocketId);
         },
 
@@ -60,6 +65,11 @@ var GAME = (function($){
          */
         playerJoinedRoom : function(data) {
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
+
+            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/TeaPot/TeaPot.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            App.objectString = possibleObjects[data.objectID];
+
+
             App.$wait.hide();
             App.$game.show();
             App.totalTime = 5; // total game time is 5 min
@@ -143,14 +153,15 @@ var GAME = (function($){
          * @param data
          */
         onNewObjData : function(data) {
-            var objectstring = "obj/Dino/Dino.js"; // this should be randomly chosen from the server
-            $.getScript( objectstring, function() {
+
+            $.getScript( App.objectString, function() {
                 console.log( "New object loaded." );
                 // reset game
                 App.Host.selection_capacity = 10000; // assign player selection capacity for current obj
                 Obj.correct_answer = answer; // get correct answers
                 Obj.height = zheight;
                 Obj.scale = scale;
+
                 App.$model.html('');
                 if(App.myRole == 'Host'){
                     App.$menu.show();
@@ -167,6 +178,9 @@ var GAME = (function($){
                 App.currentTime = Date.now();
                 Obj.init();
                 Obj.animate();
+                GAME.Obj.object.rotation.y = Math.random()*Math.PI*2;
+                console.log('rotation:');
+                console.log(GAME.Obj.object.rotation.y );
             });
         },
 
@@ -819,7 +833,8 @@ var GAME = (function($){
 
                 //collect data to send to the server
                 var data = {
-                    playerName : 'max'
+                    playerName : 'max',
+                    objectID : 999
                 };
 
                 // Send the gameId and playerName to the server
@@ -1304,21 +1319,22 @@ var GAME = (function($){
         /**
          * initialize obj parameters, ONLY used initially offline before any game
          */
-        initial_obj: function () {
-            var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
-            //$.each(objectstring_set, function(i,string){
-            //for(var i = 0; i<objectstring_set.length; i++){
-            var string = objectstring_set[1];
-            $.getScript(string, function () {
-                THREE.SceneLoad();
-                $.post('/initial_obj', {
-                    'object_name': THREEScene.name,
-                    'face_per_mesh': THREEScene.FaceArray,
-                    'num_selections': []
-                }, function () {
-                });
-            });
-        }
+        //initial_obj: function () {
+        //    var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
+        //    //$.each(objectstring_set, function(i,string){
+        //    //for(var i = 0; i<objectstring_set.length; i++){
+        //    var string = objectstring_set[1];
+        //    $.getScript(string, function () {
+        //        THREE.SceneLoad();
+        //
+        //        $.post('/initial_obj', {
+        //            'object_name': THREEScene.name,
+        //            'face_per_mesh': THREEScene.FaceArray,
+        //            'num_selections': []
+        //        }, function () {
+        //        });
+        //    });
+        //}
     };
 
     game.IO = IO;

@@ -4,6 +4,7 @@
 var io;
 var gameSocket;
 
+
 /**
  * This function is called by index.js to initialize a new game instance.
  *
@@ -13,6 +14,7 @@ var gameSocket;
 exports.initGame = function(sio, socket){
     io = sio;
     gameSocket = socket;
+
     gameSocket.emit('connected', { message: "You are connected!" });
 
     // Player Events
@@ -41,8 +43,9 @@ function createNewGame(data) {
 
     data.mySocketId = this.id;
 
+
     // Emit an event notifying the clients that the player has joined the room.
-    io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
+    io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id, objectID: objID});
 };
 
 /**
@@ -76,12 +79,18 @@ function joinGame(data) {
     // If find a room...
     if( room != null ){
         // attach the socket id to the data object.
+        var numOfObjects = 5; //update this number as the number of models increases
+        var objID = Math.floor(Math.random() * numOfObjects);
+        data.objectID = objID;
         data.mySocketId = sock.id;
         data.gameId = roomid;
+
+
         // Join the room
         sock.join(roomid);
         sock.gameId = roomid; // assign room id to sock
         //console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+
 
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(roomid).emit('playerJoinedRoom', data);
@@ -97,6 +106,8 @@ function joinGame(data) {
         sock.join(thisGameId.toString());
         sock.gameId = thisGameId; // assign room id to sock
         data.mySocketId = sock.id;
+
+
 
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
