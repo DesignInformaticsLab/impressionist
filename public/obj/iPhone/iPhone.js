@@ -1,6 +1,6 @@
 var scale = 150;
 var zheight = 0;
-var answer = ['iPhone','iphone','IPHONE','Iphone'];
+var answer = ['iPhone','iphone','IPHONE','Iphone','phone'];
 
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
