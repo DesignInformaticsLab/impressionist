@@ -1,6 +1,6 @@
 var scale = 200;
 var zheight = -120;
-var answer = ['Helmet'];
+var answer = ['Helmet','helmet', 'HELMET','corinthian helmet','Corinthian Helmet', 'greek helmet', 'Greek Helmet'];
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
     THREEScene.name = "Helmet";

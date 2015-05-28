@@ -1,6 +1,6 @@
 var scale = 160;
 var zheight = -120;
-var answer = ['Teapot'];
+var answer = ['Teapot','pot','teapot'];
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
     THREEScene.name = "Teapot";

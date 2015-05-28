@@ -1,6 +1,6 @@
 var scale = 160;
 var zheight = -120;
-var answer = ['fedora'];
+var answer = ['fedora','Fedora', 'FEDORA', 'hat', 'Hat', 'HAT'];
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
     THREEScene.name = "Fedora";

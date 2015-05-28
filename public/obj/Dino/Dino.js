@@ -1,6 +1,6 @@
 var scale = 100;
 var zheight = -60;
-var answer = ['dinosaur','dino']; // this needs to be an array
+var answer = ['dinosaur','dino', 'Dinosaur', 'Dino', 'T-Rex', 't-rex', 'Trex', 'trex','TREX','Tyrannosaurus','Tyrannosaurus Rex']; // this needs to be an array
 
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();

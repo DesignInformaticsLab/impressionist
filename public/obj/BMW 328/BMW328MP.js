@@ -1,6 +1,6 @@
 var scale = 140;
 var zheight = 0;
-var answer = ['BMW'];
+var answer = ['BMW', 'bmw', 'car', '3 Series', 'BMW 3 Series', '3 series'];
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
     THREEScene.name = "BMW 328";
