@@ -5,7 +5,6 @@
 var GAME = (function($){
     'use strict';
     var game = {};
-
     /**
      * All the code relevant to Socket.IO is collected in the IO namespace.
      *
@@ -35,7 +34,8 @@ var GAME = (function($){
             IO.socket.on('answerWrong', IO.onAnswerWrong);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
-            IO.socket.on('selection', IO.onSelection); // when faces    selected
+            IO.socket.on('selection', IO.onSelection); // when faces are selected
+            IO.socket.on('playerReady', IO.onPlayerReady); // when faces are selected
         },
 
         /**
@@ -68,7 +68,6 @@ var GAME = (function($){
 
             var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/TeaPot/TeaPot.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[data.objectID];
-
 
             App.$wait.hide();
             App.$game.show();
@@ -126,26 +125,50 @@ var GAME = (function($){
 
         // on correct guess
         onAnswerCorrect : function() {
-            App.score += 1; // this needs to change depending on the difficulty of the object
-            App.currentRound += 1;
-            App.$score.html(App.score); // update score
-            IO.onNewObjData(); // get a new object and start a new round
+            App.$guessinput.css('background-color', '#ffffff');
+            App.$guessinput.html('You got it!'); // show something when correct
+            setTimeout(function () {
+                App.$guessinput.css('background-color', '#f5f5ff');
+                App.$guessinput.html(''); // clean input area
+                App.score += 1; // this needs to change depending on the difficulty of the object
+                App.currentRound += 1;
+                App.$score.html(App.score); // update score
+                App.$guessoutput.html(''); // clean output area
+
+                App.$game.hide();
+                App.$continue.show();
+                //IO.onNewObjData(); // get a new object and start a new round
+            },800);
         },
 
         // on wrong guess
         onAnswerWrong : function(data) {
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
-                setInterval(function () {
-                    App.$guessoutput.css('background-color', '#ffffff');
-                },800);
             }
             else if (App.myRole == 'Player'){
                 App.$guessinput.css('background-color', '#000000');
-                setInterval(function () {
+                setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
                 },800);
             }
+        },
+
+        /**
+         * When the other player is ready
+         * @param data
+         */
+        onPlayerReady : function(data) {
+            // switch role
+            if(App.myRole == 'Host'){
+                App.myRole = 'Player';
+            }
+            else{
+                App.myRole = 'Host';
+            }
+            App.$wait.hide();
+            App.$game.show();
+            IO.onNewObjData();
         },
 
         /**
@@ -153,7 +176,6 @@ var GAME = (function($){
          * @param data
          */
         onNewObjData : function(data) {
-
             $.getScript( App.objectString, function() {
                 console.log( "New object loaded." );
                 // reset game
@@ -178,7 +200,7 @@ var GAME = (function($){
                 App.currentTime = Date.now();
                 Obj.init();
                 Obj.animate();
-                GAME.Obj.object.rotation.y = Math.random()*Math.PI*2;
+                Obj.object.rotation.y = Math.random()*Math.PI*2;
                 console.log('rotation:');
                 console.log(GAME.Obj.object.rotation.y );
             });
@@ -275,6 +297,8 @@ var GAME = (function($){
             App.$entry = $('#entry');
             App.$home = $('#home');
             App.$wait = $('#wait');
+            App.$continue = $('#continue');
+            App.$continue_btn = $('#continue_btn');
 
             // interface
             //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
@@ -303,8 +327,8 @@ var GAME = (function($){
             App.$model.mousemove(function(e){App.onMouseMove(e)});
             App.$model.mousedown(function(e){App.onMouseDown(e)});
             App.$model.mouseup(function(e){App.onMouseUp(e)});
-            document.addEventListener('keyup', App.onKeyUp, false);
-            document.addEventListener('keydown', App.onKeyDown, false);
+            App.$model.keyup(function(e){App.onKeyUp(e)});
+            App.$model.keydown(function(e){App.onKeyDown(e)});
             window.addEventListener( 'resize', App.onWindowResize, false );
 
             // Host
@@ -316,6 +340,12 @@ var GAME = (function($){
                 App.$wait.show();
                 App.Player.onJoinClick();
             });
+            App.$continue_btn.click(function(){
+                App.$continue.hide();
+                App.$wait.show();
+                IO.socket.emit('playerReady');
+            });
+
         },
 
         /* *************************************
@@ -1319,22 +1349,21 @@ var GAME = (function($){
         /**
          * initialize obj parameters, ONLY used initially offline before any game
          */
-        //initial_obj: function () {
-        //    var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
-        //    //$.each(objectstring_set, function(i,string){
-        //    //for(var i = 0; i<objectstring_set.length; i++){
-        //    var string = objectstring_set[1];
-        //    $.getScript(string, function () {
-        //        THREE.SceneLoad();
-        //
-        //        $.post('/initial_obj', {
-        //            'object_name': THREEScene.name,
-        //            'face_per_mesh': THREEScene.FaceArray,
-        //            'num_selections': []
-        //        }, function () {
-        //        });
-        //    });
-        //}
+        initial_obj: function () {
+            var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
+            //$.each(objectstring_set, function(i,string){
+            //for(var i = 0; i<objectstring_set.length; i++){
+            var string = objectstring_set[1];
+            $.getScript(string, function () {
+                THREE.SceneLoad();
+                $.post('/initial_obj', {
+                    'object_name': THREEScene.name,
+                    'face_per_mesh': THREEScene.FaceArray,
+                    'num_selections': []
+                }, function () {
+                });
+            });
+        }
     };
 
     game.IO = IO;
