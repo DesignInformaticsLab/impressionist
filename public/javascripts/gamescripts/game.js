@@ -197,6 +197,8 @@ var GAME = (function($){
                     App.$guessinput.show();
                     App.$guessinput[0].value='';
                 }
+                App.$model.focus(); // focus on $model so that key events can work
+
                 App.currentTime = Date.now();
                 Obj.init();
                 Obj.animate();
@@ -1373,5 +1375,4 @@ var GAME = (function($){
 })(jQuery);
 GAME.App.init();
 GAME.IO.init();
-
 
