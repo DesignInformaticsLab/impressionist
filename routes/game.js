@@ -3,7 +3,7 @@
  */
 var io;
 var gameSocket;
-
+var playerReady;
 
 /**
  * This function is called by index.js to initialize a new game instance.
@@ -14,7 +14,6 @@ var gameSocket;
 exports.initGame = function(sio, socket){
     io = sio;
     gameSocket = socket;
-
     gameSocket.emit('connected', { message: "You are connected!" });
 
     // Player Events
@@ -23,6 +22,7 @@ exports.initGame = function(sio, socket){
     gameSocket.on('nextRound', nextRound);
     gameSocket.on('checkAnswer', checkAnswer);
     gameSocket.on('selection', selection);
+    gameSocket.on('playerReady', playerReady);
 };
 
 /* *******************************
@@ -42,7 +42,6 @@ function createNewGame(data) {
     gameSocket.join(thisGameId.toString());
 
     data.mySocketId = this.id;
-
 
     // Emit an event notifying the clients that the player has joined the room.
     io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id, objectID: objID});
@@ -107,10 +106,19 @@ function joinGame(data) {
         sock.gameId = thisGameId; // assign room id to sock
         data.mySocketId = sock.id;
 
-
-
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
+    }
+}
+
+function playerReady(data){
+    var roomid = this.gameId;
+    if (!playerReady[roomid]){
+        playerReady[roomid] = true;
+    }
+    else {
+        playerReady[roomid] = false;
+        io.sockets.in(roomid).emit('playerReady', data);
     }
 }
 
@@ -119,13 +127,13 @@ function joinGame(data) {
  * @param data Sent from the client. Contains the current round and gameId (room)
  */
 function nextRound(data) {
-    if(data.round < objPool.length ){
-        // Send a new set of words back to the host and players.
-        sendObj(data.round, data.gameId);
-    } else {
-        // If the current round exceeds the number of words, send the 'gameOver' event.
-        io.sockets.in(data.gameId).emit('gameOver',data);
-    }
+    //if(data.round < objPool.length ){
+    //    // Send a new set of words back to the host and players.
+    //    sendObj(data.round, data.gameId);
+    //} else {
+    //    // If the current round exceeds the number of words, send the 'gameOver' event.
+    //    io.sockets.in(data.gameId).emit('gameOver',data);
+    //}
 }
 
 // player selected meshes, emit to the other player

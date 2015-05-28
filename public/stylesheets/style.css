@@ -44,6 +44,11 @@
     /*transition: background-color 0.5s, transform 0.5s;*/
 }
 
+#continue {
+    display: none;
+}
+
+
 #title {
     position: absolute;
     /*width: 100%;*/
