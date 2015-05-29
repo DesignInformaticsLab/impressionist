@@ -1,49 +1,29 @@
 var scale = 160;
 var zheight = -120;
 var answer = ['Teapot','pot','teapot'];
-
-var loadobject = function(obj_string,scene,count,callback){
-	var string = obj_string.shift();
-	if(typeof string != 'undefined'){
-		$.getJSON(string, function( object) {
-			var objects = JSONMeshParser(object);
-			objects.scale.set(scale, scale, scale);
-			objects.name = ""+count;
-			objects.allSelectedID = [];
-			scene.add(objects);
-			scene.FaceArray.push(objects.geometry.faces.length);
-			count++;
-			loadobject(obj_string,scene,count,callback);
-		});
-	}
-	else{
-		callback();
-	}
-};
-
-THREE.SceneLoad = function (ajax) {
-	THREEScene  = new THREE.Scene();
+THREE.SceneLoad = function () {
+	var THREEScene  = new THREE.Scene();
     THREEScene.name = "Teapot";
     THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/TeaPot/data(1).json'];
-	loadobject(objstrings,THREEScene,0,function(){
-		THREEScene.position.y = zheight;
-		if (typeof ajax != 'undefined') ajax();
-		return THREEScene;
-	});
 
-	//$.getJSON("obj/TeaPot/data(1).json", function( object) {
-	//	parsedFile = object;
-	//	objects = JSONMeshParser(object);
-	//	objects.scale.set(scale,scale,scale);
-     //   objects.name = "1";
-	//	THREEScene.add(objects);
-     //   objects.allSelectedID = [];
-     //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+	$.getJSON("obj/TeaPot/data(1).json", function( object) {
+		parsedFile = object;
+		objects = JSONMeshParser(object);
+		objects.scale.set(scale,scale,scale);
+        objects.name = "1";
+		THREEScene.add(objects);
+        objects.allSelectedID = [];
+        THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 
-	//} );
+	} );
+		
+
+
+	THREEScene.position.y = zheight;
+	return THREEScene;
+
 }
 
 function JSONMeshParser(object) {

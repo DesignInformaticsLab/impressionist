@@ -1380,22 +1380,24 @@ var GAME = (function($){
         },
 
         /**
-         * initialize obj parameters, ONLY used initially offline before any game
+         * "show_obj" and "upload_obj" initialize obj parameters, ONLY used initially offline before any game
          */
-        initial_obj: function () {
-            var objectstr ing_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
-            $.each(objectstring_set, function(i,string) {
-                $.getScript(string, function () {
-                    THREE.SceneLoad(function(){
-                        $.post('/initial_obj', {
-                                'object_name': THREEScene.name.toLowerCase(),
-                                'face_per_mesh': THREEScene.FaceArray,
-                                'num_selections': []
-                            });
-                    });
-                });
+        show_obj: function (id) {
+            var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
+            var string = objectstring_set[id];
+            $.getScript(string, function () {
+                THREE.SceneLoad();
             });
         },
+        upload_obj: function () {
+            $.post('/initial_obj', {
+                'object_name': THREEScene.name,
+                'face_per_mesh': JSON.stringify(THREEScene.FaceArray),
+                'num_selections': ""
+                }
+            );
+        },
+
 
         /*
         calculates the center of an object so that it can be used to center it in the future
