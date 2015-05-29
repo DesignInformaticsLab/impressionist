@@ -158,7 +158,7 @@ var GAME = (function($){
          * When the other player is ready
          * @param data
          */
-        onPlayerReady : function(data) {
+        onPlayerReady : function(objectID) {
             // switch role
             if(App.myRole == 'Host'){
                 App.myRole = 'Player';
@@ -166,9 +166,14 @@ var GAME = (function($){
             else{
                 App.myRole = 'Host';
             }
+
             App.$wait.hide();
             App.$game.show();
-            IO.onNewObjData();
+            App.objectString = "";
+            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            App.objectString = possibleObjects[objectID.objectID];
+
+            IO.onNewObjData({});
         },
 
         /**
@@ -1207,26 +1212,34 @@ var GAME = (function($){
                 //if (App.Player.allSelectedID.indexOf(s) == -1) {
                 //   App.Player.allSelectedID.push(s);
 
-                    var geom = new THREE.Geometry();
+                var geom = new THREE.Geometry();
 
-                    var f = Obj.object.children[childnumber].geometry.faces[s];
-                    var v1 = Obj.object.children[childnumber].geometry.vertices[f.a];
-                    var v2 = Obj.object.children[childnumber].geometry.vertices[f.b];
-                    var v3 = Obj.object.children[childnumber].geometry.vertices[f.c];
+                var f = Obj.object.children[childnumber].geometry.faces[s];
+                var v1 = Obj.object.children[childnumber].geometry.vertices[f.a];
+                var v2 = Obj.object.children[childnumber].geometry.vertices[f.b];
+                var v3 = Obj.object.children[childnumber].geometry.vertices[f.c];
 
-                    geom.vertices.push(v1, v2, v3);
-                    var nf = new THREE.Face3(0, 1, 2);
-                    nf.vertexNormals = f.vertexNormals;
-                    nf.normal = f.normal;
-                    geom.faces.push(nf);
 
-                    var mesh = new THREE.Mesh(geom, Obj.object.children[childnumber].material);
-                    mesh.rotation.y = 1;
-                    mesh.scale.set(Obj.scale, Obj.scale, Obj.scale);
-                    mesh.castShadow = true;
-                    mesh.position.y = Obj.height;
-                    Obj.emptyobject.add(mesh);
-               // }
+                geom.vertices.push(v1, v2, v3);
+
+
+
+                var nf = new THREE.Face3(0, 1, 2);
+                nf.vertexNormals = f.vertexNormals;
+                nf.normal = f.normal;
+                geom.faces.push(nf);
+
+                //geom.applyMatrix( new THREE.Matrix4().makeTranslation( Obj.object.CG[0]/225, Obj.object.CG[1]/225, Obj.object.CG[2]/225 ) );
+
+                var mesh = new THREE.Mesh(geom, Obj.object.children[childnumber].material);
+                mesh.rotation.y = 1;
+                mesh.scale.set(Obj.scale, Obj.scale, Obj.scale);
+                mesh.castShadow = true;
+                //mesh.position.x = 0 - Obj.object.CG[0];
+                //mesh.position.y = 0 - Obj.object.CG[1];
+                //mesh.position.z = 0 - Obj.object.CG[2];
+                Obj.emptyobject.add(mesh);
+           // }
                 //else {
 
                 //}
@@ -1365,6 +1378,37 @@ var GAME = (function($){
                 }, function () {
                 });
             });
+        },
+
+        /*
+        calculates the center of an object so that it can be used to center it in the future
+         */
+
+        findCG: function () {
+            var boundingBox = [[],[],[]];
+            $.each(Obj.object.children, function(i, m) {
+                console.log(i);
+                m.geometry.computeBoundingBox();
+                boundingBox[0].push(m.geometry.boundingBox.min.x);
+                boundingBox[0].push(m.geometry.boundingBox.max.x);
+                boundingBox[1].push(m.geometry.boundingBox.min.y);
+                boundingBox[1].push(m.geometry.boundingBox.max.y);
+                boundingBox[2].push(m.geometry.boundingBox.min.z);
+                boundingBox[2].push(m.geometry.boundingBox.max.z);
+
+            })
+            boundingBox[0].sort();
+            boundingBox[1].sort();
+            boundingBox[2].sort();
+            var CG = new THREE.Vector3;
+
+            CG.x=[boundingBox[0][0],boundingBox[0][boundingBox[0].length-1]];
+            CG.y=[boundingBox[1][0],boundingBox[1][boundingBox[1].length-1]];
+            CG.z=[boundingBox[2][0],boundingBox[2][boundingBox[2].length-1]];
+
+            console.log('[' + 0.5*(CG.x[0] + CG.x[1] ) + ', ' +
+                0.5*(CG.y[0] + CG.y[1] ) + ', ' +
+                0.5*(CG.z[0] + CG.z[1] ) + ']');
         }
     };
 

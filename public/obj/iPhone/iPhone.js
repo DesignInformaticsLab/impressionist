@@ -1,20 +1,26 @@
-var scale = 150;
+var scale = 225;
 var zheight = 0;
 var answer = ['iPhone','iphone','IPHONE','Iphone','phone'];
+var CG = [2.803531, -0.20256299999999994, -4.1529195] ; //find this using findCG in game script
+$.each(CG, function(i,cg) {CG[i] = cg *scale;})
 
 THREE.SceneLoad = function () {
 	var THREEScene  = new THREE.Scene();
     THREEScene.name = "iPhone";
     THREEScene.FaceArray = [];
-
+    THREEScene.CG = CG;
         //edge
 		$.getJSON("obj/iPhone/data (34).json", function( object) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
 			THREEScene.add(objects);
             objects.name = ("1");
             objects.allSelectedID = [];
+
             THREEScene.FaceArray.push(objects.geometry.faces.length);
 
 			for (var i =0; i<objects.geometry.faces.length; i++)
@@ -28,6 +34,9 @@ THREE.SceneLoad = function () {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
 
             THREEScene.add(objects);
             objects.name = ("2");
@@ -47,6 +56,10 @@ THREE.SceneLoad = function () {
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
             objects.name = "selectable";
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+
 			THREEScene.add(objects);
             objects.name = ("3");
             objects.allSelectedID = [];
@@ -63,6 +76,10 @@ THREE.SceneLoad = function () {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+
 			THREEScene.add(objects);
             objects.name = ("4");
             objects.allSelectedID = [];
@@ -79,6 +96,10 @@ THREE.SceneLoad = function () {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+
 			THREEScene.add(objects);
             objects.name = ("5");
             objects.allSelectedID = [];
@@ -95,6 +116,10 @@ THREE.SceneLoad = function () {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+
 			THREEScene.add(objects);
             objects.name = ("6");
             objects.allSelectedID = [];
@@ -105,7 +130,6 @@ THREE.SceneLoad = function () {
 
 
 		} );
-
 
 
 
@@ -288,6 +312,11 @@ function SortMeshObjects(geometry) {
 		faceSorted3[1][faceIndex] = b;
 		faceSorted3[2][faceIndex] = c;
 	}
+
+}
+
+function centering(mesh) {
+
 
 }
 	

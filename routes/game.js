@@ -4,6 +4,7 @@
 var io;
 var gameSocket;
 var playerReady;
+var numOfObjects = 5;
 
 /**
  * This function is called by index.js to initialize a new game instance.
@@ -78,7 +79,7 @@ function joinGame(data) {
     // If find a room...
     if( room != null ){
         // attach the socket id to the data object.
-        var numOfObjects = 5; //update this number as the number of models increases
+ //update this number as the number of models increases
         var objID = Math.floor(Math.random() * numOfObjects);
         data.objectID = objID;
         data.mySocketId = sock.id;
@@ -112,13 +113,17 @@ function joinGame(data) {
 }
 
 function playerReady(data){
+
     var roomid = this.gameId;
     if (!playerReady[roomid]){
         playerReady[roomid] = true;
     }
     else {
+
+        var objID = Math.floor(Math.random() * numOfObjects);
+
         playerReady[roomid] = false;
-        io.sockets.in(roomid).emit('playerReady', data);
+        io.sockets.in(roomid).emit('playerReady', {objectID: objID});
     }
 }
 
