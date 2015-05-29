@@ -83,7 +83,7 @@ function joinGame(data) {
     if( room != null ){
         // attach the socket id to the data object.
  //update this number as the number of models increases
-        var objID = 0;//Math.floor(Math.random() * numOfObjects);
+        var objID = 3;//Math.floor(Math.random() * numOfObjects);
         data.objectID = objID;
         data.mySocketId = sock.id;
         data.gameId = roomid;
