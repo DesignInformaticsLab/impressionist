@@ -2,25 +2,6 @@ var scale = 140;
 var zheight = 0;
 var answer = ['BMW', 'bmw', 'car', '3 Series', 'BMW 3 Series', '3 series'];
 
-var loadobject = function(obj_string,scene,count,callback){
-	var string = obj_string.shift();
-	if(typeof string != 'undefined'){
-		$.getJSON(string, function( object) {
-			var objects = JSONMeshParser(object);
-			objects.scale.set(scale, scale, scale);
-			objects.name = ""+count;
-			objects.allSelectedID = [];
-			scene.add(objects);
-			scene.FaceArray.push(objects.geometry.faces.length);
-			count++;
-			loadobject(obj_string,scene,count,callback);
-		});
-	}
-	else{
-		callback();
-	}
-};
-
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
     THREEScene.name = "BMW 328";
@@ -34,314 +15,301 @@ THREE.SceneLoad = function (ajax) {
     var textureCube = THREE.ImageUtils.loadTextureCube( urls ); // fix texture
     THREEScene.name = 'BMW328';
 
-	var objstrings = ['obj/BMW 328/chassis.json','obj/BMW 328/exhaust.json','obj/BMW 328/turnIndicators.json',
-		'obj/BMW 328/WindowShieldFrame.json','obj/BMW 328/headlightCenter.json','obj/BMW 328/headlightHousingInner.json',
-	'obj/BMW 328/miscHeadlight.json','obj/BMW 328/angelEyes.json','obj/BMW 328/headlightCover.json',
-	'obj/BMW 328/WheelBackground.json','obj/BMW 328/RearLights.json','obj/BMW 328/windowFrame.json',
-	'obj/BMW 328/seats.json','obj/BMW 328/windowFrame2.json','obj/BMW 328/BLTire.json','obj/BMW 328/BLRim.json',
-	'obj/BMW 328/BLBolts.json','obj/BMW 328/BLVeneer.json','obj/BMW 328/BRTire.json','obj/BMW 328/BRRim.json',
-	'obj/BMW 328/BRBolts.json','obj/BMW 328/BRVeneer.json','obj/BMW 328/FLTire.json','obj/BMW 328/FLRim.json',
-	'obj/BMW 328/FLBolts.json','obj/BMW 328/FLVeneer.json','obj/BMW 328/FRTire.json','obj/BMW 328/FRRim.json',
-	'obj/BMW 328/FRBolts.json','obj/BMW 328/FRVeneer.json'];
-	loadobject(objstrings,THREEScene,0,function(){
-		THREEScene.position.y = zheight;
-		if (typeof ajax != 'undefined') ajax();
-		return THREEScene;
-	});
+		$.getJSON("obj/BMW 328/chassis.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+            objects.name = ("selectable");
+			THREEScene.add(objects);
+            objects.name = ("1");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
 
-		//$.getJSON("obj/BMW 328/chassis.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-         //   objects.name = ("selectable");
-		//	THREEScene.add(objects);
-         //   objects.name = ("1");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/exhaust.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("2");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/turnIndicators.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("3");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/WindowShieldFrame.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("4");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/headlightCenter.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("5");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/headlightHousingInner.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("6");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/miscHeadlight.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("7");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/angelEyes.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("8");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/headlightCover.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	objects.material.opacity  = 0.1;
-		//	objects.material.reflectivity = 0.05;
-		//	THREEScene.add(objects);
-         //   objects.name = ("9");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-        //
-		//$.getJSON("obj/BMW 328/WheelBackground.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("10");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/RearLights.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("11");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/windowFrame.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("12");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/seats.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("13");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/windowFrame2.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("14");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//$.getJSON("obj/BMW 328/BLTire.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("15");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/BLRim.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("16");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/BLBolts.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("17");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/BLVeneer.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("18");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-        //
-		//$.getJSON("obj/BMW 328/BRTire.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("19");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/BRRim.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("20");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/BRBolts.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("21");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/BRVeneer.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("22");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//
-		//$.getJSON("obj/BMW 328/FLTire.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("23");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/FLRim.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("24");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/FLBolts.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("25");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/FLVeneer.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("26");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//
-		//
-		//$.getJSON("obj/BMW 328/FRTire.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("27");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/FRRim.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("28");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/FRBolts.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("29");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
-		//$.getJSON("obj/BMW 328/FRVeneer.json", function( object) {
-		//	parsedFile = object;
-		//	objects = JSONMeshParser(object);
-		//	objects.scale.set(scale,scale,scale);
-		//	THREEScene.add(objects);
-         //   objects.name = ("30");
-         //   objects.allSelectedID = [];
-         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
-		//} );
+		$.getJSON("obj/BMW 328/exhaust.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("2");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/turnIndicators.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("3");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/WindowShieldFrame.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("4");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/headlightCenter.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("5");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/headlightHousingInner.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("6");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/miscHeadlight.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("7");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/angelEyes.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("8");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/headlightCover.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			objects.material.opacity  = 0.1;
+			objects.material.reflectivity = 0.05;
+			THREEScene.add(objects);
+            objects.name = ("9");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/WheelBackground.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("10");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/RearLights.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("11");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/windowFrame.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("12");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/seats.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("13");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/windowFrame2.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("14");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+		$.getJSON("obj/BMW 328/BLTire.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("15");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/BLRim.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("16");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/BLBolts.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("17");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/BLVeneer.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("18");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+
+		$.getJSON("obj/BMW 328/BRTire.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("19");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/BRRim.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("20");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/BRBolts.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("21");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/BRVeneer.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("22");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+
+		$.getJSON("obj/BMW 328/FLTire.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("23");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/FLRim.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("24");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/FLBolts.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("25");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/FLVeneer.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("26");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+
+
+		$.getJSON("obj/BMW 328/FRTire.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("27");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/FRRim.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("28");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/FRBolts.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("29");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+		$.getJSON("obj/BMW 328/FRVeneer.json", function( object) {
+			parsedFile = object;
+			objects = JSONMeshParser(object);
+			objects.scale.set(scale,scale,scale);
+			THREEScene.add(objects);
+            objects.name = ("30");
+            objects.allSelectedID = [];
+            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		} );
+	THREEScene.position.y = zheight;
+	return THREEScene;
 }
 
 function JSONMeshParser(object) {

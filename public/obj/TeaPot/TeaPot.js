@@ -19,8 +19,6 @@ THREE.SceneLoad = function () {
 
 	} );
 		
-
-
 	THREEScene.position.y = zheight;
 	return THREEScene;
 
