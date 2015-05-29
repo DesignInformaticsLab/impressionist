@@ -1,27 +1,52 @@
 var scale = 200;
 var zheight = -120;
 var answer = ['Helmet','helmet', 'HELMET','corinthian helmet','Corinthian Helmet', 'greek helmet', 'Greek Helmet'];
-THREE.SceneLoad = function () {
-	var THREEScene  = new THREE.Scene();
+
+var loadobject = function(obj_string,scene,count,callback){
+	var string = obj_string.shift();
+	if(typeof string != 'undefined'){
+		$.getJSON(string, function( object) {
+			var objects = JSONMeshParser(object);
+			objects.scale.set(scale, scale, scale);
+			objects.name = ""+count;
+			objects.allSelectedID = [];
+			scene.add(objects);
+			scene.FaceArray.push(objects.geometry.faces.length);
+			count++;
+			loadobject(obj_string,scene,count,callback);
+		});
+	}
+	else{
+		callback();
+	}
+};
+
+THREE.SceneLoad = function (ajax) {
+	THREEScene  = new THREE.Scene();
     THREEScene.name = "Helmet";
     THREEScene.FaceArray = [];
     //var light = new THREE.AmbientLight( 0xffffff ); // soft white light
     //scene.add( light );
 
+	var objstrings = ['obj/Helmet/data.json'];
+	loadobject(objstrings,THREEScene,0,function(){
+		THREEScene.position.y = zheight;
+		if (typeof ajax != 'undefined') ajax();
+		return THREEScene;
+	});
 
-
-	$.getJSON("obj/Helmet/data.json", function( object) {
-        parsedFile = object;
-        objects = JSONMeshParser(object);
-        objects.scale.set(scale,scale,scale);
-        objects.name = "1";
-        THREEScene.add(objects);
-        objects.allSelectedID = [];
-        THREEScene.FaceArray.push(objects.geometry.faces.length);
-    } );
-
-	THREEScene.position.y = zheight;
-	return THREEScene;
+	//$.getJSON("obj/Helmet/data.json", function( object) {
+     //   parsedFile = object;
+     //   objects = JSONMeshParser(object);
+     //   objects.scale.set(scale,scale,scale);
+     //   objects.name = "1";
+     //   THREEScene.add(objects);
+     //   objects.allSelectedID = [];
+     //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+    //} );
+    //
+	//THREEScene.position.y = zheight;
+	//return THREEScene;
 
 }
 
