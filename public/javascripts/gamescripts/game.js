@@ -204,6 +204,7 @@ var GAME = (function($){
                 }
                 App.$model.focus(); // focus on $model so that key events can work
 
+                App.start_obj_time = Date.now();
                 App.currentTime = Date.now();
                 Obj.init();
                 Obj.animate();
@@ -449,47 +450,6 @@ var GAME = (function($){
             if (e.keyCode == 83 && App.myRole =='Host'){ //s: selection
                 App.Host.SELECT = true;
                 App.$bar.addClass('active');
-            } else if ( e.keyCode == 90 && App.myRole =='Host') { //z: show heatmap
-                var weight = new Array(object.getObjectByName('selectable').geometry.faces.length);
-                var mesh_id_array, weight_array;
-                $.post('/read_selection',{'obj_id':object.name},function(response){
-                        $.each(response, function(i,r){
-                            mesh_id_array = r.mesh_id;
-                            weight_array = r.weight;
-                            $.each(mesh_id_array, function(j,mesh_id){
-                                if(!weight[mesh_id]){
-                                    weight[mesh_id] = weight_array[j];
-                                }
-                                else{
-                                    weight[mesh_id] += weight_array[j];
-                                }
-                            })
-                        });
-                        var max_weight = Math.max.apply(Math,weight_array)
-                        $.each(weight, function(i,w){
-                            if(w){
-                                Obj.object.getObjectByName("selectable").geometry.faces[i].color.r = Math.max(w/max_weight,0.7);
-                                Obj.object.getObjectByName("selectable").geometry.faces[i].color.g = Math.max(w/max_weight/5,0.2);
-                                Obj.object.getObjectByName("selectable").geometry.faces[i].color.b = Math.max(w/max_weight/5,0.2);
-                            }
-                            else{
-                                Obj.object.getObjectByName("selectable").geometry.faces[i].color.r = 0.2;
-                                Obj.object.getObjectByName("selectable").geometry.faces[i].color.g = 0.2;
-                                Obj.object.getObjectByName("selectable").geometry.faces[i].color.b = 0.2;
-                            }
-                        });
-                    }
-                );
-            } else if (e.keyCode == 85 && App.myRole =='Host'){ //u: upload selection
-                var weight = [];
-                $.each(allSelectedID, function(i,d){
-                    weight.push(1-weight.length/allSelectedID.length);
-                })
-                $.post('/store_selection',{
-                        'obj_id': Obj.object.name,
-                        'mesh_id': JSON.stringify(allSelectedID),
-                        'weight': JSON.stringify(weight)}
-                );
             }
         },
 
@@ -571,7 +531,7 @@ var GAME = (function($){
              * @param e: key event
              */
             onGuessinputKeyPress: function (e) {
-                if(e.which == 13) {// log in
+                if(e.which == 13) {// submit guess
                     if (App.$guessinput[0].value!='your guess' && App.$guessinput[0].value!=''){
                         App.Player.onSubmitAnswer();
                     }
@@ -883,17 +843,25 @@ var GAME = (function($){
             },
 
             /**
-             *  Click handler for the Player hitting a word in the word list.
+             *  Click handler for the Player to submit and store a guess.
              */
             onSubmitAnswer: function() {
+                //var weight = [];
+                //$.each(App.allSelectedIDMaster, function(i,d){
+                //    weight.push(1-weight.length/App.allSelectedIDMaster.length);
+                //});
+
                 var answer = $('#guessinput')[0].value;
                 var data = {
-                    gameId: App.gameId,
-                    playerId: App.mySocketId,
+                    game_id: App.gameId,
                     answer: answer,
                     correct: $.inArray(answer.toLowerCase(), Obj.correct_answer)>=0,
-                    round: App.currentRound
-                };
+                    round: App.currentRound,
+                    duration: Date.now()-App.start_obj_time, // time from start of the object
+                    score: App.score,
+                    obj_id: Obj.object.name,
+                    all_selected_id: JSON.stringify(App.allSelectedIDMaster)};
+//                    weight: JSON.stringify(weight)};
                 IO.socket.emit('checkAnswer',data);
             },
 
@@ -1036,6 +1004,7 @@ var GAME = (function($){
 
 
     var Obj = {
+        object_id: [],
         camera: [],
         raycaster: [],
         scene: [],
@@ -1131,6 +1100,55 @@ var GAME = (function($){
             Obj.renderer.setSize( App.$model.width(), App.$model.height());
             Obj.renderer.sortObjects = false;
             container.appendChild( Obj.renderer.domElement );
+
+
+            var weight = new Array(Obj.object.FaceArray.length);
+            $.each(weight, function(i,e){weight[i] = new Array(Obj.object.children[i].geometry.faces.length);});
+            var raw_face_id_array, mesh_id, face_id, max_weight;
+            $.post('/read_selection',{'obj_id':Obj.object.name},function(response){
+                    $.each(response, function(i,r){
+                        raw_face_id_array = r.face_id;
+                        //weight_array = r.weight;
+                        $.each(raw_face_id_array, function(j,raw_face_id){
+                            mesh_id = 0; face_id = 0;
+                            $.each(Obj.object.FaceArray, function(i,face_number){
+                               if (raw_face_id-face_number>0){
+                                   raw_face_id -= face_number;
+                                   mesh_id ++;
+                               }
+                            });
+                            if(!weight[mesh_id][face_id]){
+                                weight[mesh_id][face_id] = 1;
+                            }
+                            else{
+                                weight[mesh_id][face_id] += 1;
+                            }
+                        })
+                    });
+
+                    max_weight = [];
+                    $.each(weight, function(i,w_mesh){
+                        max_weight.push(Math.max.apply(Math,w_mesh));
+                    });
+                    var max_max_weight = Math.max.apply(Math,max_weight);
+                    $.each(weight, function(mesh_id,face_for_mesh){
+                        $.each(face_for_mesh, function(face_id,w){
+                            if(w){
+                                Obj.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w/max_max_weight,0.7);
+                                Obj.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w/max_max_weight/5,0.2);
+                                Obj.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w/max_max_weight/5,0.2);
+                            }
+                            //else{
+                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = 0.2;
+                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = 0.2;
+                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = 0.2;
+                            //}
+                        });
+                    });
+                }
+            );
+
+
         },
 
         animate: function() {
@@ -1377,23 +1395,24 @@ var GAME = (function($){
         },
 
         /**
-         * initialize obj parameters, ONLY used initially offline before any game
+         * "show_obj" and "upload_obj" initialize obj parameters, ONLY used initially offline before any game
          */
-        initial_obj: function () {
+        show_obj: function (id) {
             var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
-            //$.each(objectstring_set, function(i,string){
-            //for(var i = 0; i<objectstring_set.length; i++){
-            var string = objectstring_set[1];
+            var string = objectstring_set[id];
             $.getScript(string, function () {
                 THREE.SceneLoad();
-                $.post('/initial_obj', {
-                    'object_name': THREEScene.name,
-                    'face_per_mesh': THREEScene.FaceArray,
-                    'num_selections': []
-                }, function () {
-                });
             });
         },
+        upload_obj: function () {
+            $.post('/initial_obj', {
+                'object_name': THREEScene.name,
+                'face_per_mesh': JSON.stringify(THREEScene.FaceArray),
+                'num_selections': ""
+                }
+            );
+        },
+
 
         /*
         calculates the center of an object so that it can be used to center it in the future

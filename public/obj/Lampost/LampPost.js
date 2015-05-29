@@ -1,30 +1,50 @@
 var scale = 35;
 var zheight = -350;
 var answer = ['Lamppost'];
-THREE.SceneLoad = function () {
+
+var loadobject = function(obj_string,scene,count,callback){
+	var string = obj_string.shift();
+	if(typeof string != 'undefined'){
+		$.getJSON(string, function( object) {
+			var objects = JSONMeshParser(object);
+			objects.scale.set(scale, scale, scale);
+			objects.name = ""+count;
+			objects.allSelectedID = [];
+			scene.add(objects);
+			scene.FaceArray.push(objects.geometry.faces.length);
+			count++;
+			loadobject(obj_string,scene,count,callback);
+		});
+	}
+	else{
+		callback();
+	}
+};
+
+THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
     THREEScene.name = "Lamppost";
     THREEScene.FaceArray = [];
 
-
+	var objstrings = ['obj/Lampost/Lampost.json'];
+	loadobject(objstrings,THREEScene,0,function(){
+		THREEScene.position.y = zheight;
+		if (typeof ajax != 'undefined') ajax();
+		return THREEScene;
+	});
 		
-		$.getJSON("obj/Lampost/Lampost.json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
-            objects.name = ("1");
-            objects.allSelectedID = [];
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
+		//$.getJSON("obj/Lampost/Lampost.json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+		//	THREEScene.add(objects);
+         //   objects.name = ("1");
+         //   objects.allSelectedID = [];
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+		//} );
 
-		} );
-		
-
-	
-	THREEScene.position.y = zheight;
-	return THREEScene;
-
-}
+};
 
 function JSONMeshParser(object) {
  	
