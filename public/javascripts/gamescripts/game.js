@@ -1214,11 +1214,17 @@ var GAME = (function($){
 
                 var geom = new THREE.Geometry();
 
+
+
                 var f = Obj.object.children[childnumber].geometry.faces[s];
+
                 var v1 = Obj.object.children[childnumber].geometry.vertices[f.a];
                 var v2 = Obj.object.children[childnumber].geometry.vertices[f.b];
                 var v3 = Obj.object.children[childnumber].geometry.vertices[f.c];
 
+                //v1.sub(CG);
+                //v2.sub(CG);
+                //v3.sub(CG);
 
                 geom.vertices.push(v1, v2, v3);
 
@@ -1235,9 +1241,18 @@ var GAME = (function($){
                 mesh.rotation.y = 1;
                 mesh.scale.set(Obj.scale, Obj.scale, Obj.scale);
                 mesh.castShadow = true;
-                //mesh.position.x = 0 - Obj.object.CG[0];
-                //mesh.position.y = 0 - Obj.object.CG[1];
-                //mesh.position.z = 0 - Obj.object.CG[2];
+
+
+                if (Obj.object.CG_emptyObj != undefined) {
+
+                    mesh.position.x =  Obj.object.CG_emptyObj[0];
+                    mesh.position.y =  Obj.object.CG_emptyObj[1];
+                    mesh.position.z =  Obj.object.CG_emptyObj[2];
+                } else {
+                    mesh.position.x = 0;
+                    mesh.position.y = 0;
+                    mesh.position.z = 0;
+                }
                 Obj.emptyobject.add(mesh);
            // }
                 //else {

@@ -2,6 +2,7 @@ var scale = 225;
 var zheight = 0;
 var answer = ['iPhone','iphone','IPHONE','Iphone','phone'];
 var CG = [2.803531, -0.20256299999999994, -4.1529195] ; //find this using findCG in game script
+
 $.each(CG, function(i,cg) {CG[i] = cg *scale;})
 
 THREE.SceneLoad = function () {
@@ -9,6 +10,7 @@ THREE.SceneLoad = function () {
     THREEScene.name = "iPhone";
     THREEScene.FaceArray = [];
     THREEScene.CG = CG;
+    THREEScene.CG_emptyObj = [450,50,1050];
         //edge
 		$.getJSON("obj/iPhone/data (34).json", function( object) {
 			parsedFile = object;
