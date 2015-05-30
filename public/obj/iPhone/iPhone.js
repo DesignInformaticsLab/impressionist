@@ -6,7 +6,7 @@ var CG = [2.803531, -0.20256299999999994, -4.1529195] ; //find this using findCG
 $.each(CG, function(i,cg) {CG[i] = cg *scale;})
 
 THREE.SceneLoad = function () {
-	var THREEScene  = new THREE.Scene();
+	THREEScene  = new THREE.Scene();
     THREEScene.name = "iPhone";
     THREEScene.FaceArray = [];
     THREEScene.CG = CG;

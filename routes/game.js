@@ -1,8 +1,6 @@
 /**
  * Created by Max Yi Ren on 3/10/2015.
  */
-
-
 var io;
 var gameSocket;
 var playerReady;
