@@ -27,6 +27,39 @@ router.get('/game_sketch', function(req, res, next) {
     res.render('sketch', { title: 'Model Selection Test'});
 });
 
+router.post('/newGame', function(req, res, next) {
+    pg.connect(connection, function(err, client, done) {
+        if(err) res.send("Could not connect to DB: " + err);
+        //var player_id = req.body.player_id;
+        //var host_id = req.body.host_id;
+        var insert_query = client.query('INSERT INTO impressionist_game_table (time) ' +
+            'VALUES (clock_timestamp())');
+        insert_query.on('err', handle_error.bind(this, err));
+        insert_query.on('end', function(result){res.status(202).send("Accepted data");});
+        done();
+    });
+});
+
+/* store current selection */
+router.post('/store_selection', function(req,res){
+    pg.connect(connection, function(err, client, done) {
+        if(err) res.send("Could not connect to DB: " + err);
+        var game_id = req.body.game_id;
+        var all_selected_id = JSON.parse(req.body.all_selected_id);
+        var duration = req.body.duration;
+        var score = req.body.score;
+        var guess = req.body.answer;
+        var correct = req.body.correct;
+        var round = req.body.round;
+        var penalty = [];
+        var insert_query = client.query('INSERT INTO impressionist_result_table (game_id, round, all_selected_id, duration,' +
+            ' score, guess, correct, penalty) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+            [game_id, round, all_selected_id, duration, score, guess, correct, penalty]);
+        insert_query.on('err', handle_error.bind(this, err));
+        insert_query.on('end', function(result){res.status(202).send("Accepted data");});
+        done();
+    });
+});
 
 /* read all selections */
 router.post('/read_selection', function(req,res){

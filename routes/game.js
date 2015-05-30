@@ -1,11 +1,14 @@
 /**
  * Created by Max Yi Ren on 3/10/2015.
  */
+
+
 var io;
 var gameSocket;
 var playerReady;
 var numOfObjects = 5;
 
+var pg = require('pg');
 var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //for local postgres server
 var connection_online = process.env.DATABASE_URL; //for online version
 
@@ -84,8 +87,9 @@ function joinGame(data) {
         // attach the socket id to the data object.
  //update this number as the number of models increases
         var objID = 3;//Math.floor(Math.random() * numOfObjects);
-        data.objectID = objID;
-        data.mySocketId = sock.id;
+        data.objectId = objID;
+        //data.playerId = sock.id;
+        //data.hostId = Object.keys(room)[0];
         data.gameId = roomid;
 
 
@@ -156,23 +160,6 @@ function selection(data) {
  */
 function checkAnswer(data) {
     var roomid = this.gameId;
-    pg.connect(connection, function(err, client, done) {
-        if(err) res.send("Could not connect to DB: " + err);
-        var game_id = req.body.game_id;
-        var all_selected_id = req.body.all_selected_id;
-        var duration = req.body.duration;
-        var score = req.body.score;
-        var guess = req.body.answer;
-        var correct = req.body.correct;
-        var round = req.body.round;
-        var penalty = [];
-        var insert_query = client.query('INSERT INTO impressionist_results_table (game_id, round, all_selected_id, duration,' +
-            ' score, guess, correct, penalty) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-            [game_id, round, all_selected_id, duration, score, guess, correct, penalty]);
-        insert_query.on('err', handle_error.bind(this, err));
-        insert_query.on('end', function(result){res.status(202).send("Accepted data");});
-        done();
-    });
     if (data.correct){
         //data.obj = getObjData(data.played);
         io.sockets.in(roomid).emit('answerCorrect', data);

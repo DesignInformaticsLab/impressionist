@@ -66,8 +66,14 @@ var GAME = (function($){
         playerJoinedRoom : function(data) {
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
 
+            // save the game
+            $.post('/newGame',{},function(res){
+                App.gameId = res.game_id;
+            });
+
             var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
-            App.objectString = possibleObjects[data.objectID];
+            App.objectString = possibleObjects[data.objectId];
+            App.gameId = data.gameId;
 
             App.$wait.hide();
             App.$game.show();
@@ -158,7 +164,7 @@ var GAME = (function($){
          * When the other player is ready
          * @param data
          */
-        onPlayerReady : function(objectID) {
+        onPlayerReady : function(objectId) {
             // switch role
             if(App.myRole == 'Host'){
                 App.myRole = 'Player';
@@ -171,7 +177,7 @@ var GAME = (function($){
             App.$game.show();
             App.objectString = "";
             var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
-            App.objectString = possibleObjects[objectID.objectID];
+            App.objectString = possibleObjects[objectId.objectId];
 
             IO.onNewObjData({});
         },
@@ -249,6 +255,12 @@ var GAME = (function($){
          * connects to the server when the page loads for the first time.
          */
         mySocketId: '',
+
+        /**
+         * game id
+         */
+        gameId: [],
+
 
         /**
          * Identifies the current round.
@@ -485,13 +497,6 @@ var GAME = (function($){
          *         HOST CODE           *
          ******************************* */
         Host : {
-
-            /**
-             * Flag to indicate if a new game is starting.
-             * This is used after the first game ends, and players initiate a new game
-             * without refreshing the browser windows.
-             */
-            isNewGame : false,
 
             /**
              * Keep track of the number of players that have joined the game.
@@ -831,10 +836,9 @@ var GAME = (function($){
                 //collect data to send to the server
                 var data = {
                     playerName : 'max',
-                    objectID : 999
+                    objectId : 999
                 };
 
-                // Send the gameId and playerName to the server
                 IO.socket.emit('joinGame', data);
 
                 // Set the appropriate properties for the current player.
@@ -852,7 +856,7 @@ var GAME = (function($){
                 //});
 
                 var answer = $('#guessinput')[0].value;
-                var data = {
+                $.post('/store_selection',{
                     game_id: App.gameId,
                     answer: answer,
                     correct: $.inArray(answer.toLowerCase(), Obj.correct_answer)>=0,
@@ -860,9 +864,13 @@ var GAME = (function($){
                     duration: Date.now()-App.start_obj_time, // time from start of the object
                     score: App.score,
                     obj_id: Obj.object.name,
-                    all_selected_id: JSON.stringify(App.allSelectedIDMaster)};
-//                    weight: JSON.stringify(weight)};
-                IO.socket.emit('checkAnswer',data);
+                    all_selected_id: JSON.stringify(App.Host.allSelectedIDMaster)
+                        //weight: JSON.stringify(weight)
+                    },
+                    function(){
+                        IO.socket.emit('checkAnswer',data);
+                    }
+                );
             },
 
             /**
