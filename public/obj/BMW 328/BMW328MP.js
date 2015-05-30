@@ -12,7 +12,7 @@ THREE.SceneLoad = function (ajax) {
         r + "posy.jpg", r + "negy.jpg",
         r + "posz.jpg", r + "negz.jpg" ];
 
-    var textureCube = THREE.ImageUtils.loadTextureCube( urls ); // fix texture
+    textureCube = THREE.ImageUtils.loadTextureCube( urls ); // fix texture
     THREEScene.name = 'BMW328';
 
 		$.getJSON("obj/BMW 328/chassis.json", function( object) {

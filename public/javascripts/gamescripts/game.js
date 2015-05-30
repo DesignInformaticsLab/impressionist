@@ -104,11 +104,11 @@ var GAME = (function($){
             //}
             if(Obj.object != undefined) { // if model exists
                 var selections = JSON.parse(sig);
-                var childnumber = selections.shift();
+                var childName = selections.shift().toString();
                 if (App.myRole == 'Player') {
                     // create meshes on fly
 
-                    Obj.createMesh(selections, childnumber);
+                    Obj.createMesh(selections, childName);
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
                     App.$bar.css('opacity', App.selection_capacity / 1000 * App.progressbar_size);
@@ -116,9 +116,9 @@ var GAME = (function($){
                 }
                 else if (App.myRole == 'Host') {
                     $.each(selections, function(id,i){
-                        Obj.object.children[childnumber].geometry.faces[i].color.setHex(0xff7777);
+                        Obj.object.getObjectByName(childName).geometry.faces[i].color.setHex(0xff7777);
                     });
-                    Obj.scene.children[0].children[childnumber].geometry.colorsNeedUpdate = true;
+                    Obj.object.getObjectByName(childName).geometry.colorsNeedUpdate = true;
                 }
             }
         },
@@ -605,7 +605,7 @@ var GAME = (function($){
 
 
 
-                            App.Host.selectedStrings.unshift(index);
+                            App.Host.selectedStrings.unshift(parseInt(intersection.object.name));
                             App.Host.selection_capacity = App.Host.selection_capacity - App.Host.selectedStrings.length + 1;
                             App.$bar.css('opacity', App.Host.selection_capacity/1000*App.progressbar_size);
 
@@ -1111,12 +1111,14 @@ var GAME = (function($){
                         //weight_array = r.weight;
                         $.each(raw_face_id_array, function(j,raw_face_id){
                             mesh_id = 0; face_id = 0;
+
                             $.each(Obj.object.FaceArray, function(i,face_number){
                                if (raw_face_id-face_number>0){
                                    raw_face_id -= face_number;
                                    mesh_id ++;
                                }
                             });
+
                             if(!weight[mesh_id][face_id]){
                                 weight[mesh_id][face_id] = 1;
                             }
@@ -1223,7 +1225,7 @@ var GAME = (function($){
          * @param selection: current face ids from meshes
          * @param childnumber: current mesh id
          */
-        createMesh: function(selection, childnumber ) {
+        createMesh: function(selection, childName ) {
             //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
 
             $.each(selection, function (i, s) {
@@ -1234,11 +1236,11 @@ var GAME = (function($){
 
 
 
-                var f = Obj.object.children[childnumber].geometry.faces[s];
+                var f = Obj.object.getObjectByName(childName).geometry.faces[s];
 
-                var v1 = Obj.object.children[childnumber].geometry.vertices[f.a];
-                var v2 = Obj.object.children[childnumber].geometry.vertices[f.b];
-                var v3 = Obj.object.children[childnumber].geometry.vertices[f.c];
+                var v1 = Obj.object.getObjectByName(childName).geometry.vertices[f.a];
+                var v2 = Obj.object.getObjectByName(childName).geometry.vertices[f.b];
+                var v3 = Obj.object.getObjectByName(childName).geometry.vertices[f.c];
 
                 //v1.sub(CG);
                 //v2.sub(CG);
@@ -1255,7 +1257,7 @@ var GAME = (function($){
 
                 //geom.applyMatrix( new THREE.Matrix4().makeTranslation( Obj.object.CG[0]/225, Obj.object.CG[1]/225, Obj.object.CG[2]/225 ) );
 
-                var mesh = new THREE.Mesh(geom, Obj.object.children[childnumber].material);
+                var mesh = new THREE.Mesh(geom, Obj.object.getObjectByName(childName).material);
                 mesh.rotation.y = 1;
                 mesh.scale.set(Obj.scale, Obj.scale, Obj.scale);
                 mesh.castShadow = true;
