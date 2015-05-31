@@ -195,7 +195,7 @@ var GAME = (function($){
          * A new obj for the round is returned from the server.
          * @param data
          */
-        onNewObjData : function() {
+        onNewObjData : function(callback) {
             $.getScript( App.objectString, function() {
                 console.log( "New object loaded." );
                 // reset game
@@ -205,27 +205,27 @@ var GAME = (function($){
                 Obj.scale = scale;
 
                 App.$model.html('');
-                if(App.myRole == 'Host'){
-                    App.$menu.show();
-                    App.$guessoutput.show();
-                    App.$guessoutput[0].value='';
-                    App.$guessinput.hide();
-                }
-                else{
+                if(App.myRole == 'Player'){
                     App.$menu.show();
                     App.$guessoutput.hide();
                     App.$guessinput.show();
                     App.$guessinput[0].value='';
                 }
+                else if(App.myRole == 'Host'){
+                    App.$menu.show();
+                    App.$guessoutput.show();
+                    App.$guessoutput[0].value='';
+                    App.$guessinput.hide();
+                }
                 App.$model.focus(); // focus on $model so that key events can work
 
                 App.start_obj_time = Date.now();
                 App.currentTime = Date.now();
-                Obj.init();
+                Obj.init(callback);
                 Obj.animate();
                 Obj.object.rotation.y = Math.random()*Math.PI*2;
-                console.log('rotation:');
-                console.log(GAME.Obj.object.rotation.y );
+                //console.log('rotation:');
+                //console.log(GAME.Obj.object.rotation.y );
             });
         },
 
@@ -408,20 +408,22 @@ var GAME = (function($){
             });
 
             App.$stat_btn.click(function(){
-                App.myRole = 'Host';
-                App.$home.hide();
-                App.$game.show();
-                App.$model.html(""); // clean canvas
-                App.objectString = App.objectstring_set[3];
-                IO.onNewObjData();
+                App.myRole = 'None';
                 App.$home.hide();
                 App.$wait.hide();
+                App.$game.hide();
                 App.$stat.show();
+                App.$stat.html("");
+                App.showList(); // show all objects available
                 App.$home_btn.removeClass('active');
                 App.$game_btn.removeClass('active');
                 App.$stat_btn.addClass('active');
             });
 
+            App.$stat.on('click', '.object_div', function(){
+               Obj.showHeatmap(this.id-1);
+               // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
+            });
         },
 
         /* *************************************
@@ -546,6 +548,17 @@ var GAME = (function($){
             }
         },
 
+        /**
+         *
+         */
+        showList: function(){
+            $.post('/getObjectList',{},function(data){
+                $.each(data, function(i,d){
+                    $("#stat").append("<div class='object_div btn btn-lg btn-default' id="
+                        + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
+                })
+            })
+        },
 
 
 
@@ -641,15 +654,12 @@ var GAME = (function($){
                             //console.log('allSelectedID');
                             //console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
                             // = Obj.object.getObjectByName(intersection.object.name).allSelectedID.concat(App.Host.selectedStrings).filter( App.onlyUnique ); // update all selection
-                            var uniqueValues = [];
-                            $.each(App.Host.selectedStrings, function (i) {
-                                uniqueValues.push(App.Host.selectedStrings[i]);
-                            });//.filter(App.onlyUnique);
 
-                            // update selection capacity
-
-
-                            // Below is Fabian's code
+                            // Below is Fabian's code for encoding face ids from different meshes
+                            //var uniqueValues = [];
+                            //$.each(App.Host.selectedStrings, function (i) {
+                            //    uniqueValues.push(App.Host.selectedStrings[i]);
+                            //});//.filter(App.onlyUnique);
                             //var index = -1;
                             //for (var i = 0 ; i< Obj.scene.children[0].children.length; i++) {
                             //    if (Obj.object.children[i].name == intersection.object.name) {
@@ -662,7 +672,16 @@ var GAME = (function($){
                             //
                             //}
 
-                            // Max code for selection
+                            // Max code for encoding face ids from different meshes
+                            var mesh_id = parseInt(intersection.object.name);
+                            var bias = 0;
+                            for(var i=0;i<mesh_id;i++){
+                                bias += Obj.object.FaceArray[i];
+                            }
+                            var uniqueValues = [];
+                            $.each(App.Host.selectedStrings, function (i,s) {
+                                uniqueValues.push(s+bias);
+                            });
 
 
 
@@ -913,7 +932,7 @@ var GAME = (function($){
         height: [],
         scale: [],
 
-        init: function() {
+        init: function(callback) {
             var container = App.$model[0];
             Obj.camera = new THREE.PerspectiveCamera( 70, App.$model.width() / App.$model.height(), 1, 10000 );
 
@@ -921,7 +940,7 @@ var GAME = (function($){
             var background = new THREE.Scene();
             background.name = "background";
             Obj.createTextureCube();
-            Obj.object = new THREE.SceneLoad;
+            Obj.object = THREE.SceneLoad(callback);
             Obj.object.name = Obj.correct_answer[0]; // use the first answer as the object name
 
             if(App.myRole=='Player'){
@@ -934,12 +953,12 @@ var GAME = (function($){
             }
 
 
-            if(App.myRole == 'Host'){
-                Obj.scene.add(Obj.object);
-                Obj.object.castShadow = true;
+            if(App.myRole == 'Player'){
+                Obj.scene.add(Obj.emptyobject);
             }
             else{
-                Obj.scene.add(Obj.emptyobject);
+                Obj.scene.add(Obj.object);
+                Obj.object.castShadow = true;
             }
             Obj.camera.position.x = -Obj.radius;
             Obj.camera.position.y = Obj.height; //don't change
@@ -997,58 +1016,64 @@ var GAME = (function($){
             container.appendChild( Obj.renderer.domElement );
         },
 
-        showHeatmap: function() {
-            var weight = new Array(Obj.object.FaceArray.length);
-            $.each(weight, function(i,e){weight[i] = new Array(Obj.object.children[i].geometry.faces.length);});
-            var raw_face_id_array, mesh_id, face_id, max_weight, count;
-            $.post('/read_selection',{'object_name':Obj.object.name},function(response){
-                    $.each(response, function(i,r){
-                        raw_face_id_array = r.all_selected_id;
-                        $.each(raw_face_id_array, function(j,raw_face_id){
-                            mesh_id = 0; face_id = raw_face_id;
-                            count = 0;
-                            while(face_id-Obj.object.FaceArray[count]>=0){
-                                face_id -= Obj.object.FaceArray[count];
-                                mesh_id ++;
-                                count ++;
-                            }
-
-                            if(typeof weight[mesh_id][face_id] == 'undefined'){
-                                weight[mesh_id][face_id] = 1;
-                            }
-                            else{
-                                weight[mesh_id][face_id] += 1;
-                            }
-                        })
-                    });
-
-                    max_weight = [];
-                    $.each(weight, function(i,w_mesh){
-                        max_weight.push(Math.max.apply(null, w_mesh.filter(function (x) {
-                            return isFinite(x);
-                        })));
-                    });
-                    var max_max_weight = Math.max.apply(Math,max_weight);
-                    $.each(weight, function(mesh_id,face_for_mesh){
-                        $.each(face_for_mesh, function(face_id,w){
-                            if(w){
-                                if (face_id>=Obj.object.children[mesh_id].geometry.faces.length){
-                                    var stop = 1;
+        showHeatmap: function(id) {
+            App.$game.show();
+            App.$menu.hide();
+            App.$model.html(""); // clean canvas
+            App.objectString = App.objectstring_set[id];
+            IO.onNewObjData(function(){
+                var weight = new Array(Obj.object.FaceArray.length);
+                $.each(weight, function(i,e){weight[i] = new Array(Obj.object.children[i].geometry.faces.length);});
+                var raw_face_id_array, mesh_id, face_id, max_weight, count;
+                $.post('/read_selection',{'object_name':Obj.object.name},function(response){
+                        $.each(response, function(i,r){
+                            raw_face_id_array = r.all_selected_id;
+                            $.each(raw_face_id_array, function(j,raw_face_id){
+                                mesh_id = 0; face_id = raw_face_id;
+                                count = 0;
+                                while(face_id-Obj.object.FaceArray[count]>=0){
+                                    face_id -= Obj.object.FaceArray[count];
+                                    mesh_id ++;
+                                    count ++;
                                 }
-                                Obj.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w/max_max_weight,0.7);
-                                Obj.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w/max_max_weight/5,0.2);
-                                Obj.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w/max_max_weight/5,0.2);
-                            }
-                            //else{
-                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = 0.2;
-                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = 0.2;
-                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = 0.2;
-                            //}
+
+                                if(typeof weight[mesh_id][face_id] == 'undefined'){
+                                    weight[mesh_id][face_id] = 1;
+                                }
+                                else{
+                                    weight[mesh_id][face_id] += 1;
+                                }
+                            })
                         });
-                        Obj.object.children[mesh_id].geometry.colorsNeedUpdate = true;
-                    });
-                }
-            );
+
+                        max_weight = [];
+                        $.each(weight, function(i,w_mesh){
+                            max_weight.push(Math.max.apply(null, w_mesh.filter(function (x) {
+                                return isFinite(x);
+                            })));
+                        });
+                        var max_max_weight = Math.max.apply(Math,max_weight);
+                        $.each(weight, function(mesh_id,face_for_mesh){
+                            $.each(face_for_mesh, function(face_id,w){
+                                if(w){
+                                    if (face_id>=Obj.object.children[mesh_id].geometry.faces.length){
+                                        var stop = 1;
+                                    }
+                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w/max_max_weight,0.7);
+                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w/max_max_weight/5,0.2);
+                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w/max_max_weight/5,0.2);
+                                }
+                                //else{
+                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = 0.2;
+                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = 0.2;
+                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = 0.2;
+                                //}
+                            });
+                            Obj.object.children[mesh_id].geometry.colorsNeedUpdate = true;
+                        });
+                    }
+                );
+            });
         },
 
         animate: function() {
@@ -1057,7 +1082,7 @@ var GAME = (function($){
         },
 
         render: function() {
-            if(App.myRole == 'Host'){
+            if(App.myRole != 'Player'){
                 if(typeof(Obj.object)!='undefined'){
 
                     Obj.object.rotation.set( Math.max(-Math.PI/6,Math.min(Obj.object.rotation.x - Obj.beta, Math.PI/6)),
@@ -1126,8 +1151,17 @@ var GAME = (function($){
         createMesh: function(selection, childName ) {
             //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
 
-            //update all selected face id
-            App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(selection);
+            //update all selected face id, encoded by childname
+            var mesh_id = parseInt(childName);
+            var bias = 0;
+            for(var i=0;i<mesh_id;i++){
+                bias += Obj.object.FaceArray[i];
+            }
+            var uniqueValues = [];
+            $.each(selection, function (i,s) {
+                uniqueValues.push(s+bias);
+            });
+            App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
 
             $.each(selection, function (i, s) {
                 //if (App.Player.allSelectedID.indexOf(s) == -1) {
@@ -1303,7 +1337,7 @@ var GAME = (function($){
         show_obj: function (id) {
             var string = App.objectstring_set[id];
             $.getScript(string, function () {
-                THREE.SceneLoad();
+                THREE.SceneLoad(Obj.upload_obj);
             });
         },
         upload_obj: function () {
