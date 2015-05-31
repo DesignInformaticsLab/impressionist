@@ -24,6 +24,7 @@ exports.initGame = function(sio, socket){
     // Player Events
     gameSocket.on('createNewGame', createNewGame);
     gameSocket.on('joinGame', joinGame);
+    gameSocket.on('broadcastGameID', broadcastGameID);
     gameSocket.on('nextRound', nextRound);
     gameSocket.on('checkAnswer', checkAnswer);
     gameSocket.on('selection', selection);
@@ -115,6 +116,11 @@ function joinGame(data) {
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
     }
+}
+
+function broadcastGameID(data){
+    var roomid = this.gameId;
+    io.sockets.in(roomid).emit('newGameId', {gameId: data});
 }
 
 function playerReady(data){

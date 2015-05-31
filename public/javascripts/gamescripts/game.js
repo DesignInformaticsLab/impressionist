@@ -27,6 +27,7 @@ var GAME = (function($){
             IO.socket.on('connected', IO.onConnected );
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
+            IO.socket.on('newGameId',IO.newGameId );
             IO.socket.on('playerLeft',IO.playerLeft );
             IO.socket.on('beginNewGame', IO.beginNewGame );
             IO.socket.on('newObjData', IO.onNewObjData);
@@ -54,8 +55,6 @@ var GAME = (function($){
             App.myRole = 'Host';
 
             // this should be randomly chosen from the server
-
-
             console.log('my id:'+data.mySocketId);
         },
 
@@ -66,20 +65,32 @@ var GAME = (function($){
         playerJoinedRoom : function(data) {
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
 
-            // save the game
-            $.post('/newGame',{},function(res){
-                App.gameId = res.game_id;
-            });
-
             var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[data.objectId];
-            App.gameId = data.gameId;
-
             App.$wait.hide();
             App.$game.show();
             App.totalTime = 5; // total game time is 5 min
-            // create a new object and start the game
-            IO.onNewObjData();
+
+            // host saves the game
+            if(App.myRole=='Host'){
+                $.post('/newGame',{},function(data){
+                    // broadcast game id
+                    IO.socket.emit('broadcastGameID', data[0].id);
+                    // create a new object and start the game
+                    IO.onNewObjData();
+                });
+            }
+            else{
+                IO.onNewObjData();
+            }
+        },
+
+        /**
+         * Receive broadcast game id
+         * @param data
+         */
+        newGameId: function(data) {
+            App.gameId = data.gameId;
         },
 
         playerLeft: function(data){
@@ -893,12 +904,6 @@ var GAME = (function($){
              */
             updateWaitingScreen : function(data) {
                 if(IO.socket.id === data.mySocketId){
-                    //App.myRole = 'Player';
-                    App.gameId = data.gameId;
-
-                    //$('#playerWaitingMessage')
-                    //    .append('<p/>')
-                    //    .text('Joined Game ' + data.gameId + '. Please wait for game to begin.');
                     $('#wait').show();
                 }
             },
@@ -1235,6 +1240,9 @@ var GAME = (function($){
          */
         createMesh: function(selection, childName ) {
             //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
+
+            //update all selected face id
+            App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(selection);
 
             $.each(selection, function (i, s) {
                 //if (App.Player.allSelectedID.indexOf(s) == -1) {

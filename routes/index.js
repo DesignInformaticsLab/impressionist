@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var connection = "postgres://postgres:GWC464doi@localhost:5432/postgres"; //for local postgres server
+var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //for local postgres server
 var connection_online = process.env.DATABASE_URL; //for online version
 
 
@@ -32,11 +32,15 @@ router.post('/newGame', function(req, res, next) {
         if(err) res.send("Could not connect to DB: " + err);
         //var player_id = req.body.player_id;
         //var host_id = req.body.host_id;
-        var insert_query = client.query('INSERT INTO impressionist_game_table (time) ' +
-            'VALUES (clock_timestamp())');
-        insert_query.on('err', handle_error.bind(this, err));
-        insert_query.on('end', function(result){res.status(202).send("Accepted data");});
-        done();
+        client.query('INSERT INTO impressionist_game_table (time) ' +
+            'VALUES (clock_timestamp()) RETURNING id', function(err, result){
+            if (err) handle_error.bind(this, err)
+            else {
+                res.send( result.rows );
+                done();
+            }
+
+        });
     });
 });
 
