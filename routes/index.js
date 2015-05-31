@@ -53,12 +53,13 @@ router.post('/store_selection', function(req,res){
         var duration = req.body.duration;
         var score = req.body.score;
         var guess = req.body.answer;
+        var object_name = req.body.object_name;
         var correct = req.body.correct;
         var round = req.body.round;
         var penalty = [];
         var insert_query = client.query('INSERT INTO impressionist_result_table (game_id, round, all_selected_id, duration,' +
-            ' score, guess, correct, penalty) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-            [game_id, round, all_selected_id, duration, score, guess, correct, penalty]);
+            ' score, guess, object_name, correct, penalty) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+            [game_id, round, all_selected_id, duration, score, guess, object_name, correct, penalty]);
         insert_query.on('err', handle_error.bind(this, err));
         insert_query.on('end', function(result){res.status(202).send("Accepted data");});
         done();
