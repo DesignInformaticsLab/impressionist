@@ -294,7 +294,7 @@ var GAME = (function($){
          * Object string contains all objects
          */
         objectstring_set : ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
-            "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/TeaPot.js"],
+            "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js"],
 
 
         /* *************************************
