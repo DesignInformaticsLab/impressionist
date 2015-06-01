@@ -12,13 +12,13 @@ block content
                           nav
                               ul.nav.masthead-nav
                                   li.active
-                                      a(href='#')
+                                      a
                                           | Home
                                   li
-                                      a(href='#')
+                                      a
                                           | Game
                                   li
-                                      a(href='#')
+                                      a
                                           | Stats
                   #home.inner.cover
                       h1.cover-heading
@@ -51,6 +51,7 @@ block content
                           input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
                           #guessoutput
                       #model(tabindex='0')
+                  #stat
                   .mastfoot
                       .inner
                           p

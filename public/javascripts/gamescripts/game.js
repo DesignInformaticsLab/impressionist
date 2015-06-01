@@ -27,6 +27,7 @@ var GAME = (function($){
             IO.socket.on('connected', IO.onConnected );
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
+            IO.socket.on('newGameId',IO.newGameId );
             IO.socket.on('playerLeft',IO.playerLeft );
             IO.socket.on('beginNewGame', IO.beginNewGame );
             IO.socket.on('newObjData', IO.onNewObjData);
@@ -54,8 +55,6 @@ var GAME = (function($){
             App.myRole = 'Host';
 
             // this should be randomly chosen from the server
-
-
             console.log('my id:'+data.mySocketId);
         },
 
@@ -66,14 +65,37 @@ var GAME = (function($){
         playerJoinedRoom : function(data) {
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
 
+
             var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[data.objectID];
+
+
+            App.objectString = App.objectstring_set[data.objectId];
 
             App.$wait.hide();
             App.$game.show();
             App.totalTime = 5; // total game time is 5 min
-            // create a new object and start the game
-            IO.onNewObjData();
+
+            // host saves the game
+            if(App.myRole=='Host'){
+                $.post('/newGame',{},function(data){
+                    // broadcast game id
+                    IO.socket.emit('broadcastGameID', data[0].id);
+                    // create a new object and start the game
+                    IO.onNewObjData();
+                });
+            }
+            else{
+                IO.onNewObjData();
+            }
+        },
+
+        /**
+         * Receive broadcast game id
+         * @param data
+         */
+        newGameId: function(data) {
+            App.gameId = data.gameId;
         },
 
         playerLeft: function(data){
@@ -158,7 +180,7 @@ var GAME = (function($){
          * When the other player is ready
          * @param data
          */
-        onPlayerReady : function(objectID) {
+        onPlayerReady : function(objectId) {
             // switch role
             if(App.myRole == 'Host'){
                 App.myRole = 'Player';
@@ -170,8 +192,12 @@ var GAME = (function($){
             App.$wait.hide();
             App.$game.show();
             App.objectString = "";
+
             var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[objectID.objectID];
+
+            App.objectString = App.objectstring_set[objectId.objectID];
+
 
             IO.onNewObjData({});
         },
@@ -180,7 +206,7 @@ var GAME = (function($){
          * A new obj for the round is returned from the server.
          * @param data
          */
-        onNewObjData : function(data) {
+        onNewObjData : function(callback) {
             $.getScript( App.objectString, function() {
                 console.log( "New object loaded." );
                 // reset game
@@ -190,27 +216,27 @@ var GAME = (function($){
                 Obj.scale = scale;
 
                 App.$model.html('');
-                if(App.myRole == 'Host'){
-                    App.$menu.show();
-                    App.$guessoutput.show();
-                    App.$guessoutput[0].value='';
-                    App.$guessinput.hide();
-                }
-                else{
+                if(App.myRole == 'Player'){
                     App.$menu.show();
                     App.$guessoutput.hide();
                     App.$guessinput.show();
                     App.$guessinput[0].value='';
                 }
+                else if(App.myRole == 'Host'){
+                    App.$menu.show();
+                    App.$guessoutput.show();
+                    App.$guessoutput[0].value='';
+                    App.$guessinput.hide();
+                }
                 App.$model.focus(); // focus on $model so that key events can work
 
                 App.start_obj_time = Date.now();
                 App.currentTime = Date.now();
-                Obj.init();
+                Obj.init(callback);
                 Obj.animate();
                 Obj.object.rotation.y = Math.random()*Math.PI*2;
-                console.log('rotation:');
-                console.log(GAME.Obj.object.rotation.y );
+                //console.log('rotation:');
+                //console.log(GAME.Obj.object.rotation.y );
             });
         },
 
@@ -219,7 +245,6 @@ var GAME = (function($){
          * @param data
          */
         gameOver : function() {
-            //App[App.myRole].endGame(data);
 
         },
 
@@ -251,6 +276,12 @@ var GAME = (function($){
         mySocketId: '',
 
         /**
+         * game id
+         */
+        gameId: [],
+
+
+        /**
          * Identifies the current round.
          */
         currentRound: 0,
@@ -270,6 +301,11 @@ var GAME = (function($){
          */
         PRESSED: false,
 
+        /**
+         * Object string contains all objects
+         */
+        objectstring_set : ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+            "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js"],
 
 
         /* *************************************
@@ -292,7 +328,9 @@ var GAME = (function($){
         cacheElements: function () {
             App.$doc = $(document);
             App.$wait = $('#wait');
+            App.$home = $('#home');
             App.$game = $('#game');
+            App.$stat = $('#stat');
             App.$model = $('#model');
             App.$score = $('#score');
             App.$guessoutput = $('#guessoutput');
@@ -303,10 +341,11 @@ var GAME = (function($){
             App.$time = $('#time');
             App.$timebar = $('#timebar');
             App.$entry = $('#entry');
-            App.$home = $('#home');
-            App.$wait = $('#wait');
             App.$continue = $('#continue');
             App.$continue_btn = $('#continue_btn');
+            App.$home_btn = $($('li')[0]);
+            App.$game_btn = $($('li')[1]);
+            App.$stat_btn = $($('li')[2]);
 
             // interface
             //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
@@ -347,6 +386,10 @@ var GAME = (function($){
                 App.$home.hide();
                 App.$wait.show();
                 App.Player.onJoinClick();
+
+                // move to game
+                App.$home_btn.removeClass('active');
+                App.$game_btn.addClass('active');
             });
             App.$continue_btn.click(function(){
                 App.$continue.hide();
@@ -354,6 +397,44 @@ var GAME = (function($){
                 IO.socket.emit('playerReady');
             });
 
+            // navigation
+            App.$home_btn.click(function(){
+                App.quit(); // quit game
+                App.$home.show();
+                App.$wait.hide();
+                App.$stat.hide();
+                App.$home_btn.addClass('active');
+                App.$game_btn.removeClass('active');
+                App.$stat_btn.removeClass('active');
+            });
+
+            App.$game_btn.click(function(){
+                App.Player.onJoinClick();
+                App.$home.hide();
+                App.$wait.show();
+                App.$stat.hide();
+                App.$home_btn.removeClass('active');
+                App.$game_btn.addClass('active');
+                App.$stat_btn.removeClass('active');
+            });
+
+            App.$stat_btn.click(function(){
+                App.myRole = 'None';
+                App.$home.hide();
+                App.$wait.hide();
+                App.$game.hide();
+                App.$stat.show();
+                App.$stat.html("");
+                App.showList(); // show all objects available
+                App.$home_btn.removeClass('active');
+                App.$game_btn.removeClass('active');
+                App.$stat_btn.addClass('active');
+            });
+
+            App.$stat.on('click', '.object_div', function(){
+               Obj.showHeatmap(this.id-1);
+               // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
+            });
         },
 
         /* *************************************
@@ -478,6 +559,17 @@ var GAME = (function($){
             }
         },
 
+        /**
+         *
+         */
+        showList: function(){
+            $.post('/getObjectList',{},function(data){
+                $.each(data, function(i,d){
+                    $("#stat").append("<div class='object_div btn btn-lg btn-default' id="
+                        + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
+                })
+            })
+        },
 
 
 
@@ -485,13 +577,6 @@ var GAME = (function($){
          *         HOST CODE           *
          ******************************* */
         Host : {
-
-            /**
-             * Flag to indicate if a new game is starting.
-             * This is used after the first game ends, and players initiate a new game
-             * without refreshing the browser windows.
-             */
-            isNewGame : false,
 
             /**
              * Keep track of the number of players that have joined the game.
@@ -580,23 +665,35 @@ var GAME = (function($){
                             //console.log('allSelectedID');
                             //console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
                             // = Obj.object.getObjectByName(intersection.object.name).allSelectedID.concat(App.Host.selectedStrings).filter( App.onlyUnique ); // update all selection
-                            var uniqueValues = [];
-                            $.each(App.Host.selectedStrings, function (i) {
-                                uniqueValues.push(App.Host.selectedStrings[i]);
-                            });//.filter(App.onlyUnique);
 
-                            // update selection capacity
-                            var index = -1;
-                            for (var i = 0 ; i< Obj.scene.children[0].children.length; i++) {
-                                if (Obj.object.children[i].name == intersection.object.name) {
-                                    index = i;
-                                    break;
-                                }
+                            // Below is Fabian's code for encoding face ids from different meshes
+                            //var uniqueValues = [];
+                            //$.each(App.Host.selectedStrings, function (i) {
+                            //    uniqueValues.push(App.Host.selectedStrings[i]);
+                            //});//.filter(App.onlyUnique);
+                            //var index = -1;
+                            //for (var i = 0 ; i< Obj.scene.children[0].children.length; i++) {
+                            //    if (Obj.object.children[i].name == intersection.object.name) {
+                            //        index = i;
+                            //        break;
+                            //    }
+                            //
+                            //    for (var j = 0; j < uniqueValues.length; j++)
+                            //        uniqueValues[j] = uniqueValues[j] + Obj.object.FaceArray[i];
+                            //
+                            //}
 
-                                for (var j = 0; j < uniqueValues.length; j++)
-                                    uniqueValues[j] = uniqueValues[j] + Obj.object.FaceArray[i];
-
+                            // Max code for encoding face ids from different meshes
+                            var mesh_id = parseInt(intersection.object.name);
+                            var bias = 0;
+                            for(var i=0;i<mesh_id;i++){
+                                bias += Obj.object.FaceArray[i];
                             }
+                            var uniqueValues = [];
+                            $.each(App.Host.selectedStrings, function (i,s) {
+                                uniqueValues.push(s+bias);
+                            });
+
 
 
                             $.each(uniqueValues, function(i,UV) {
@@ -616,183 +713,23 @@ var GAME = (function($){
             },
 
             /**
-             * The Host screen is displayed for the first time.
-             * @param data{{ gameId: int, mySocketId: * }}
+             * send out quit signal
              */
-            gameInit: function (data) {
-                App.gameId = data.gameId;
-                App.mySocketId = data.mySocketId;
-                App.myRole = 'Host';
-                App.Host.numPlayersInRoom = 0;
+            quit: function(){
+                IO.socket.emit('playerQuit');
+            },
 
-                //App.Host.displayNewGameScreen();
-                // console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
+            /**
+             * both user quit
+             */
+            quitGame: function(){
+                App.$home.show();
+                App.$wait.hide();
+                App.$stat.hide();
+                App.$home_btn.addClass('active');
+                App.$game_btn.removeClass('active');
+                App.$stat_btn.removeClass('active');
             }
-
-            /**
-             * Show the Host screen containing the game URL and unique game ID
-             */
-            //displayNewGameScreen : function() {
-            //    // Fill the game screen with the appropriate HTML
-            //    App.$gameArea.html(App.$templateNewGame);
-            //
-            //    // Display the URL on screen
-            //    $('#gameURL').text(window.location.href);
-            //    App.doTextFit('#gameURL');
-            //
-            //    // Show the gameId / room id on screen
-            //    $('#spanNewGameCode').text(App.gameId);
-            //},
-
-            /**
-             * Update the Host screen when the first player joins
-             * @param data{{playerName: string}}
-             */
-            //updateWaitingScreen: function(data) {
-            //    // If this is a restarted game, show the screen.
-            //    if ( App.Host.isNewGame ) {
-            //        App.Host.displayNewGameScreen();
-            //    }
-            //    // Update host screen
-            //    $('#playersWaiting')
-            //        .append('<p/>')
-            //        .text('Player ' + data.playerName + ' joined the game.');
-            //
-            //    // Store the new player's data on the Host.
-            //    App.Host.players.push(data);
-            //
-            //    // Increment the number of players in the room
-            //    App.Host.numPlayersInRoom += 1;
-            //
-            //    // If two players have joined, start the game!
-            //    if (App.Host.numPlayersInRoom === 2) {
-            //        // console.log('Room is full. Almost ready!');
-            //
-            //        // Let the server know that two players are present.
-            //        IO.socket.emit('hostRoomFull',App.gameId);
-            //    }
-            //},
-
-            /**
-             * Show the countdown screen
-             */
-            //gameCountdown : function() {
-            //
-            //    // Prepare the game screen with new HTML
-            //    App.$gameArea.html(App.$hostGame);
-            //    App.doTextFit('#hostWord');
-            //
-            //    // Begin the on-screen countdown timer
-            //    var $secondsLeft = $('#hostWord');
-            //    App.countDown( $secondsLeft, 5, function(){
-            //        IO.socket.emit('hostCountdownFinished', App.gameId);
-            //    });
-            //
-            //    // Display the players' names on screen
-            //    $('#player1Score')
-            //        .find('.playerName')
-            //        .html(App.Host.players[0].playerName);
-            //
-            //    $('#player2Score')
-            //        .find('.playerName')
-            //        .html(App.Host.players[1].playerName);
-            //
-            //    // Set the Score section on screen to 0 for each player.
-            //    $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
-            //    $('#player2Score').find('.score').attr('id',App.Host.players[1].mySocketId);
-            //},
-
-            /**
-             * Show the word for the current round on screen.
-             * @param data{{round: *, word: *, answer: *, list: Array}}
-             */
-            //newWord : function(data) {
-            //    // Insert the new word into the DOM
-            //    $('#hostWord').text(data.word);
-            //    App.doTextFit('#hostWord');
-            //
-            //    // Update the data for the current round
-            //    App.Host.currentCorrectAnswer = data.answer;
-            //    App.Host.currentRound = data.round;
-            //},
-
-            /**
-             * Check the answer clicked by a player.
-             * @param data{{round: *, playerId: *, answer: *, gameId: *}}
-             */
-            //checkAnswer : function(data) {
-            //    // Verify that the answer clicked is from the current round.
-            //    // This prevents a 'late entry' from a player whos screen has not
-            //    // yet updated to the current round.
-            //    if (data.round === App.currentRound){
-            //
-            //        // Get the player's score
-            //        var $pScore = $('#' + data.playerId);
-            //
-            //        // Advance player's score if it is correct
-            //        if( App.Host.currentCorrectAnswer === data.answer ) {
-            //            // Add 5 to the player's score
-            //            $pScore.text( +$pScore.text() + 5 );
-            //
-            //            // Advance the round
-            //            App.currentRound += 1;
-            //
-            //            // Prepare data to send to the server
-            //            var data = {
-            //                gameId : App.gameId,
-            //                round : App.currentRound
-            //            }
-            //
-            //            // Notify the server to start the next round.
-            //            IO.socket.emit('hostNextRound',data);
-            //
-            //        } else {
-            //            // A wrong answer was submitted, so decrement the player's score.
-            //            $pScore.text( +$pScore.text() - 3 );
-            //        }
-            //    }
-            //},
-
-
-            /**
-             * All 10 rounds have played out. End the game.
-             * @param data
-             */
-            //endGame : function(data) {
-            //    // Get the data for player 1 from the host screen
-            //    var $p1 = $('#player1Score');
-            //    var p1Score = +$p1.find('.score').text();
-            //    var p1Name = $p1.find('.playerName').text();
-            //
-            //    // Get the data for player 2 from the host screen
-            //    var $p2 = $('#player2Score');
-            //    var p2Score = +$p2.find('.score').text();
-            //    var p2Name = $p2.find('.playerName').text();
-            //
-            //    // Find the winner based on the scores
-            //    var winner = (p1Score < p2Score) ? p2Name : p1Name;
-            //    var tie = (p1Score === p2Score);
-            //
-            //    // Display the winner (or tie game message)
-            //    if(tie){
-            //        $('#hostWord').text("It's a Tie!");
-            //    } else {
-            //        $('#hostWord').text( winner + ' Wins!!' );
-            //    }
-            //    App.doTextFit('#hostWord');
-            //
-            //    // Reset game data
-            //    App.Host.numPlayersInRoom = 0;
-            //    App.Host.isNewGame = true;
-            //},
-
-            /**
-             * A player hit the 'Start Again' button after the end of a game.
-             */
-            //restartGame : function() {
-            //    App.$gameArea.html(App.$templateNewGame);
-            //    $('#spanNewGameCode').text(App.gameId);
-            //}
         },
 
 
@@ -831,10 +768,9 @@ var GAME = (function($){
                 //collect data to send to the server
                 var data = {
                     playerName : 'max',
-                    objectID : 999
+                    objectId : 999
                 };
 
-                // Send the gameId and playerName to the server
                 IO.socket.emit('joinGame', data);
 
                 // Set the appropriate properties for the current player.
@@ -859,10 +795,13 @@ var GAME = (function($){
                     round: App.currentRound,
                     duration: Date.now()-App.start_obj_time, // time from start of the object
                     score: App.score,
-                    obj_id: Obj.object.name,
-                    all_selected_id: JSON.stringify(App.allSelectedIDMaster)};
-//                    weight: JSON.stringify(weight)};
-                IO.socket.emit('checkAnswer',data);
+                    object_name: Obj.object.name,
+                    all_selected_id: JSON.stringify(App.Host.allSelectedIDMaster)
+                    //weight: JSON.stringify(weight)
+                };
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
             },
 
             /**
@@ -885,12 +824,6 @@ var GAME = (function($){
              */
             updateWaitingScreen : function(data) {
                 if(IO.socket.id === data.mySocketId){
-                    //App.myRole = 'Player';
-                    App.gameId = data.gameId;
-
-                    //$('#playerWaitingMessage')
-                    //    .append('<p/>')
-                    //    .text('Joined Game ' + data.gameId + '. Please wait for game to begin.');
                     $('#wait').show();
                 }
             },
@@ -909,15 +842,7 @@ var GAME = (function($){
              * Show the "Game Over" screen.
              */
             endGame : function() {
-                //$('#gameArea')
-                //    .html('<div class="gameOver">Game Over!</div>')
-                //    .append(
-                //    // Create a button to start a new game.
-                //    $('<button>Start Again</button>')
-                //        .attr('id','btnPlayerRestart')
-                //        .addClass('btn')
-                //        .addClass('btnGameOver')
-                //);
+
             }
         },
 
@@ -1018,7 +943,7 @@ var GAME = (function($){
         height: [],
         scale: [],
 
-        init: function() {
+        init: function(callback) {
             var container = App.$model[0];
             Obj.camera = new THREE.PerspectiveCamera( 70, App.$model.width() / App.$model.height(), 1, 10000 );
 
@@ -1026,7 +951,7 @@ var GAME = (function($){
             var background = new THREE.Scene();
             background.name = "background";
             Obj.createTextureCube();
-            Obj.object = new THREE.SceneLoad;
+            Obj.object = THREE.SceneLoad(callback);
             Obj.object.name = Obj.correct_answer[0]; // use the first answer as the object name
 
             if(App.myRole=='Player'){
@@ -1039,12 +964,12 @@ var GAME = (function($){
             }
 
 
-            if(App.myRole == 'Host'){
-                Obj.scene.add(Obj.object);
-                Obj.object.castShadow = true;
+            if(App.myRole == 'Player'){
+                Obj.scene.add(Obj.emptyobject);
             }
             else{
-                Obj.scene.add(Obj.emptyobject);
+                Obj.scene.add(Obj.object);
+                Obj.object.castShadow = true;
             }
             Obj.camera.position.x = -Obj.radius;
             Obj.camera.position.y = Obj.height; //don't change
@@ -1100,57 +1025,66 @@ var GAME = (function($){
             Obj.renderer.setSize( App.$model.width(), App.$model.height());
             Obj.renderer.sortObjects = false;
             container.appendChild( Obj.renderer.domElement );
+        },
 
+        showHeatmap: function(id) {
+            App.$game.show();
+            App.$menu.hide();
+            App.$model.html(""); // clean canvas
+            App.objectString = App.objectstring_set[id];
+            IO.onNewObjData(function(){
+                var weight = new Array(Obj.object.FaceArray.length);
+                $.each(weight, function(i,e){weight[i] = new Array(Obj.object.children[i].geometry.faces.length);});
+                var raw_face_id_array, mesh_id, face_id, max_weight, count;
+                $.post('/read_selection',{'object_name':Obj.object.name},function(response){
+                        $.each(response, function(i,r){
+                            raw_face_id_array = r.all_selected_id;
+                            $.each(raw_face_id_array, function(j,raw_face_id){
+                                mesh_id = 0; face_id = raw_face_id;
+                                count = 0;
+                                while(face_id-Obj.object.FaceArray[count]>=0){
+                                    face_id -= Obj.object.FaceArray[count];
+                                    mesh_id ++;
+                                    count ++;
+                                }
 
-            var weight = new Array(Obj.object.FaceArray.length);
-            $.each(weight, function(i,e){weight[i] = new Array(Obj.object.children[i].geometry.faces.length);});
-            var raw_face_id_array, mesh_id, face_id, max_weight;
-            $.post('/read_selection',{'obj_id':Obj.object.name},function(response){
-                    $.each(response, function(i,r){
-                        raw_face_id_array = r.face_id;
-                        //weight_array = r.weight;
-                        $.each(raw_face_id_array, function(j,raw_face_id){
-                            mesh_id = 0; face_id = 0;
-
-                            $.each(Obj.object.FaceArray, function(i,face_number){
-                               if (raw_face_id-face_number>0){
-                                   raw_face_id -= face_number;
-                                   mesh_id ++;
-                               }
-                            });
-
-                            if(!weight[mesh_id][face_id]){
-                                weight[mesh_id][face_id] = 1;
-                            }
-                            else{
-                                weight[mesh_id][face_id] += 1;
-                            }
-                        })
-                    });
-
-                    max_weight = [];
-                    $.each(weight, function(i,w_mesh){
-                        max_weight.push(Math.max.apply(Math,w_mesh));
-                    });
-                    var max_max_weight = Math.max.apply(Math,max_weight);
-                    $.each(weight, function(mesh_id,face_for_mesh){
-                        $.each(face_for_mesh, function(face_id,w){
-                            if(w){
-                                Obj.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w/max_max_weight,0.7);
-                                Obj.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w/max_max_weight/5,0.2);
-                                Obj.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w/max_max_weight/5,0.2);
-                            }
-                            //else{
-                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = 0.2;
-                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = 0.2;
-                            //    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = 0.2;
-                            //}
+                                if(typeof weight[mesh_id][face_id] == 'undefined'){
+                                    weight[mesh_id][face_id] = 1;
+                                }
+                                else{
+                                    weight[mesh_id][face_id] += 1;
+                                }
+                            })
                         });
-                    });
-                }
-            );
 
-
+                        max_weight = [];
+                        $.each(weight, function(i,w_mesh){
+                            max_weight.push(Math.max.apply(null, w_mesh.filter(function (x) {
+                                return isFinite(x);
+                            })));
+                        });
+                        var max_max_weight = Math.max.apply(Math,max_weight);
+                        $.each(weight, function(mesh_id,face_for_mesh){
+                            $.each(face_for_mesh, function(face_id,w){
+                                if(w){
+                                    if (face_id>=Obj.object.children[mesh_id].geometry.faces.length){
+                                        var stop = 1;
+                                    }
+                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w/max_max_weight,0.7);
+                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w/max_max_weight/5,0.2);
+                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w/max_max_weight/5,0.2);
+                                }
+                                //else{
+                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = 0.2;
+                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = 0.2;
+                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = 0.2;
+                                //}
+                            });
+                            Obj.object.children[mesh_id].geometry.colorsNeedUpdate = true;
+                        });
+                    }
+                );
+            });
         },
 
         animate: function() {
@@ -1159,7 +1093,7 @@ var GAME = (function($){
         },
 
         render: function() {
-            if(App.myRole == 'Host'){
+            if(App.myRole != 'Player'){
                 if(typeof(Obj.object)!='undefined'){
 
                     Obj.object.rotation.set( Math.max(-Math.PI/6,Math.min(Obj.object.rotation.x - Obj.beta, Math.PI/6)),
@@ -1227,6 +1161,18 @@ var GAME = (function($){
          */
         createMesh: function(selection, childName ) {
             //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
+
+            //update all selected face id, encoded by childname
+            var mesh_id = parseInt(childName);
+            var bias = 0;
+            for(var i=0;i<mesh_id;i++){
+                bias += Obj.object.FaceArray[i];
+            }
+            var uniqueValues = [];
+            $.each(selection, function (i,s) {
+                uniqueValues.push(s+bias);
+            });
+            App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
 
             $.each(selection, function (i, s) {
                 //if (App.Player.allSelectedID.indexOf(s) == -1) {
@@ -1400,10 +1346,9 @@ var GAME = (function($){
          * "show_obj" and "upload_obj" initialize obj parameters, ONLY used initially offline before any game
          */
         show_obj: function (id) {
-            var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js", "obj/Helmet/Helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/Teapot/Teapot.js"];
-            var string = objectstring_set[id];
+            var string = App.objectstring_set[id];
             $.getScript(string, function () {
-                THREE.SceneLoad();
+                THREE.SceneLoad(Obj.upload_obj);
             });
         },
         upload_obj: function () {

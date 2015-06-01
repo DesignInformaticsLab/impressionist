@@ -6,8 +6,9 @@ var gameSocket;
 var playerReady;
 var numOfObjects = 5;
 
-var connection = "postgres://postgres:GWC464doi@localhost:5432/postgres"; //for local postgres server
-var connection_online = process.env.DATABASE_URL; //for online version
+var pg = require('pg');
+//var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //for local postgres server
+var connection = process.env.DATABASE_URL; //for online version
 
 /**
  * This function is called by index.js to initialize a new game instance.
@@ -23,10 +24,11 @@ exports.initGame = function(sio, socket){
     // Player Events
     gameSocket.on('createNewGame', createNewGame);
     gameSocket.on('joinGame', joinGame);
-    gameSocket.on('nextRound', nextRound);
+    gameSocket.on('broadcastGameID', broadcastGameID);
     gameSocket.on('checkAnswer', checkAnswer);
     gameSocket.on('selection', selection);
     gameSocket.on('playerReady', playerReady);
+    gameSocket.on('playerQuit', playerQuit);
 };
 
 /* *******************************
@@ -83,9 +85,15 @@ function joinGame(data) {
     if( room != null ){
         // attach the socket id to the data object.
  //update this number as the number of models increases
-        var objID = 5;//Math.floor(Math.random() * numOfObjects);
+
+        var objID = Math.floor(Math.random() * numOfObjects);
         data.objectID = objID;
         data.mySocketId = sock.id;
+
+
+        //data.playerId = sock.id;
+        //data.hostId = Object.keys(room)[0];
+
         data.gameId = roomid;
 
 
@@ -115,6 +123,11 @@ function joinGame(data) {
     }
 }
 
+function broadcastGameID(data){
+    var roomid = this.gameId;
+    io.sockets.in(roomid).emit('newGameId', {gameId: data});
+}
+
 function playerReady(data){
 
     var roomid = this.gameId;
@@ -130,20 +143,6 @@ function playerReady(data){
     }
 }
 
-/**
- * A player answered correctly. Time for the next word.
- * @param data Sent from the client. Contains the current round and gameId (room)
- */
-function nextRound(data) {
-    //if(data.round < objPool.length ){
-    //    // Send a new set of words back to the host and players.
-    //    sendObj(data.round, data.gameId);
-    //} else {
-    //    // If the current round exceeds the number of words, send the 'gameOver' event.
-    //    io.sockets.in(data.gameId).emit('gameOver',data);
-    //}
-}
-
 // player selected meshes, emit to the other player
 function selection(data) {
     var roomid = this.gameId;
@@ -156,23 +155,6 @@ function selection(data) {
  */
 function checkAnswer(data) {
     var roomid = this.gameId;
-    pg.connect(connection, function(err, client, done) {
-        if(err) res.send("Could not connect to DB: " + err);
-        var game_id = req.body.game_id;
-        var all_selected_id = req.body.all_selected_id;
-        var duration = req.body.duration;
-        var score = req.body.score;
-        var guess = req.body.answer;
-        var correct = req.body.correct;
-        var round = req.body.round;
-        var penalty = [];
-        var insert_query = client.query('INSERT INTO impressionist_results_table (game_id, round, all_selected_id, duration,' +
-            ' score, guess, correct, penalty) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-            [game_id, round, all_selected_id, duration, score, guess, correct, penalty]);
-        insert_query.on('err', handle_error.bind(this, err));
-        insert_query.on('end', function(result){res.status(202).send("Accepted data");});
-        done();
-    });
     if (data.correct){
         //data.obj = getObjData(data.played);
         io.sockets.in(roomid).emit('answerCorrect', data);
@@ -182,35 +164,9 @@ function checkAnswer(data) {
     }
 }
 
-/**
- * This function does all the work of getting a new words from the pile
- * and organizing the data to be sent back to the clients.
- *
- * @param i The index of the wordPool.
- * @returns {{round: *, word: *, answer: *, list: Array}}
- */
-function getObjData(i){
-    // Randomize the order of the available words.
-    // The first element in the randomized array will be displayed on the host screen.
-    // The second element will be hidden in a list of decoys as the correct answer
-    //var objs = shuffle(objPool[i].objs);
-
-    //// Randomize the order of the decoy words and choose the first 5
-    //var decoys = shuffle(wordPool[i].decoys).slice(0,5);
-    //
-    //// Pick a random spot in the decoy list to put the correct answer
-    //var rnd = Math.floor(Math.random() * 5);
-    //decoys.splice(rnd, 0, words[1]);
-    //
-    //// Package the words into a single object.
-    //var wordData = {
-    //    round: i,
-    //    word : words[0],   // Displayed Word
-    //    answer : words[1], // Correct Answer
-    //    list : decoys      // Word list for player (decoys and answer)
-    //};
-    //
-    //return wordData;
+function playerQuit(){
+    var roomid = this.gameId;
+    io.sockets.in(roomid).emit('quitGame', data);
 }
 
 /*

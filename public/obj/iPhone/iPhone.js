@@ -5,135 +5,164 @@ var CG = [2.803531, -0.20256299999999994, -4.1529195] ; //find this using findCG
 
 $.each(CG, function(i,cg) {CG[i] = cg *scale;})
 
-THREE.SceneLoad = function () {
+var loadobject = function(obj_string,scene,count,callback){
+	var string = obj_string.shift();
+	if(typeof string != 'undefined'){
+		$.getJSON(string, function( object) {
+			var objects = JSONMeshParser(object);
+			objects.scale.set(scale, scale, scale);
+			objects.position.x = objects.position.x - CG[0];
+			objects.position.y = objects.position.y - CG[1];
+		   	objects.position.z = objects.position.z - CG[2];
+			objects.name = ""+count;
+			objects.allSelectedID = [];
+			scene.add(objects);
+			scene.FaceArray.push(objects.geometry.faces.length);
+			count++;
+			loadobject(obj_string,scene,count,callback);
+		});
+	}
+	else{
+		callback();
+	}
+};
+
+THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
     THREEScene.name = "iPhone";
     THREEScene.FaceArray = [];
     THREEScene.CG = CG;
     THREEScene.CG_emptyObj = [450,50,1050];
-        //edge
-		$.getJSON("obj/iPhone/data (34).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-            objects.position.x = objects.position.x - CG[0];
-            objects.position.y = objects.position.y - CG[1];
-            objects.position.z = objects.position.z - CG[2];
-			THREEScene.add(objects);
-            objects.name = ("1");
-            objects.allSelectedID = [];
-
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
-
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0x303030);
 
 
-		} );
-
-        //Power Button
-		$.getJSON("obj/iPhone/data (35).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-            objects.position.x = objects.position.x - CG[0];
-            objects.position.y = objects.position.y - CG[1];
-            objects.position.z = objects.position.z - CG[2];
-
-            THREEScene.add(objects);
-            objects.name = ("2");
-            objects.allSelectedID = [];
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
+	var objstrings = ['obj/iPhone/data (34).json', 'obj/iPhone/data (35).json', 'obj/iPhone/data (36).json',
+	'obj/iPhone/data (37).json', 'obj/iPhone/data (42).json', 'obj/iPhone/screen.json'];
+	loadobject(objstrings,THREEScene,0,function(){
+		if (typeof ajax != 'undefined') ajax();
+	});
 
 
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0x252525);
-
-
-		} );
-
-        //volume buttons
-		$.getJSON("obj/iPhone/data (36).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-            objects.name = "selectable";
-            objects.position.x = objects.position.x - CG[0];
-            objects.position.y = objects.position.y - CG[1];
-            objects.position.z = objects.position.z - CG[2];
-
-			THREEScene.add(objects);
-            objects.name = ("3");
-            objects.allSelectedID = [];
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
-
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0x252525);
-
-
-		} );
-
-        //lock
-		$.getJSON("obj/iPhone/data (37).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-            objects.position.x = objects.position.x - CG[0];
-            objects.position.y = objects.position.y - CG[1];
-            objects.position.z = objects.position.z - CG[2];
-
-			THREEScene.add(objects);
-            objects.name = ("4");
-            objects.allSelectedID = [];
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
-
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0x252525);
-
-
-		} );
-
-        //apple logo
-		$.getJSON("obj/iPhone/data (42).json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-            objects.position.x = objects.position.x - CG[0];
-            objects.position.y = objects.position.y - CG[1];
-            objects.position.z = objects.position.z - CG[2];
-
-			THREEScene.add(objects);
-            objects.name = ("5");
-            objects.allSelectedID = [];
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
-
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0xffffff);
-
-
-		} );
-
-        //screen
-		$.getJSON("obj/iPhone/screen.json", function( object) {
-			parsedFile = object;
-			objects = JSONMeshParser(object);
-			objects.scale.set(scale,scale,scale);
-            objects.position.x = objects.position.x - CG[0];
-            objects.position.y = objects.position.y - CG[1];
-            objects.position.z = objects.position.z - CG[2];
-
-			THREEScene.add(objects);
-            objects.name = ("6");
-            objects.allSelectedID = [];
-            THREEScene.FaceArray.push(objects.geometry.faces.length);
-
-			for (var i =0; i<objects.geometry.faces.length; i++)
-				objects.geometry.faces[i].color.setHex( 0x050507);
-
-
-		} );
-
-
+        ////edge
+		//$.getJSON("obj/iPhone/data (34).json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+         //   objects.position.x = objects.position.x - CG[0];
+         //   objects.position.y = objects.position.y - CG[1];
+         //   objects.position.z = objects.position.z - CG[2];
+		//	THREEScene.add(objects);
+         //   objects.name = ("1");
+         //   objects.allSelectedID = [];
+        //
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+		//	for (var i =0; i<objects.geometry.faces.length; i++)
+		//		objects.geometry.faces[i].color.setHex( 0x303030);
+        //
+        //
+		//} );
+        //
+        ////Power Button
+		//$.getJSON("obj/iPhone/data (35).json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+         //   objects.position.x = objects.position.x - CG[0];
+         //   objects.position.y = objects.position.y - CG[1];
+         //   objects.position.z = objects.position.z - CG[2];
+        //
+         //   THREEScene.add(objects);
+         //   objects.name = ("2");
+         //   objects.allSelectedID = [];
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+        //
+		//	for (var i =0; i<objects.geometry.faces.length; i++)
+		//		objects.geometry.faces[i].color.setHex( 0x252525);
+        //
+        //
+		//} );
+        //
+        ////volume buttons
+		//$.getJSON("obj/iPhone/data (36).json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+         //   objects.name = "selectable";
+         //   objects.position.x = objects.position.x - CG[0];
+         //   objects.position.y = objects.position.y - CG[1];
+         //   objects.position.z = objects.position.z - CG[2];
+        //
+		//	THREEScene.add(objects);
+         //   objects.name = ("3");
+         //   objects.allSelectedID = [];
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+		//	for (var i =0; i<objects.geometry.faces.length; i++)
+		//		objects.geometry.faces[i].color.setHex( 0x252525);
+        //
+        //
+		//} );
+        //
+        ////lock
+		//$.getJSON("obj/iPhone/data (37).json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+         //   objects.position.x = objects.position.x - CG[0];
+         //   objects.position.y = objects.position.y - CG[1];
+         //   objects.position.z = objects.position.z - CG[2];
+        //
+		//	THREEScene.add(objects);
+         //   objects.name = ("4");
+         //   objects.allSelectedID = [];
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+		//	for (var i =0; i<objects.geometry.faces.length; i++)
+		//		objects.geometry.faces[i].color.setHex( 0x252525);
+        //
+        //
+		//} );
+        //
+        ////apple logo
+		//$.getJSON("obj/iPhone/data (42).json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+         //   objects.position.x = objects.position.x - CG[0];
+         //   objects.position.y = objects.position.y - CG[1];
+         //   objects.position.z = objects.position.z - CG[2];
+        //
+		//	THREEScene.add(objects);
+         //   objects.name = ("5");
+         //   objects.allSelectedID = [];
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+		//	for (var i =0; i<objects.geometry.faces.length; i++)
+		//		objects.geometry.faces[i].color.setHex( 0xffffff);
+        //
+        //
+		//} );
+        //
+        ////screen
+		//$.getJSON("obj/iPhone/screen.json", function( object) {
+		//	parsedFile = object;
+		//	objects = JSONMeshParser(object);
+		//	objects.scale.set(scale,scale,scale);
+         //   objects.position.x = objects.position.x - CG[0];
+         //   objects.position.y = objects.position.y - CG[1];
+         //   objects.position.z = objects.position.z - CG[2];
+        //
+		//	THREEScene.add(objects);
+         //   objects.name = ("6");
+         //   objects.allSelectedID = [];
+         //   THREEScene.FaceArray.push(objects.geometry.faces.length);
+        //
+		//	for (var i =0; i<objects.geometry.faces.length; i++)
+		//		objects.geometry.faces[i].color.setHex( 0x050507);
+        //
+        //
+		//} );
 
 	//THREEScene.position.y = -60;
 	return THREEScene;
