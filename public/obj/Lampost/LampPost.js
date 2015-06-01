@@ -1,5 +1,5 @@
-var scale = 35;
-var zheight = -350;
+var scale = 30;
+var zheight = -1800;
 var answer = ['Lamppost'];
 
 THREE.SceneLoad = function (ajax) {
@@ -11,6 +11,7 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            //objects.position.y = -500;
 			THREEScene.add(objects);
             objects.name = ("1");
             objects.allSelectedID = [];

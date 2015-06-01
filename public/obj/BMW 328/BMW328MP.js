@@ -1,11 +1,14 @@
-var scale = 140;
+var scale = 125;
 var zheight = 0;
 var answer = ['BMW', 'bmw', 'car', '3 Series', 'BMW 3 Series', '3 series'];
+var CG = [-2.667, 0.667, -0.667]
+$.each(CG, function(i,cg) {CG[i] = cg *scale;})
 
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
     THREEScene.name = "BMW 328";
     THREEScene.FaceArray = [];
+    THREEScene.CG_emptyObj = [250, -100, -225];
 
     var r = "textures/bridge/";
     var urls = [ r + "posx.jpg", r + "negx.jpg",
@@ -19,6 +22,9 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
             objects.name = ("selectable");
 			THREEScene.add(objects);
             objects.name = ("1");
@@ -30,6 +36,9 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
 			THREEScene.add(objects);
             objects.name = ("2");
             objects.allSelectedID = [];
@@ -40,6 +49,9 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
 			THREEScene.add(objects);
             objects.name = ("3");
             objects.allSelectedID = [];
@@ -50,7 +62,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("4");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -60,7 +75,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("5");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -70,7 +88,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("6");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -80,7 +101,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("7");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -90,7 +114,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("8");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -100,7 +127,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			objects.material.opacity  = 0.1;
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            objects.material.opacity  = 0.1;
 			objects.material.reflectivity = 0.05;
 			THREEScene.add(objects);
             objects.name = ("9");
@@ -112,7 +142,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("10");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -122,7 +155,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("11");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -132,7 +168,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("12");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -142,7 +181,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("13");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -152,7 +194,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("14");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -162,7 +207,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("15");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -171,7 +219,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("16");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -180,7 +231,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("17");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -189,7 +243,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("18");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -200,7 +257,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("19");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -209,7 +269,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("20");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -218,7 +281,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("21");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -227,7 +293,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("22");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -238,7 +307,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("23");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -247,7 +319,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("24");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -256,7 +331,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("25");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -265,7 +343,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("26");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -276,7 +357,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("27");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -285,7 +369,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("28");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -294,7 +381,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("29");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -303,7 +393,10 @@ THREE.SceneLoad = function (ajax) {
 			parsedFile = object;
 			objects = JSONMeshParser(object);
 			objects.scale.set(scale,scale,scale);
-			THREEScene.add(objects);
+            objects.position.x = objects.position.x - CG[0];
+            objects.position.y = objects.position.y - CG[1];
+            objects.position.z = objects.position.z - CG[2];
+            THREEScene.add(objects);
             objects.name = ("30");
             objects.allSelectedID = [];
             THREEScene.FaceArray.push(objects.geometry.faces.length);
@@ -372,7 +465,8 @@ function JSONMeshParser(object) {
         	specular 	 : object.materials[0].specular,
         	uuid 		 : object.materials[0].uuid,
         	vertexColors : object.materials[0].vertexColors,
-            envMap       : textureCube
+            envMap       : textureCube,
+            side         : THREE.DoubleSide
 
 		});	
 	}

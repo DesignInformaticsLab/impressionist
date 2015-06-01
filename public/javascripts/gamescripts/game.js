@@ -66,7 +66,7 @@ var GAME = (function($){
         playerJoinedRoom : function(data) {
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
 
-            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[data.objectID];
 
             App.$wait.hide();
@@ -170,7 +170,7 @@ var GAME = (function($){
             App.$wait.hide();
             App.$game.show();
             App.objectString = "";
-            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[objectID.objectID];
 
             IO.onNewObjData({});
