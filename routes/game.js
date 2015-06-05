@@ -7,8 +7,8 @@ var playerReady;
 var numOfObjects = 5;
 
 var pg = require('pg');
-//var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //for local postgres server
-var connection = process.env.DATABASE_URL; //for online version
+var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //for local postgres server
+//var connection = process.env.DATABASE_URL; //for online version
 
 /**
  * This function is called by index.js to initialize a new game instance.
@@ -86,7 +86,7 @@ function joinGame(data) {
         // attach the socket id to the data object.
  //update this number as the number of models increases
 
-        var objID = Math.floor(Math.random() * numOfObjects);
+        var objID = 0;//Math.floor(Math.random() * numOfObjects);
         data.objectID = objID;
         data.mySocketId = sock.id;
 

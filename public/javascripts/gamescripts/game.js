@@ -66,11 +66,11 @@ var GAME = (function($){
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
 
 
-            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
-            App.objectString = possibleObjects[data.objectID];
+            var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            //App.objectString = possibleObjects[data.objectID];
 
 
-            App.objectString = App.objectstring_set[data.objectId];
+            App.objectString = App.objectstring_set[data.objectID];
 
             App.$wait.hide();
             App.$game.show();
@@ -193,7 +193,7 @@ var GAME = (function($){
             App.$game.show();
             App.objectString = "";
 
-            var possibleObjects = ["obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             App.objectString = possibleObjects[objectID.objectID];
 
             App.objectString = App.objectstring_set[objectId.objectID];
@@ -304,7 +304,7 @@ var GAME = (function($){
         /**
          * Object string contains all objects
          */
-        objectstring_set : ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+        objectstring_set : ["obj/Princeton/1.js", "obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
             "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js"],
 
 
@@ -1189,7 +1189,7 @@ var GAME = (function($){
                 var v3 = Obj.object.getObjectByName(childName).geometry.vertices[f.c];
 
                 //v1.sub(CG);
-                //v2.sub(CG);
+                       //v2.sub(CG);
                 //v3.sub(CG);
 
                 geom.vertices.push(v1, v2, v3);
