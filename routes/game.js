@@ -4,7 +4,7 @@
 var io;
 var gameSocket;
 var playerReady;
-var numOfObjects = 5;
+var numOfObjects = 16;
 
 var pg = require('pg');
 var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //for local postgres server
@@ -86,7 +86,7 @@ function joinGame(data) {
         // attach the socket id to the data object.
  //update this number as the number of models increases
 
-        var objID = 0;//Math.floor(Math.random() * numOfObjects);
+        var objID = Math.floor(Math.random() * numOfObjects);
         data.objectID = objID;
         data.mySocketId = sock.id;
 

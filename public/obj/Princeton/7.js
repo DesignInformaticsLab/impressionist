@@ -26,7 +26,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "Teapot";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/1.json'];
+	var objstrings = ['obj/Princeton/7.json'];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

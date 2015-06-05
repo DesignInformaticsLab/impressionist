@@ -66,7 +66,7 @@ var GAME = (function($){
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
 
 
-            var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            //var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
             //App.objectString = possibleObjects[data.objectID];
 
 
@@ -193,8 +193,8 @@ var GAME = (function($){
             App.$game.show();
             App.objectString = "";
 
-            var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
-            App.objectString = possibleObjects[objectID.objectID];
+            //var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
+            //App.objectString = possibleObjects[objectID.objectID];
 
             App.objectString = App.objectstring_set[objectId.objectID];
 
@@ -304,7 +304,9 @@ var GAME = (function($){
         /**
          * Object string contains all objects
          */
-        objectstring_set : ["obj/Princeton/1.js", "obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+        objectstring_set : ["obj/Princeton/1.js", "obj/Princeton/2.js", "obj/Princeton/3.js", "obj/Princeton/4.js",
+            "obj/Princeton/5.js", "obj/Princeton/6.js", "obj/Princeton/7.js", "obj/Princeton/8.js", "obj/Princeton/9.js",
+            "obj/Princeton/10.js", "obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
             "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js"],
 
 
