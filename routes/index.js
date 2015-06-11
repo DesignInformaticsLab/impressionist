@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var connection = "postgres://postgres:GWC464doi@localhost:5432/postgres"; //for local postgres server
-//var connection = process.env.DATABASE_URL; //for online version
+var connection = "postgres://postgres:GWC464doi@localhost:5432/postgres" || process.env.DATABASE_URL;
+//for local postgres server, and Heroku server
+
 
 
 function handle_error(res, err) {
