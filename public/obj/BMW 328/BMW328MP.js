@@ -5,22 +5,7 @@ var CG = [-2.667, 0.667, -0.667]
 $.each(CG, function(i,cg) {CG[i] = cg *scale;})
 
 var loadobject = function(obj_string,scene,count,callback){
-	var string = obj_string.shift();
-	if(typeof string != 'undefined'){
-		$.getJSON(string, function( object) {
-			var objects = JSONMeshParser(object);
-			objects.scale.set(scale, scale, scale);
-			objects.name = ""+count;
-			objects.allSelectedID = [];
-			scene.add(objects);
-			scene.FaceArray.push(objects.geometry.faces.length);
-			count++;
-			loadobject(obj_string,scene,count,callback);
-		});
-	}
-	else{
-		callback();
-	}
+
 };
 
 THREE.SceneLoad = function (ajax) {

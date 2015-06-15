@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['person'];
+var answer = ['horse'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -8,34 +8,14 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
+            objects.rotation.x = -3.14/2;
 			objects.name = ""+count;
 			objects.allSelectedID = [];
-
-            $.getJSON('obj/Princeton/1Topo.json', function(obj) {
-                scene.parsed = obj;
-                $.each(obj.parsed.lambda, function (i,val) {
-                    scene.children[0].geometry.vertices[i].salColor = val[0];
-                })
-
-
-                scene.children[0].geometry.colorMin = obj.parsed.maxMinLambda[1];
-                scene.children[0].geometry.colorMax = obj.parsed.maxMinLambda[0];
-
-
-            })
-
 			scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
 			count++;
 			loadobject(obj_string,scene,count,callback);
 		});
-
-
-
-
-
-
-
 	}
 	else{
 		callback();
@@ -44,10 +24,10 @@ var loadobject = function(obj_string,scene,count,callback){
 
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
-	THREEScene.name = "Princeton1";
+	THREEScene.name = "P383";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/1.json'];
+	var objstrings = ['obj/Princeton/383.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

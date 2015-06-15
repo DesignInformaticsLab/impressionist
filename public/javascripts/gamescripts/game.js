@@ -304,10 +304,11 @@ var GAME = (function($){
         /**
          * Object string contains all objects
          */
-        objectstring_set : ["obj/Princeton/1.js", "obj/Princeton/2.js", "obj/Princeton/3.js", "obj/Princeton/4.js",
-            "obj/Princeton/5.js", "obj/Princeton/6.js", "obj/Princeton/7.js", "obj/Princeton/8.js", "obj/Princeton/9.js",
-            "obj/Princeton/10.js", "obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
-            "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js"],
+        objectstring_set : ['obj/Princeton/1.js'],
+        //"obj/Princeton/1.js", "obj/Princeton/2.js", "obj/Princeton/3.js", "obj/Princeton/4.js",
+        //    "obj/Princeton/5.js", "obj/Princeton/6.js", "obj/Princeton/7.js", "obj/Princeton/8.js", "obj/Princeton/9.js",
+        //    "obj/Princeton/10.js", "obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+        //    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js"],
 
 
         /* *************************************
@@ -1206,7 +1207,11 @@ var GAME = (function($){
                 //geom.applyMatrix( new THREE.Matrix4().makeTranslation( Obj.object.CG[0]/225, Obj.object.CG[1]/225, Obj.object.CG[2]/225 ) );
 
                 var mesh = new THREE.Mesh(geom, Obj.object.getObjectByName(childName).material);
-                mesh.rotation.y = 1;
+
+                mesh.rotation.x = Obj.object.getObjectByName(childName).rotation.x;
+                mesh.rotation.y = Obj.object.getObjectByName(childName).rotation.y;
+                mesh.rotation.z = Obj.object.getObjectByName(childName).rotation.z;
+
                 mesh.scale.set(Obj.scale, Obj.scale, Obj.scale);
                 mesh.castShadow = true;
 
@@ -1360,6 +1365,52 @@ var GAME = (function($){
                 'num_selections': ""
                 }
             );
+        },
+
+        paint_faces: function () {
+            var r, g, b;
+            var col;
+            $.each(Obj.object.children[0].geometry.faces, function(i,f){
+                col = Obj.getRGB(Math.max(
+                    Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].a].salColor,
+                    Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].b].salColor,
+                    Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].c].salColor));
+
+                Obj.object.children[0].geometry.faces[i].color.r = col[0]/255;
+                Obj.object.children[0].geometry.faces[i].color.g = col[1]/255;
+                Obj.object.children[0].geometry.faces[i].color.b = col[2]/255;
+            });
+
+            Obj.object.children[0].geometry.colorsNeedUpdate = true;
+
+
+        },
+
+        getRGB: function(val) {
+            var min = GAME.Obj.object.children[0].geometry.colorMin;
+            var max = GAME.Obj.object.children[0].geometry.colorMax;;
+
+            if (val>max) {
+                val = max;
+            } else if (val < min) {
+                val = min;
+            }
+
+            var half = (max + min)/2 ;
+            var col = [0,0,0];
+
+            if (val < half) {
+                col[0] = 0;
+                col[1]= 255/(half - min) * (val - min);
+                col[2] =  255 - 255/(half - min)  * (val - min);
+            } else if (half < val) {
+                col[0] = 255/(max - half) * (val - half);
+                col[1] = 255 + -255/(max - half)  * (val - half);
+                col[2] = 0;
+            }
+
+
+            return (col);
         },
 
 
