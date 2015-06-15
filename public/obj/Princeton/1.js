@@ -23,7 +23,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
-	THREEScene.name = "Teapot";
+	THREEScene.name = "Princeton1";
 	THREEScene.FaceArray = [];
 
 	var objstrings = ['obj/Princeton/1.json'];
