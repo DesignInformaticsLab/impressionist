@@ -1,5 +1,6 @@
 var scale = 35;
 var zheight = -350;
+var answer = ['lamp', "lamppost", "street light"];
 THREE.SceneLoad = function () {
 	THREEScene  = new THREE.Scene();
     THREEScene.name = "Lamppost";

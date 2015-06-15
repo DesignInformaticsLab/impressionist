@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['person'];
+var answer = ['cow'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -10,32 +10,11 @@ var loadobject = function(obj_string,scene,count,callback){
 			objects.scale.set(scale, scale, scale);
 			objects.name = ""+count;
 			objects.allSelectedID = [];
-
-            $.getJSON('obj/Princeton/1Topo.json', function(obj) {
-                scene.parsed = obj;
-                $.each(obj.parsed.lambda, function (i,val) {
-                    scene.children[0].geometry.vertices[i].salColor = val[0];
-                })
-
-
-                scene.children[0].geometry.colorMin = obj.parsed.maxMinLambda[1];
-                scene.children[0].geometry.colorMax = obj.parsed.maxMinLambda[0];
-
-
-            })
-
 			scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
 			count++;
 			loadobject(obj_string,scene,count,callback);
 		});
-
-
-
-
-
-
-
 	}
 	else{
 		callback();
@@ -47,7 +26,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "Teapot";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/1.json'];
+	var objstrings = ['obj/Princeton/381.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});
