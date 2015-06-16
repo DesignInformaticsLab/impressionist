@@ -5,6 +5,9 @@ var io;
 var gameSocket;
 var playerReady;
 var numOfObjects = 1;
+var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js",
+    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
 var pg = require('pg');
 var connection = process.env.DATABASE_URL || "postgres://postgres:54093960@localhost:5432/postgres";
@@ -85,14 +88,11 @@ function joinGame(data) {
     if( room != null ){
         // attach the socket id to the data object.
  //update this number as the number of models increases
-        try {
-            var numOfObjects = GAME.App.objectstring_set.length;
-        } catch (e) {
-            var numOfObjects = 1;
-        }
+        var numOfObjects = objectstring_set.length;
 
         var objID = Math.floor(Math.random() * numOfObjects);
 
+        data.objectstring_set = objectstring_set;
         data.objectID = objID;
         data.mySocketId = sock.id;
 
