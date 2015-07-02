@@ -5,9 +5,9 @@ var io;
 var gameSocket;
 var playerReady;
 var numOfObjects = 1;
-var objectstring_set = ["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
-    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js",
-    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
+var objectstring_set = ["obj/Princeton/381.js"]; //["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+//    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js",
+//    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
 var pg = require('pg');
 var connection = process.env.DATABASE_URL || "postgres://postgres:54093960@localhost:5432/postgres";

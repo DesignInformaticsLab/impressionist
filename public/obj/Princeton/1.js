@@ -13,7 +13,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
             $.getJSON('obj/Princeton/1Topo.json', function(obj) {
                 scene.parsed = obj;
-                $.each(obj.parsed.lambda, function (i,val) {
+                $.each(obj.parsed.Results, function (i,val) {
                     scene.children[0].geometry.vertices[i].salColor = val[0];
                 })
 
