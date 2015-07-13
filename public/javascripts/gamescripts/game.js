@@ -1361,7 +1361,7 @@ var GAME = (function($){
             var r, g, b;
             var col;
             $.each(Obj.object.children[0].geometry.faces, function(i,f){
-                col = Obj.getRGB(Math.max(
+                col = Obj.getRGB(1/3*(
                     Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].a].salColor,
                     Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].b].salColor,
                     Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].c].salColor));

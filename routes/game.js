@@ -4,8 +4,12 @@
 var io;
 var gameSocket;
 var playerReady;
-var numOfObjects = 1;
-var objectstring_set = ["obj/Princeton/381.js"]; //["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+
+var objectstring_set = ["obj/Princeton/381.js","obj/Princeton/382.js","obj/Princeton/383.js","obj/Princeton/384.js",
+    "obj/Princeton/385.js","obj/Princeton/386.js","obj/Princeton/387.js","obj/Princeton/388.js","obj/Princeton/389.js",
+    "obj/Princeton/390.js","obj/Princeton/391.js","obj/Princeton/392.js","obj/Princeton/393.js","obj/Princeton/394.js",
+    "obj/Princeton/395.js","obj/Princeton/396.js","obj/Princeton/397.js","obj/Princeton/398.js",
+    "obj/Princeton/400.js"]; //["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
 //    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js",
 //    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
@@ -143,7 +147,7 @@ function playerReady(data){
     else {
 
         try {
-            var numOfObjects = GAME.App.objectstring_set.length;
+            var numOfObjects = objectstring_set.length;
         } catch (e) {
             var numOfObjects = 1;
         }

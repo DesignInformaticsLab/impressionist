@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['pig'];
+var answer = ['ox'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -27,7 +27,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P383";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/383.json',];
+	var objstrings = ['obj/Princeton/386.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});
