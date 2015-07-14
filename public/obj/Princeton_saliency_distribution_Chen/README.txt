@@ -1,0 +1,1 @@
+These files contain the Schelling Distribution Functions (S_D(V) in the paper).  Each file contains a value between 0 and 1 for every vertex of a mesh, where higher values indicate more likely to be selected by a person in the Schelling Point Study.

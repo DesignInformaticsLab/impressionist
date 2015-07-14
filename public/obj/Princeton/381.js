@@ -11,19 +11,15 @@ var loadobject = function(obj_string,scene,count,callback){
 			objects.name = ""+count;
 			objects.allSelectedID = [];
 
-            $.getJSON('obj/Princeton/381Topo.json', function(obj) {
-                scene.parsed = obj;
-                $.each(obj.parsed.Results, function (i,val) {
-                    scene.children[0].geometry.vertices[i].salColor = val[0];
-                })
-
-
-                scene.children[0].geometry.colorMin = obj.parsed.maxMinLambda[1];
-                scene.children[0].geometry.colorMax = obj.parsed.maxMinLambda[0];
-
-
-            })
-
+            //$.getJSON('obj/Princeton/381Topo.json', function(obj) {
+            //    scene.parsed = obj;
+            //    $.each(obj.parsed.Results, function (i,val) {
+            //        scene.children[0].geometry.vertices[i].salColor = val[0];
+            //    })
+            //
+            //    scene.children[0].geometry.colorMin = obj.parsed.maxMinLambda[1];
+            //    scene.children[0].geometry.colorMax = obj.parsed.maxMinLambda[0];
+            //})
 
             scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
@@ -38,7 +34,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
-	THREEScene.name = "Teapot";
+	THREEScene.name = "P381";
 	THREEScene.FaceArray = [];
 
 	var objstrings = ['obj/Princeton/381.json',];

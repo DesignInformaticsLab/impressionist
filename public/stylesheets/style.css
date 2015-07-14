@@ -171,6 +171,37 @@
     outline: none !important;
 }
 
+#stat {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: none;
+    z-index: 0;
+}
+
+#comp_model1, #comp_model2 {
+    position: relative;
+    top: 0px;
+    float: left;
+    width: 50%;
+    height: 100%;
+    z-index: 1;
+    outline: none !important;
+}
+
+#objlist {
+    position: absolute;
+    width: 100%;
+    z-index: 5;
+}
+.object_div a{
+    font-size: 10;
+    background: #eee;
+    color: #222;
+}
+
 
 /* From bootstrap cover template */
 /*

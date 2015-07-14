@@ -119,13 +119,13 @@ var GAME = (function($){
             //    object.children[childnumber].geometry.colorsNeedUpdate = true;
             //    selections.unshift(childnumber);
             //}
-            if(Obj.object != undefined) { // if model exists
+            if(Obj.object_set[0].object != undefined) { // if model exists
                 var selections = JSON.parse(sig);
                 var childName = selections.shift().toString();
                 if (App.myRole == 'Player') {
                     // create meshes on fly
 
-                    Obj.createMesh(selections, childName);
+                    Obj.object_set[0].createMesh(selections, childName);
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
                     App.$bar.css('opacity', App.selection_capacity / 1000 * App.progressbar_size);
@@ -133,9 +133,9 @@ var GAME = (function($){
                 }
                 else if (App.myRole == 'Host') {
                     $.each(selections, function(id,i){
-                        Obj.object.getObjectByName(childName).geometry.faces[i].color.setHex(0xff7777);
+                        Obj.object_set[0].object.getObjectByName(childName).geometry.faces[i].color.setHex(0xff7777);
                     });
-                    Obj.object.getObjectByName(childName).geometry.colorsNeedUpdate = true;
+                    Obj.object_set[0].object.getObjectByName(childName).geometry.colorsNeedUpdate = true;
                 }
             }
         },
@@ -201,14 +201,14 @@ var GAME = (function($){
          * A new obj for the round is returned from the server.
          * @param data
          */
-        onNewObjData : function(callback) {
+        onNewObjData : function(target, callback) {
             $.getScript( App.objectString, function() {
                 console.log( "New object loaded." );
                 // reset game
                 App.Host.selection_capacity = 10000; // assign player selection capacity for current obj
-                Obj.correct_answer = answer; // get correct answers
-                Obj.height = zheight;
-                Obj.scale = scale;
+                Obj.object_set[0].correct_answer = answer; // get correct answers
+                Obj.object_set[0].height = zheight;
+                Obj.object_set[0].scale = scale;
 
                 App.$model.html('');
                 if(App.myRole == 'Player'){
@@ -227,9 +227,9 @@ var GAME = (function($){
 
                 App.start_obj_time = Date.now();
                 App.currentTime = Date.now();
-                Obj.init(callback);
-                Obj.animate();
-                Obj.object.rotation.y = Math.random()*Math.PI*2;
+                var o = Obj.init(target, callback);
+                o.animate();
+                o.object.rotation.y = Math.random()*Math.PI*2;
                 //console.log('rotation:');
                 //console.log(GAME.Obj.object.rotation.y );
             });
@@ -322,8 +322,9 @@ var GAME = (function($){
             App.$doc = $(document);
             App.$wait = $('#wait');
             App.$home = $('#home');
+
+            // div for game
             App.$game = $('#game');
-            App.$stat = $('#stat');
             App.$model = $('#model');
             App.$score = $('#score');
             App.$guessoutput = $('#guessoutput');
@@ -335,6 +336,14 @@ var GAME = (function($){
             App.$timebar = $('#timebar');
             App.$entry = $('#entry');
             App.$continue = $('#continue');
+
+            // div for stats
+            App.$stat = $('#stat');
+            App.$comp_model1 = $('#comp_model1');
+            App.$comp_model2 = $('#comp_model2');
+            App.$objlist = $('#objlist');
+
+            // buttons
             App.$continue_btn = $('#continue_btn');
             App.$home_btn = $($('li')[0]);
             App.$game_btn = $($('li')[1]);
@@ -346,6 +355,7 @@ var GAME = (function($){
                 -App.$time.width()-App.$score.width()-30)*.5;
             var menu_bottom = $('.mastfoot').height();
             App.$menu.css('bottom',menu_bottom);
+            App.$objlist.css('bottom',menu_bottom);
             //App.$game.height(game_height);
             App.$time.css('marginLeft',margin_left+'px');
             App.$timebar.css('marginLeft',margin_left+'px');
@@ -364,11 +374,18 @@ var GAME = (function($){
          */
         bindEvents: function () {
             // Host and Player
-            App.$model.mousemove(function(e){App.onMouseMove(e)});
-            App.$model.mousedown(function(e){App.onMouseDown(e)});
-            App.$model.mouseup(function(e){App.onMouseUp(e)});
-            App.$model.keyup(function(e){App.onKeyUp(e)});
-            App.$model.keydown(function(e){App.onKeyDown(e)});
+            App.$model.mousemove(function(e){App.onMouseMove(e, App.$model)});
+            App.$model.mousedown(function(e){App.onMouseDown(e, App.$model)});
+            App.$model.mouseup(function(e){App.onMouseUp(e, App.$model)});
+            App.$model.keyup(function(e){App.onKeyUp(e, App.$model)});
+            App.$model.keydown(function(e){App.onKeyDown(e, App.$model)});
+            App.$comp_model1.mousemove(function(e){App.onMouseMove(e, App.$comp_model1)});
+            App.$comp_model1.mousedown(function(e){App.onMouseDown(e, App.$comp_model1)});
+            App.$comp_model1.mouseup(function(e){App.onMouseUp(e, App.$comp_model1)});
+            App.$comp_model2.mousemove(function(e){App.onMouseMove(e, App.$comp_model2)});
+            App.$comp_model2.mousedown(function(e){App.onMouseDown(e, App.$comp_model2)});
+            App.$comp_model2.mouseup(function(e){App.onMouseUp(e, App.$comp_model2)});
+
             window.addEventListener( 'resize', App.onWindowResize, false );
 
             // Host
@@ -417,7 +434,8 @@ var GAME = (function($){
                 App.$wait.hide();
                 App.$game.hide();
                 App.$stat.show();
-                App.$stat.html("");
+                App.$comp_model1.html(""); // clean div for new models
+                App.$comp_model2.html("");
                 App.showList(); // show all objects available
                 App.$home_btn.removeClass('active');
                 App.$game_btn.removeClass('active');
@@ -425,10 +443,32 @@ var GAME = (function($){
             });
 
             App.$stat.on('click', '.object_div', function(){
-               Obj.showHeatmap(this.id-1);
-               // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
+                // clear previoius drawings
+                Obj.object_set = [];
+                App.$comp_model1.html('');
+                App.$comp_model2.html('');
+
+                // show our saliency
+                var id = this.id-1;
+                Obj.showHeatmap(id,0,App.$comp_model1, function(){
+                    // show existing saliency
+                    Obj.showHeatmap(id,1,App.$comp_model2);
+                });
+                // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
             });
         },
+
+
+        /**
+         * check if the global list objectstring_set in routes\games.js is the same as the object table,
+         * if not, add new table entries and the objectstring list
+         * ONLY USED BY ADMINISTRATOR
+         * NOT YET IMPLEMENTED
+         */
+        updateDatabase: function () {
+            $.post('update_database');
+        },
+
 
         /* *************************************
          *             Game Logic              *
@@ -464,45 +504,48 @@ var GAME = (function($){
                 +App.$time.width()+App.$score.width()+'px');
             App.progressbar_size = App.$select.css('opacity')/1;
 
-            Obj.camera.aspect = App.$model.width() / App.$model.height();
-            Obj.camera.updateProjectionMatrix();
-
-            /* if (VRMODE) {
-             Obj.vrEffect.setSize(window.innerWidth, window.innerHeight);
-             }
-             else {*/
-            Obj.renderer.setSize(App.$model.width(), App.$model.height());
-            //}
+            $.each(Obj.object_set, function(i,o){
+                o.camera.aspect = App.$model.width() / App.$model.height();
+                o.camera.updateProjectionMatrix();
+                /* if (VRMODE) {
+                 Obj.vrEffect.setSize(window.innerWidth, window.innerHeight);
+                 }
+                 else {*/
+                o.renderer.setSize(App.$model.width(), App.$model.height());
+                //}
+            });
         },
 
         /**
          * when mouse move, change view and do select() when SELECT is true
          * @param e: mouse event
          */
-        onMouseMove: function (e) {
+        onMouseMove: function (e, target) {
             e.preventDefault();
             var tempx = App.mouse.x;
             var tempy = App.mouse.y;
-            App.mouse.x = ( e.clientX / App.$model.width()) * 2 - 1;
-            App.mouse.y = - ( e.clientY / App.$model.height() ) * 2 + 1;
+            App.mouse.x = ( e.clientX / target.width()) * 2 - 1;
+            App.mouse.y = - ( e.clientY / target.height() ) * 2 + 1;
             if (App.PRESSED == true){
                 if (App.Host.SELECT == true) {
                     App.Host.select();
                 }
                 else {
-                    Obj.theta = (App.mouse.x - tempx)*4.0;
-                    Obj.beta = (App.mouse.y-tempy)*2.0;
+                    $.each(Obj.object_set, function(i,o){
+                        o.theta = (App.mouse.x - tempx)*4.0;
+                        o.beta = (App.mouse.y-tempy)*2.0;
+                    });
                 }
             }
         },
 
-        onMouseDown: function (e) {
+        onMouseDown: function (e, target) {
             e.preventDefault();
             if (!App.isJqmGhostClick(event)) {
                 App.PRESSED = true;
                 if (App.PRESSED == true && App.Host.SELECT == true) {
-                    App.mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
-                    App.mouse.y = -( e.clientY / window.innerHeight ) * 2 + 1;
+                    App.mouse.x = ( e.clientX / target.width() ) * 2 - 1;
+                    App.mouse.y = -( e.clientY / target.height() ) * 2 + 1;
                     App.Host.select();
 
                 }
@@ -511,8 +554,10 @@ var GAME = (function($){
         onMouseUp: function (e) {
             e.preventDefault();
             App.PRESSED = false;
-            Obj.theta = 0;
-            Obj.beta = 0;
+            $.each(Obj.object_set, function(i,o){
+                o.theta = 0;
+                o.beta = 0;
+            });
         },
 
         /**
@@ -558,7 +603,7 @@ var GAME = (function($){
         showList: function(){
             $.post('/getObjectList',{},function(data){
                 $.each(data, function(i,d){
-                    $("#stat").append("<div class='object_div btn btn-lg btn-default' id="
+                    $("#objlist").append("<div class='object_div btn' id="
                         + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
                 })
             })
@@ -620,23 +665,23 @@ var GAME = (function($){
 
             select: function () {
                 if (App.Host.selection_capacity>0){ // if still can select
-                    Obj.raycaster.setFromCamera( App.mouse, Obj.camera );
+                    Obj.object_set[0].raycaster.setFromCamera( App.mouse, Obj.object_set[0].camera );
                     App.Host.selectedStrings = [];
                     var intersections=[];
 
                     try {
-                        intersections = Obj.raycaster.intersectObjects( Obj.scene.children[0].children);
+                        intersections = Obj.object_set[0].raycaster.intersectObjects( Obj.object_set[0].scene.children[0].children);
                     } catch (e) {
                         intersections[0] = null ;
                     }
                     var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 
                     if (intersection != null) {
-                        if(Obj.object.getObjectByName(intersection.object.name).allSelectedID.indexOf(intersection.faceIndex)==-1){//if not selected
-                            Obj.selectNeighboringFaces3(
-                                Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
-                                Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
-                                Obj.scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex,intersection.object.name);
+                        if(Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.indexOf(intersection.faceIndex)==-1){//if not selected
+                            Obj.object_set[0].selectNeighboringFaces3(
+                                Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
+                                Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
+                                Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex,intersection.object.name);
                             //console.log('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
                             //console.log('with doubles');
                             //console.log(App.Host.selectedStrings);
@@ -648,12 +693,12 @@ var GAME = (function($){
                             //
                             //})
 
-                            App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
+                            App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
 
                             //console.log('only new selections');
                             //console.log(App.Host.selectedStrings);
                             $.each(App.Host.selectedStrings, function(i, SS) {
-                                Obj.object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
+                                Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
                             });
                             //console.log('allSelectedID');
                             //console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
@@ -680,7 +725,7 @@ var GAME = (function($){
                             var mesh_id = parseInt(intersection.object.name);
                             var bias = 0;
                             for(var i=0;i<mesh_id;i++){
-                                bias += Obj.object.FaceArray[i];
+                                bias += Obj.object_set[0].object.FaceArray[i];
                             }
                             var uniqueValues = [];
                             $.each(App.Host.selectedStrings, function (i,s) {
@@ -692,8 +737,6 @@ var GAME = (function($){
                             $.each(uniqueValues, function(i,UV) {
                                 App.Host.allSelectedIDMaster.push(UV);
                             });
-
-
 
                             App.Host.selectedStrings.unshift(parseInt(intersection.object.name));
                             App.Host.selection_capacity = App.Host.selection_capacity - App.Host.selectedStrings.length + 1;
@@ -784,11 +827,11 @@ var GAME = (function($){
                 var data = {
                     game_id: App.gameId,
                     answer: answer,
-                    correct: $.inArray(answer.toLowerCase(), Obj.correct_answer)>=0,
+                    correct: $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0,
                     round: App.currentRound,
                     duration: Date.now()-App.start_obj_time, // time from start of the object
                     score: App.score,
-                    object_name: Obj.object.name,
+                    object_name: Obj.object_set[0].object.name,
                     all_selected_id: JSON.stringify(App.Host.allSelectedIDMaster)
                     //weight: JSON.stringify(weight)
                 };
@@ -922,58 +965,328 @@ var GAME = (function($){
 
 
     var Obj = {
-        object_id: [],
-        camera: [],
-        raycaster: [],
-        scene: [],
-        object: [],
-        emptyobject: [], // for the hidden obj on the player's side
-        renderer: [],
-        correct_answer: '',
-        theta: 0, // camera angle x
-        beta: 0, // camera angle y
-        radius: 1500,
-        height: [],
-        scale: [],
+        object_set: [],
+        object_scene: function(){
+            this.object_id = [];
+            this.camera = [];
+            this.raycaster = [];
+            this.scene = [];
+            this.object = [];
+            this.emptyobject = []; // for the hidden obj on the player's side
+            this.renderer = [];
+            this.correct_answer = '';
+            this.theta = 0; // camera angle x
+            this.beta = 0; // camera angle y
+            this.radius = 1500;
+            this.height = [];
+            this.scale = [];
+            var d = this;
 
-        init: function(callback) {
-            var container = App.$model[0];
-            Obj.camera = new THREE.PerspectiveCamera( 70, App.$model.width() / App.$model.height(), 1, 10000 );
+            this.createTextureCube = function() {
+                var r = "textures/bridge/";
+                var urls = [ r + "posx.jpg", r + "negx.jpg",
+                    r + "posy.jpg", r + "negy.jpg",
+                    r + "posz.jpg", r + "negz.jpg" ];
 
-            Obj.scene = new THREE.Scene();
+                var textureCube = THREE.ImageUtils.loadTextureCube( urls );
+                textureCube.format = THREE.RGBFormat;
+                textureCube.mapping = THREE.CubeReflectionMapping;
+                return textureCube;
+            };
+
+            this.createLights = function() {
+                var ambient = new THREE.AmbientLight( 0x020202 );
+                d.scene.add( ambient );
+
+                var directionalLight1 = new THREE.DirectionalLight( 0xffffff );
+                directionalLight1.position.set( d.camera.position.z + 50, d.camera.position.y, - d.camera.position.x );//.normalize();
+
+                var directionalLight2 = new THREE.DirectionalLight( 0xffffff );
+                directionalLight2.position.set( 1000, 500,-1000 );//.normalize();
+                d.scene.add( directionalLight1 );
+                d.scene.add( directionalLight2 );
+            },
+
+            /**
+             * create mesh faces on the player side
+             * @param selection: current face ids from meshes
+             * @param childnumber: current mesh id
+             */
+            this.createMesh = function(selection, childName ) {
+                //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
+
+                //update all selected face id, encoded by childname
+                var mesh_id = parseInt(childName);
+                var bias = 0;
+                for(var i=0;i<mesh_id;i++){
+                    bias += d.object.FaceArray[i];
+                }
+                var uniqueValues = [];
+                $.each(selection, function (i,s) {
+                    uniqueValues.push(s+bias);
+                });
+                App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
+
+                $.each(selection, function (i, s) {
+                    //if (App.Player.allSelectedID.indexOf(s) == -1) {
+                    //   App.Player.allSelectedID.push(s);
+
+                    var geom = new THREE.Geometry();
+                    var f = d.object.getObjectByName(childName).geometry.faces[s];
+                    var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
+                    var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
+                    var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
+
+                    //v1.sub(CG);
+                    //v2.sub(CG);
+                    //v3.sub(CG);
+
+                    geom.vertices.push(v1, v2, v3);
+
+                    var nf = new THREE.Face3(0, 1, 2);
+                    nf.vertexNormals = f.vertexNormals;
+                    nf.normal = f.normal;
+                    geom.faces.push(nf);
+
+                    var mesh = new THREE.Mesh(geom, d.object.getObjectByName(childName).material);
+
+                    mesh.rotation.x = d.object.getObjectByName(childName).rotation.x;
+                    mesh.rotation.y = d.object.getObjectByName(childName).rotation.y;
+                    mesh.rotation.z = d.object.getObjectByName(childName).rotation.z;
+
+                    mesh.scale.set(d.scale, d.scale, d.scale);
+                    mesh.castShadow = true;
+
+
+                    if (d.object.CG_emptyObj != undefined) {
+                        mesh.position.x =  d.object.CG_emptyObj[0];
+                        mesh.position.y =  d.object.CG_emptyObj[1];
+                        mesh.position.z =  d.object.CG_emptyObj[2];
+                    } else {
+                        mesh.position.x = 0;
+                        mesh.position.y = 0;
+                        mesh.position.z = 0;
+                    }
+                    d.emptyobject.add(mesh);
+                });
+            };
+
+            /**
+             * 3rd iteration of the mesh selection algorithm, works in conjunction
+             * with the second version
+             * @param a
+             * @param b
+             * @param c
+             * @param iteration
+             * @param faceindex
+             * @param name
+             */
+            this.selectNeighboringFaces3 = function(a,b,c,iteration,faceindex, name) {
+                for (var i=0; i<13; i++) {
+                    if (d.object.getObjectByName(name).sorted[1][i][a] != undefined) {
+                        if (iteration!=0) {
+                            d.selectNeigboringFaces2(
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][a]].a,
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][a]].b,
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][a]].c,
+                                iteration-1,d.object.getObjectByName(name).sorted[1][i][a], name);
+                        }
+
+                    }
+
+                    if (d.object.getObjectByName(name).sorted[1][i][b] != undefined) {
+                        if (iteration!=0) {
+
+                            d.selectNeigboringFaces2(
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][b]].a,
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][b]].b,
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][b]].c,
+                                iteration-1,d.object.getObjectByName(name).sorted[1][i][b], name);
+                        }
+                    }
+
+
+                    if (d.object.getObjectByName(name).sorted[1][i][c] != undefined) {
+                        if (iteration!=0) {
+
+                            d.selectNeigboringFaces2(
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][c]].a,
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][c]].b,
+                                d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[1][i][c]].c,
+                                iteration-1,d.object.getObjectByName(name).sorted[1][i][c], name);
+                        }
+                    }
+                }
+            };
+
+            /**
+             * 2nd iteration of the selection algorithm that works with the 3rd
+             * @param a
+             * @param b
+             * @param c
+             * @param iteration
+             * @param faceIndex
+             * @param name
+             */
+            this.selectNeigboringFaces2 = function(a, b, c, iteration, faceIndex, name) {
+
+                App.Host.selectedStrings.push(faceIndex);
+
+                if (d.object.getObjectByName(name).sorted[0][0][a] == faceIndex) {
+                    if (iteration != 0) {
+                        d.selectNeigboringFaces2(
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][1][a]].a,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][1][a]].b,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][1][a]].c, iteration - 1, d.object.getObjectByName(name).sorted[0][1][a])
+                    }
+                } else if (d.object.getObjectByName(name).sorted[0][1][a] == faceIndex) {
+                    if (iteration != 0) {
+                        d.selectNeigboringFaces2(
+                            d.object.getObjectByName(name).geometry.faces[object.getObjectByName(name).sorted[0][0][a]].a,
+                            d.object.getObjectByName(name).geometry.faces[object.getObjectByName(name).sorted[0][0][a]].b,
+                            d.object.getObjectByName(name).geometry.faces[object.getObjectByName(name).sorted[0][0][a]].c, iteration - 1, d.object.getObjectByName(name).sorted[0][0][a])
+                    }
+
+                }
+
+                if (d.object.getObjectByName(name).sorted[0][2][b] == faceIndex) {
+                    if (iteration != 0) {
+                        d.selectNeigboringFaces2(
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][3][b]].a,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][3][b]].b,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][3][b]].c, iteration - 1, d.object.getObjectByName(name).sorted[0][3][b])
+                    }
+                } else if (d.object.getObjectByName(name).sorted[0][3][b] == faceIndex) {
+                    if (iteration != 0) {
+                        d.selectNeigboringFaces2(
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][2][b]].a,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][2][b]].b,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][2][b]].c, iteration - 1, d.object.getObjectByName(name).sorted[0][2][b])
+                    }
+
+                }
+
+                if (d.object.getObjectByName(name).sorted[0][4][c] == faceIndex) {
+
+                    if (iteration != 0) {
+                        d.selectNeigboringFaces2(
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][5][c]].a,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][5][c]].b,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][5][c]].c, iteration - 1, d.object.getObjectByName(name).sorted[0][5][c])
+                    }
+                } else if (d.object.getObjectByName(name).sorted[0][5][c] == faceIndex) {
+                    if (iteration != 0) {
+                        d.selectNeigboringFaces2(
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][4][c]].a,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][4][c]].b,
+                            d.object.getObjectByName(name).geometry.faces[d.object.getObjectByName(name).sorted[0][4][c]].c, iteration - 1, d.object.getObjectByName(name).sorted[0][4][c])
+                    }
+
+                }
+            };
+
+
+            this.animate = function() {
+                requestAnimationFrame(d.animate);
+                d.render();
+            };
+
+            this.render = function() {
+                if(App.myRole != 'Player'){
+                    if(typeof(d.object)!='undefined'){
+
+                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                            d.object.rotation.y + d.theta, 0, 'XYZ' );
+                    }
+                }
+                else{
+                    if(typeof(d.emptyobject)!='undefined'){
+                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                    }
+                }
+
+                d.camera.position.x = 0;
+                d.camera.position.y = d.height; //don't change
+                d.camera.position.z = d.radius;
+
+                if (App.VRMODE){
+                    d.headControls.update();
+                    d.vrEffect.render( d.scene, d.camera );
+                }
+                else{
+                    d.renderer.render( d.scene, d.camera);
+                    if(typeof(d.object.getObjectByName("selectable"))!='undefined'){
+                        d.object.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
+                    }
+                }
+
+                // countdown when object is shown
+                App.$timebar.css('opacity',1-(Date.now()-App.currentTime)/App.totalTime/60000);
+                if (1-(Date.now()-App.currentTime)/App.totalTime/60000<=0){
+                    IO.gameOver();
+                }
+            };
+
+            this.paint_faces = function () {
+                $.each(d.object.children[0].geometry.faces, function(i,f){
+                    //col = d.getRGB(1/3*(
+                    //    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].a].salColor,
+                    //    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].b].salColor,
+                    //    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor));
+
+                    var col = Obj.getRGB((d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].a].salColor+
+                        d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].b].salColor+
+                        d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor)/3.0);
+
+                    //if (w>0){
+                    //    d.object.children[0].geometry.faces[i].color.r = Math.min(w+0.5,1.0);
+                    //    d.object.children[0].geometry.faces[i].color.g = 0.5;
+                    //    d.object.children[0].geometry.faces[i].color.b = 0.5;
+                    //}
+
+                    d.object.children[0].geometry.faces[i].color.r = col[0]/255;
+                    d.object.children[0].geometry.faces[i].color.g = col[1]/255;
+                    d.object.children[0].geometry.faces[i].color.b = col[2]/255;
+                });
+
+                d.object.children[0].geometry.colorsNeedUpdate = true;
+            };
+        },
+
+        init: function(target, callback) {
+            var container = target[0];
+            var o = new Obj.object_scene();
+            o.camera = new THREE.PerspectiveCamera( 70, target.width() / target.height(), 1, 10000 );
+            o.scene = new THREE.Scene();
             var background = new THREE.Scene();
             background.name = "background";
-            Obj.createTextureCube();
-            Obj.object = THREE.SceneLoad(callback);
-            Obj.object.name = Obj.correct_answer[0]; // use the first answer as the object name
+            o.createTextureCube();
+            o.object = THREE.SceneLoad(callback);
+            o.object.name = o.correct_answer[0]; // use the first answer as the object name
 
             if(App.myRole=='Player'){
-                Obj.emptyobject = new THREE.Scene();
-                Obj.emptyobject.name = "emptyobject";
-                Obj.emptyobject.castShadow  = true;
+                o.emptyobject = new THREE.Scene();
+                o.emptyobject.name = "emptyobject";
+                o.emptyobject.castShadow  = true;
+                o.scene.add(o.emptyobject);
             }
             else{
-                Obj.object.castShadow  = true;
+                o.object.castShadow  = true;
+                o.scene.add(o.object);
+
             }
 
+            o.camera.position.x = -o.radius;
+            o.camera.position.y = o.height; //don't change
+            o.camera.position.z = 0;
 
-            if(App.myRole == 'Player'){
-                Obj.scene.add(Obj.emptyobject);
-            }
-            else{
-                Obj.scene.add(Obj.object);
-                Obj.object.castShadow = true;
-            }
-            Obj.camera.position.x = -Obj.radius;
-            Obj.camera.position.y = Obj.height; //don't change
-            Obj.camera.position.z = 0;
+            o.createLights();
 
-            Obj.createLights();
+            o.raycaster = new THREE.Raycaster();
 
-            Obj.raycaster = new THREE.Raycaster();
-
-            Obj.renderer = new THREE.WebGLRenderer( { antialias: true } );
-            Obj.renderer.setPixelRatio( window.devicePixelRatio );
+            o.renderer = new THREE.WebGLRenderer( { antialias: true } );
+            o.renderer.setPixelRatio( window.devicePixelRatio );
 
             //if (App.VRMODE){
             //    var fullScreenButton = document.querySelector( '.full-screen' );
@@ -1014,371 +1327,129 @@ var GAME = (function($){
             //    }
             //}
 
-            Obj.renderer.setClearColor( 0xeeeeee );
-            Obj.renderer.setSize( App.$model.width(), App.$model.height());
-            Obj.renderer.sortObjects = false;
-            container.appendChild( Obj.renderer.domElement );
+            o.renderer.setClearColor( 0xeeeeee );
+            o.renderer.setSize( target.width(), target.height());
+            o.renderer.sortObjects = false;
+            container.appendChild( o.renderer.domElement );
+            Obj.object_set.push(o);
+            return o;
         },
 
-        showHeatmap: function(id) {
-            App.$game.show();
-            App.$menu.hide();
-            App.$model.html(""); // clean canvas
-            App.objectString = App.objectstring_set[id];
-            IO.onNewObjData(function(){
-                var weight = new Array(Obj.object.FaceArray.length);
-                $.each(weight, function(i,e){weight[i] = new Array(Obj.object.children[i].geometry.faces.length);});
-                var raw_face_id_array, mesh_id, face_id, max_weight, count;
-                $.post('/read_selection',{'object_name':Obj.object.name},function(response){
-                        $.each(response, function(i,r){
-                            raw_face_id_array = r.all_selected_id;
-                            $.each(raw_face_id_array, function(j,raw_face_id){
-                                mesh_id = 0; face_id = raw_face_id;
-                                count = 0;
-                                while(face_id-Obj.object.FaceArray[count]>=0){
-                                    face_id -= Obj.object.FaceArray[count];
-                                    mesh_id ++;
-                                    count ++;
-                                }
-
-                                if(typeof weight[mesh_id][face_id] == 'undefined'){
-                                    weight[mesh_id][face_id] = 1;
-                                }
-                                else{
-                                    weight[mesh_id][face_id] += 1;
-                                }
-                            })
+        showHeatmap: function(id,method,target,callback) {
+            $.get('/getRawObjectList', function(response) {
+                App.objectstring_set = response.objectstring_set;
+                App.objectString = App.objectstring_set[id];
+                $.getScript(App.objectString, function () {
+                    var inner_callback = function(){
+                        var weight = new Array(o.object.FaceArray.length);
+                        $.each(weight, function (i, e) {
+                            weight[i] = new Array(o.object.children[i].geometry.faces.length);
                         });
 
-                        max_weight = [];
-                        $.each(weight, function(i,w_mesh){
-                            max_weight.push(Math.max.apply(null, w_mesh.filter(function (x) {
-                                return isFinite(x);
-                            })));
-                        });
-                        var max_max_weight = Math.max.apply(Math,max_weight);
-                        $.each(weight, function(mesh_id,face_for_mesh){
-                            $.each(face_for_mesh, function(face_id,w){
-                                if(w){
-                                    if (face_id>=Obj.object.children[mesh_id].geometry.faces.length){
-                                        var stop = 1;
+                        if (method == 0) { // our method
+                            var raw_face_id_array, mesh_id, face_id, max_weight, count;
+                            $.post('/read_selection', {'object_name': o.object.name}, function (response) {
+                                    $.each(response, function (i, r) {
+                                        raw_face_id_array = r.all_selected_id;
+                                        $.each(raw_face_id_array, function (j, raw_face_id) {
+                                            mesh_id = 0;
+                                            face_id = raw_face_id;
+                                            count = 0;
+                                            while (face_id - o.object.FaceArray[count] >= 0) {
+                                                face_id -= o.object.FaceArray[count];
+                                                mesh_id++;
+                                                count++;
+                                            }
+                                            if (typeof weight[mesh_id][face_id] == 'undefined') {
+                                                weight[mesh_id][face_id] = 1;
+                                            }
+                                            else {
+                                                weight[mesh_id][face_id] += 1;
+                                            }
+                                        })
+                                    });
+
+                                    max_weight = [];
+                                    $.each(weight, function (i, w_mesh) {
+                                        max_weight.push(Math.max.apply(null, w_mesh.filter(function (x) {
+                                            return isFinite(x);
+                                        })));
+                                    });
+                                    var max_max_weight = Math.max.apply(Math, max_weight);
+                                    $.each(weight, function (mesh_id, face_for_mesh) {
+                                        $.each(face_for_mesh, function (face_id, w) {
+                                            if (w) {
+                                                if (face_id >= o.object.children[mesh_id].geometry.faces.length) {
+                                                    var stop = 1;
+                                                }
+                                                o.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w / max_max_weight, 0.7);
+                                                o.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w / max_max_weight / 5.0, 0.2);
+                                                o.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w / max_max_weight / 5.0, 0.2);
+                                            }
+                                        });
+                                        o.object.children[mesh_id].geometry.colorsNeedUpdate = true;
+                                    });
+                                    if (typeof(callback) != 'undefined'){
+                                        callback();
                                     }
-                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w/max_max_weight,0.7);
-                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w/max_max_weight/5,0.2);
-                                    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w/max_max_weight/5,0.2);
                                 }
-                                //else{
-                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.r = 0.2;
-                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.g = 0.2;
-                                //    Obj.object.children[mesh_id].geometry.faces[face_id].color.b = 0.2;
-                                //}
+                            );
+                        }
+                        else if (method == 1) { // use saliency distribution data from Chen 2012
+                            // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
+                            var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
+                            $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
+                                response = response.split('\n');
+                                if (response[response.length-1]==''){response = response.splice(0,response.length-1);}
+                                $.each(response, function (i, r) {
+                                    response[i] = parseFloat(r);
+                                });
+                                var max_weight = Math.max.apply(Math, response);
+                                $.each(response, function (i, r) {
+                                    o.object.children[0].geometry.vertices[i].salColor = r/max_weight;
+                                });
+
+                                o.paint_faces();
+                                if (typeof(callback) != 'undefined'){
+                                    callback();
+                                }
                             });
-                            Obj.object.children[mesh_id].geometry.colorsNeedUpdate = true;
-                        });
-                    }
-                );
+                        }
+                    };
+                    var o = Obj.init(target,inner_callback);
+                    o.animate();
+                });
             });
-        },
-
-        animate: function() {
-            requestAnimationFrame(Obj.animate);
-            Obj.render();
-        },
-
-        render: function() {
-            if(App.myRole != 'Player'){
-                if(typeof(Obj.object)!='undefined'){
-
-                    Obj.object.rotation.set( Math.max(-Math.PI/6,Math.min(Obj.object.rotation.x - Obj.beta, Math.PI/6)),
-                        Obj.object.rotation.y + Obj.theta, 0, 'XYZ' );
-                }
-            }
-            else{
-                if(typeof(Obj.emptyobject)!='undefined'){
-                    Obj.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(Obj.emptyobject.rotation.x - Obj.beta, Math.PI/6)),
-                        Obj.emptyobject.rotation.y + Obj.theta, 0, 'XYZ' );
-                }
-            }
-
-            Obj.camera.position.x = 0;
-            Obj.camera.position.y = Obj.height; //don't change
-            Obj.camera.position.z = Obj.radius;
-
-            if (App.VRMODE){
-                Obj.headControls.update();
-                Obj.vrEffect.render( Obj.scene, Obj.camera );
-            }
-            else{
-                Obj.renderer.render( Obj.scene, Obj.camera);
-                if(typeof(Obj.object.getObjectByName("selectable"))!='undefined'){
-                    Obj.object.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
-                }
-            }
-
-            // countdown when object is shown
-            App.$timebar.css('opacity',1-(Date.now()-App.currentTime)/App.totalTime/60000);
-            if (1-(Date.now()-App.currentTime)/App.totalTime/60000<=0){
-                IO.gameOver();
-            }
-        },
-
-        createTextureCube: function() {
-            var r = "textures/bridge/";
-            var urls = [ r + "posx.jpg", r + "negx.jpg",
-                r + "posy.jpg", r + "negy.jpg",
-                r + "posz.jpg", r + "negz.jpg" ];
-
-            var textureCube = THREE.ImageUtils.loadTextureCube( urls );
-            textureCube.format = THREE.RGBFormat;
-            textureCube.mapping = THREE.CubeReflectionMapping;
-            return textureCube;
-        },
-
-        createLights: function() {
-            var ambient = new THREE.AmbientLight( 0x020202 );
-            Obj.scene.add( ambient );
-
-            var directionalLight1 = new THREE.DirectionalLight( 0xffffff );
-            directionalLight1.position.set( Obj.camera.position.z + 50, Obj.camera.position.y, - Obj.camera.position.x );//.normalize();
-
-            var directionalLight2 = new THREE.DirectionalLight( 0xffffff );
-            directionalLight2.position.set( 1000, 500,-1000 );//.normalize();
-            Obj.scene.add( directionalLight1 );
-            Obj.scene.add( directionalLight2 );
-        },
-
-        /**
-         * create mesh faces on the player side
-         * @param selection: current face ids from meshes
-         * @param childnumber: current mesh id
-         */
-        createMesh: function(selection, childName ) {
-            //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
-
-            //update all selected face id, encoded by childname
-            var mesh_id = parseInt(childName);
-            var bias = 0;
-            for(var i=0;i<mesh_id;i++){
-                bias += Obj.object.FaceArray[i];
-            }
-            var uniqueValues = [];
-            $.each(selection, function (i,s) {
-                uniqueValues.push(s+bias);
-            });
-            App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
-
-            $.each(selection, function (i, s) {
-                //if (App.Player.allSelectedID.indexOf(s) == -1) {
-                //   App.Player.allSelectedID.push(s);
-
-                var geom = new THREE.Geometry();
-
-
-
-                var f = Obj.object.getObjectByName(childName).geometry.faces[s];
-
-                var v1 = Obj.object.getObjectByName(childName).geometry.vertices[f.a];
-                var v2 = Obj.object.getObjectByName(childName).geometry.vertices[f.b];
-                var v3 = Obj.object.getObjectByName(childName).geometry.vertices[f.c];
-
-                //v1.sub(CG);
-                       //v2.sub(CG);
-                //v3.sub(CG);
-
-                geom.vertices.push(v1, v2, v3);
-
-
-
-                var nf = new THREE.Face3(0, 1, 2);
-                nf.vertexNormals = f.vertexNormals;
-                nf.normal = f.normal;
-                geom.faces.push(nf);
-
-                //geom.applyMatrix( new THREE.Matrix4().makeTranslation( Obj.object.CG[0]/225, Obj.object.CG[1]/225, Obj.object.CG[2]/225 ) );
-
-                var mesh = new THREE.Mesh(geom, Obj.object.getObjectByName(childName).material);
-
-                mesh.rotation.x = Obj.object.getObjectByName(childName).rotation.x;
-                mesh.rotation.y = Obj.object.getObjectByName(childName).rotation.y;
-                mesh.rotation.z = Obj.object.getObjectByName(childName).rotation.z;
-
-                mesh.scale.set(Obj.scale, Obj.scale, Obj.scale);
-                mesh.castShadow = true;
-
-
-                if (Obj.object.CG_emptyObj != undefined) {
-
-                    mesh.position.x =  Obj.object.CG_emptyObj[0];
-                    mesh.position.y =  Obj.object.CG_emptyObj[1];
-                    mesh.position.z =  Obj.object.CG_emptyObj[2];
-                } else {
-                    mesh.position.x = 0;
-                    mesh.position.y = 0;
-                    mesh.position.z = 0;
-                }
-                Obj.emptyobject.add(mesh);
-           // }
-                //else {
-
-                //}
-            });
-        },
-
-        /**
-         * 3rd iteration of the mesh selection algorithm, works in conjunction
-         * with the second version
-         * @param a
-         * @param b
-         * @param c
-         * @param iteration
-         * @param faceindex
-         * @param name
-         */
-        selectNeighboringFaces3: function(a,b,c,iteration,faceindex, name) {
-            for (var i=0; i<13; i++) {
-                if (Obj.object.getObjectByName(name).sorted[1][i][a] != undefined) {
-                    if (iteration!=0) {
-
-                        Obj.selectNeigboringFaces2(
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][a]].a,
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][a]].b,
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][a]].c,
-                            iteration-1,Obj.object.getObjectByName(name).sorted[1][i][a], name);
-                    }
-
-                }
-
-                if (Obj.object.getObjectByName(name).sorted[1][i][b] != undefined) {
-                    if (iteration!=0) {
-
-                        Obj.selectNeigboringFaces2(
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][b]].a,
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][b]].b,
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][b]].c,
-                            iteration-1,Obj.object.getObjectByName(name).sorted[1][i][b], name);
-                    }
-                }
-
-
-                if (Obj.object.getObjectByName(name).sorted[1][i][c] != undefined) {
-                    if (iteration!=0) {
-
-                        Obj.selectNeigboringFaces2(
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][c]].a,
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][c]].b,
-                            Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[1][i][c]].c,
-                            iteration-1,Obj.object.getObjectByName(name).sorted[1][i][c], name);
-                    }
-                }
-            }
-        },
-
-        /**
-         * 2nd iteration of the selection algorithm that works with the 3rd
-         * @param a
-         * @param b
-         * @param c
-         * @param iteration
-         * @param faceIndex
-         * @param name
-         */
-        selectNeigboringFaces2: function(a, b, c, iteration, faceIndex, name) {
-
-                App.Host.selectedStrings.push(faceIndex);
-
-            if (Obj.object.getObjectByName(name).sorted[0][0][a] == faceIndex) {
-                if (iteration != 0) {
-                    Obj.selectNeigboringFaces2(
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][1][a]].a,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][1][a]].b,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][1][a]].c, iteration - 1, Obj.object.getObjectByName(name).sorted[0][1][a])
-                }
-            } else if (Obj.object.getObjectByName(name).sorted[0][1][a] == faceIndex) {
-                if (iteration != 0) {
-                    Obj.selectNeigboringFaces2(
-                        Obj.object.getObjectByName(name).geometry.faces[object.getObjectByName(name).sorted[0][0][a]].a,
-                        Obj.object.getObjectByName(name).geometry.faces[object.getObjectByName(name).sorted[0][0][a]].b,
-                        Obj.object.getObjectByName(name).geometry.faces[object.getObjectByName(name).sorted[0][0][a]].c, iteration - 1, Obj.object.getObjectByName(name).sorted[0][0][a])
-                }
-
-            }
-
-            if (Obj.object.getObjectByName(name).sorted[0][2][b] == faceIndex) {
-                if (iteration != 0) {
-                    Obj.selectNeigboringFaces2(
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][3][b]].a,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][3][b]].b,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][3][b]].c, iteration - 1, Obj.object.getObjectByName(name).sorted[0][3][b])
-                }
-            } else if (Obj.object.getObjectByName(name).sorted[0][3][b] == faceIndex) {
-                if (iteration != 0) {
-                    Obj.selectNeigboringFaces2(
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][2][b]].a,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][2][b]].b,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][2][b]].c, iteration - 1, Obj.object.getObjectByName(name).sorted[0][2][b])
-                }
-
-            }
-
-            if (Obj.object.getObjectByName(name).sorted[0][4][c] == faceIndex) {
-
-                if (iteration != 0) {
-                    Obj.selectNeigboringFaces2(
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][5][c]].a,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][5][c]].b,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][5][c]].c, iteration - 1, Obj.object.getObjectByName(name).sorted[0][5][c])
-                }
-            } else if (Obj.object.getObjectByName(name).sorted[0][5][c] == faceIndex) {
-                if (iteration != 0) {
-                    Obj.selectNeigboringFaces2(
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][4][c]].a,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][4][c]].b,
-                        Obj.object.getObjectByName(name).geometry.faces[Obj.object.getObjectByName(name).sorted[0][4][c]].c, iteration - 1, Obj.object.getObjectByName(name).sorted[0][4][c])
-                }
-
-            }
         },
 
         /**
          * "show_obj" and "upload_obj" initialize obj parameters, ONLY used initially offline before any game
          */
-        show_obj: function (id) {
-            var string = App.objectstring_set[id];
-            $.getScript(string, function () {
-                THREE.SceneLoad(Obj.upload_obj);
+        initial_obj: function (id) {
+            $.get('/getRawObjectList', function(response){
+                App.objectstring_set = response.objectstring_set;
+                var obj = App.objectstring_set[id];
+                $.getScript(obj, function () {
+                    THREE.SceneLoad(function(){
+                        console.log('storing obj to database...');
+                        $.post('/initial_obj', {
+                                'object_name': THREEScene.name,
+                                'face_per_mesh': JSON.stringify(THREEScene.FaceArray),
+                                'num_selections': ""
+                            }, function(){
+                                if (id<App.objectstring_set.length-1){
+                                    Obj.initial_obj(id + 1);
+                                }
+                            }
+                        );
+                    });
+                });
             });
-        },
-        upload_obj: function () {
-            $.post('/initial_obj', {
-                'object_name': THREEScene.name,
-                'face_per_mesh': JSON.stringify(THREEScene.FaceArray),
-                'num_selections': ""
-                }
-            );
-        },
-
-        paint_faces: function () {
-            var r, g, b;
-            var col;
-            $.each(Obj.object.children[0].geometry.faces, function(i,f){
-                col = Obj.getRGB(1/3*(
-                    Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].a].salColor,
-                    Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].b].salColor,
-                    Obj.object.children[0].geometry.vertices[Obj.object.children[0].geometry.faces[i].c].salColor));
-
-                Obj.object.children[0].geometry.faces[i].color.r = col[0]/255;
-                Obj.object.children[0].geometry.faces[i].color.g = col[1]/255;
-                Obj.object.children[0].geometry.faces[i].color.b = col[2]/255;
-            });
-
-            Obj.object.children[0].geometry.colorsNeedUpdate = true;
-
-
         },
 
         getRGB: function(val) {
-            var min = GAME.Obj.object.children[0].geometry.colorMin;
-            var max = GAME.Obj.object.children[0].geometry.colorMax;;
+            var min = 0.0;
+            var max = 1.0;
 
             if (val>max) {
                 val = max;
@@ -1398,8 +1469,6 @@ var GAME = (function($){
                 col[1] = 255 + -255/(max - half)  * (val - half);
                 col[2] = 0;
             }
-
-
             return (col);
         },
 

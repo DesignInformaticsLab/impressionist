@@ -2,11 +2,16 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var connection = process.env.DATABASE_URL ||"postgres://postgres:GWC464doi@localhost:5432/postgres"; //old:  "postgres://postgres:54093960@localhost:5432/postgres" wrong password
-
+var connection = process.env.DATABASE_URL ||"postgres://postgres:54093960@localhost:5432/postgres"; //old:  "postgres://postgres:54093960@localhost:5432/postgres" wrong password
 //for local postgres server, and Heroku server
 
-
+var objectstring_set = ["obj/Princeton/381.js","obj/Princeton/382.js","obj/Princeton/383.js","obj/Princeton/384.js",
+    "obj/Princeton/385.js","obj/Princeton/386.js","obj/Princeton/387.js","obj/Princeton/388.js","obj/Princeton/389.js",
+    "obj/Princeton/390.js","obj/Princeton/391.js","obj/Princeton/392.js","obj/Princeton/393.js","obj/Princeton/394.js",
+    "obj/Princeton/395.js","obj/Princeton/396.js","obj/Princeton/397.js","obj/Princeton/398.js",
+    "obj/Princeton/400.js"]; //["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
+//    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js",
+//    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
 function handle_error(res, err) {
     console.error(err);
@@ -86,6 +91,8 @@ router.post('/read_selection', function(req,res){
 });
 
 
+
+
 router.post('/initial_obj', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.send("Could not connect to DB: " + err);
@@ -100,7 +107,7 @@ router.post('/initial_obj', function(req,res){
     });
 });
 
-
+// get object list from database
 router.post('/getObjectList', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
@@ -116,4 +123,11 @@ router.post('/getObjectList', function(req,res){
         });
     });
 });
+
+// get object list from objectstring_set, should be the same as /getObjectList if database list updated
+router.get('/getRawObjectList', function(req,res){
+    res.send({'objectstring_set':objectstring_set});
+});
+
+
 module.exports = router;
