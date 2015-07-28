@@ -539,6 +539,12 @@ var GAME = (function($){
             }
         },
 
+
+        /**
+        when mouse button is clicked. If the 's' key is simultaneously pressed the geometry is selected,
+         if not, the model is rotated
+
+         */
         onMouseDown: function (e, target) {
             e.preventDefault();
             if (!App.isJqmGhostClick(event)) {
@@ -551,6 +557,11 @@ var GAME = (function($){
                 }
             }
         },
+
+        /**
+         prevents events from continuing once mouse click is released.
+         */
+
         onMouseUp: function (e) {
             e.preventDefault();
             App.PRESSED = false;
@@ -663,63 +674,47 @@ var GAME = (function($){
                 }
             },
 
+            // method invoked if the user clicks on a geometry while pressing s
             select: function () {
                 if (App.Host.selection_capacity>0){ // if still can select
-                    Obj.object_set[0].raycaster.setFromCamera( App.mouse, Obj.object_set[0].camera );
-                    App.Host.selectedStrings = [];
-                    var intersections=[];
 
+                    //casts a ray from camera through mouse at object
+                    Obj.object_set[0].raycaster.setFromCamera( App.mouse, Obj.object_set[0].camera );
+                    App.Host.selectedStrings = []; //initialized the selectedStrings array as empty
+                    var intersections=[]; //creates a empty intersection array as multiple selection are possible --
+                    // raycaster might intersect more than one face such as at the front and back of a geometry
+
+                    //attempts to make an intersection
                     try {
                         intersections = Obj.object_set[0].raycaster.intersectObjects( Obj.object_set[0].scene.children[0].children);
                     } catch (e) {
                         intersections[0] = null ;
                     }
+
+                    //stores the first (closest) intersection
                     var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
 
+
                     if (intersection != null) {
-                        if(Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.indexOf(intersection.faceIndex)==-1){//if not selected
+                        //sends the 3 vertex indices of the selected faces so the neighboring faces can be found
+                        //this is done without looping
+                        if(Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.indexOf(intersection.faceIndex)==-1){
                             Obj.object_set[0].selectNeighboringFaces3(
                                 Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
                                 Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
                                 Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex,intersection.object.name);
-                            //console.log('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-                            //console.log('with doubles');
-                            //console.log(App.Host.selectedStrings);
+
+                            // the returned faces are filtered for only unique faces
                             App.Host.selectedStrings =App.Host.selectedStrings.filter(App.onlyUnique);
-                            //console.log('only unique ');
-                            //console.log(App.Host.selectedStrings);
 
-                            //$.each(selectedStrings, function(i,ss){
-                            //
-                            //})
-
+                            // the unique faces are compared to the faces that had previusly been selected
                             App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
 
-                            //console.log('only new selections');
-                            //console.log(App.Host.selectedStrings);
+
                             $.each(App.Host.selectedStrings, function(i, SS) {
                                 Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
                             });
-                            //console.log('allSelectedID');
-                            //console.log(Obj.object.getObjectByName(intersection.object.name).allSelectedID);
-                            // = Obj.object.getObjectByName(intersection.object.name).allSelectedID.concat(App.Host.selectedStrings).filter( App.onlyUnique ); // update all selection
 
-                            // Below is Fabian's code for encoding face ids from different meshes
-                            //var uniqueValues = [];
-                            //$.each(App.Host.selectedStrings, function (i) {
-                            //    uniqueValues.push(App.Host.selectedStrings[i]);
-                            //});//.filter(App.onlyUnique);
-                            //var index = -1;
-                            //for (var i = 0 ; i< Obj.scene.children[0].children.length; i++) {
-                            //    if (Obj.object.children[i].name == intersection.object.name) {
-                            //        index = i;
-                            //        break;
-                            //    }
-                            //
-                            //    for (var j = 0; j < uniqueValues.length; j++)
-                            //        uniqueValues[j] = uniqueValues[j] + Obj.object.FaceArray[i];
-                            //
-                            //}
 
                             // Max code for encoding face ids from different meshes
                             var mesh_id = parseInt(intersection.object.name);
@@ -963,10 +958,13 @@ var GAME = (function($){
 
     };
 
-
+    // Anything associated with the scene and objects in it can be accessed under GAME.Obj
     var Obj = {
         object_set: [],
+
+        //creates the scene
         object_scene: function(){
+            //
             this.object_id = [];
             this.camera = [];
             this.raycaster = [];
@@ -982,6 +980,7 @@ var GAME = (function($){
             this.scale = [];
             var d = this;
 
+            //for background pics
             this.createTextureCube = function() {
                 var r = "textures/bridge/";
                 var urls = [ r + "posx.jpg", r + "negx.jpg",
@@ -994,6 +993,7 @@ var GAME = (function($){
                 return textureCube;
             };
 
+            // creates lighting
             this.createLights = function() {
                 var ambient = new THREE.AmbientLight( 0x020202 );
                 d.scene.add( ambient );
@@ -1028,8 +1028,7 @@ var GAME = (function($){
                 App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
 
                 $.each(selection, function (i, s) {
-                    //if (App.Player.allSelectedID.indexOf(s) == -1) {
-                    //   App.Player.allSelectedID.push(s);
+
 
                     var geom = new THREE.Geometry();
                     var f = d.object.getObjectByName(childName).geometry.faces[s];
@@ -1037,9 +1036,6 @@ var GAME = (function($){
                     var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
                     var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
 
-                    //v1.sub(CG);
-                    //v2.sub(CG);
-                    //v3.sub(CG);
 
                     geom.vertices.push(v1, v2, v3);
 
@@ -1080,7 +1076,10 @@ var GAME = (function($){
              * @param iteration
              * @param faceindex
              * @param name
+             * This program looks at vertices that get fed in and look for the faces that have these vertices as part of
+             * their definition
              */
+
             this.selectNeighboringFaces3 = function(a,b,c,iteration,faceindex, name) {
                 for (var i=0; i<13; i++) {
                     if (d.object.getObjectByName(name).sorted[1][i][a] != undefined) {
@@ -1229,6 +1228,8 @@ var GAME = (function($){
             };
 
             this.paint_faces = function () {
+                //this function paints the faces in a defined color pattern. This has to do with the saliency files that
+                // are loading in.
                 $.each(d.object.children[0].geometry.faces, function(i,f){
                     //col = d.getRGB(1/3*(
                     //    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].a].salColor,
@@ -1254,6 +1255,7 @@ var GAME = (function($){
             };
         },
 
+        //
         init: function(target, callback) {
             var container = target[0];
             var o = new Obj.object_scene();
@@ -1447,6 +1449,7 @@ var GAME = (function($){
             });
         },
 
+        //this funciton returns a rgb value on a linear scale between min and max. This is usefull for creating heat maps
         getRGB: function(val) {
             var min = 0.0;
             var max = 1.0;
