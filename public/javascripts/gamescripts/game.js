@@ -77,11 +77,11 @@ var GAME = (function($){
                     // broadcast game id
                     IO.socket.emit('broadcastGameID', data[0].id);
                     // create a new object and start the game
-                    IO.onNewObjData();
+                    IO.onNewObjData(App.$model);
                 });
             }
             else{
-                IO.onNewObjData();
+                IO.onNewObjData(App.$model);
             }
         },
 
@@ -194,7 +194,7 @@ var GAME = (function($){
             App.objectString = App.objectstring_set[objectId.objectID];
 
 
-            IO.onNewObjData({});
+            IO.onNewObjData(App.$model);
         },
 
         /**
@@ -203,12 +203,13 @@ var GAME = (function($){
          */
         onNewObjData : function(target, callback) {
             $.getScript( App.objectString, function() {
+                var o = Obj.init(target, callback);
                 console.log( "New object loaded." );
                 // reset game
                 App.Host.selection_capacity = 10000; // assign player selection capacity for current obj
-                Obj.object_set[0].correct_answer = answer; // get correct answers
-                Obj.object_set[0].height = zheight;
-                Obj.object_set[0].scale = scale;
+                o.correct_answer = answer; // get correct answers
+                o.height = zheight;
+                o.scale = scale;
 
                 App.$model.html('');
                 if(App.myRole == 'Player'){
@@ -227,7 +228,7 @@ var GAME = (function($){
 
                 App.start_obj_time = Date.now();
                 App.currentTime = Date.now();
-                var o = Obj.init(target, callback);
+
                 o.animate();
                 o.object.rotation.y = Math.random()*Math.PI*2;
                 //console.log('rotation:');
