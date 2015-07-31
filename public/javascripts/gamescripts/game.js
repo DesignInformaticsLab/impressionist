@@ -77,10 +77,12 @@ var GAME = (function($){
                     // broadcast game id
                     IO.socket.emit('broadcastGameID', data[0].id);
                     // create a new object and start the game
+                    Obj.object_set = [];
                     IO.onNewObjData(App.$model);
                 });
             }
             else{
+                Obj.object_set = [];
                 IO.onNewObjData(App.$model);
             }
         },
@@ -193,7 +195,7 @@ var GAME = (function($){
 
             App.objectString = App.objectstring_set[objectId.objectID];
 
-
+            Obj.object_set = [];
             IO.onNewObjData(App.$model);
         },
 
@@ -203,36 +205,40 @@ var GAME = (function($){
          */
         onNewObjData : function(target, callback) {
             $.getScript( App.objectString, function() {
-                var o = Obj.init(target, callback);
-                console.log( "New object loaded." );
-                // reset game
-                App.Host.selection_capacity = 10000; // assign player selection capacity for current obj
-                o.correct_answer = answer; // get correct answers
-                o.height = zheight;
-                o.scale = scale;
+                // the following happens for a normal game
+                if (typeof(callback) == 'undefined'){
+                    callback = function(){
+                        console.log( "New object loaded." );
+                        // reset game
+                        App.Host.selection_capacity = 10000; // assign player selection capacity for current obj
+                        o.correct_answer = answer[0]; // get correct answers
+                        o.height = zheight;
+                        o.scale = scale;
 
+                        if(App.myRole == 'Player'){
+                            App.$menu.show();
+                            App.$guessoutput.hide();
+                            App.$guessinput.show();
+                            App.$guessinput[0].value='';
+                        }
+                        else if(App.myRole == 'Host'){
+                            App.$menu.show();
+                            App.$guessoutput.show();
+                            App.$guessoutput[0].value='';
+                            App.$guessinput.hide();
+                        }
+                        App.$model.focus(); // focus on $model so that key events can work
+
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
+
+                        o.object.rotation.y = Math.random()*Math.PI*2;
+                    }
+
+                }
                 App.$model.html('');
-                if(App.myRole == 'Player'){
-                    App.$menu.show();
-                    App.$guessoutput.hide();
-                    App.$guessinput.show();
-                    App.$guessinput[0].value='';
-                }
-                else if(App.myRole == 'Host'){
-                    App.$menu.show();
-                    App.$guessoutput.show();
-                    App.$guessoutput[0].value='';
-                    App.$guessinput.hide();
-                }
-                App.$model.focus(); // focus on $model so that key events can work
-
-                App.start_obj_time = Date.now();
-                App.currentTime = Date.now();
-
+                var o = Obj.init(target, callback);
                 o.animate();
-                o.object.rotation.y = Math.random()*Math.PI*2;
-                //console.log('rotation:');
-                //console.log(GAME.Obj.object.rotation.y );
             });
         },
 
