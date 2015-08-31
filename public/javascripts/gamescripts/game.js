@@ -232,7 +232,8 @@ var GAME = (function($){
                         App.start_obj_time = Date.now();
                         App.currentTime = Date.now();
 
-                        o.object.rotation.y = Math.random()*Math.PI*2;
+                        o.object.rotation.y = Math.PI*2;
+                        //o.object.rotation.y = Math.random()*Math.PI*2;
                     }
 
                 }

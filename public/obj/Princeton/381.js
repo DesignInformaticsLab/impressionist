@@ -8,19 +8,11 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
+            objects.rotation.x = 3.14 * 2/2 +0.5
+            objects.rotation.y = -3.14 * 1/2
+            objects.rotation.z = 3.14 * 3/3 +0.6
 			objects.name = ""+count;
 			objects.allSelectedID = [];
-
-            //$.getJSON('obj/Princeton/381Topo.json', function(obj) {
-            //    scene.parsed = obj;
-            //    $.each(obj.parsed.Results, function (i,val) {
-            //        scene.children[0].geometry.vertices[i].salColor = val[0];
-            //    })
-            //
-            //    scene.children[0].geometry.colorMin = obj.parsed.maxMinLambda[1];
-            //    scene.children[0].geometry.colorMax = obj.parsed.maxMinLambda[0];
-            //})
-
             scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
 			count++;

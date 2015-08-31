@@ -8,7 +8,9 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
-            objects.rotation.x = -3.14/2;
+			objects.rotation.x =-0.20465116279069617;
+			objects.rotation.y = 6.10320780436744;
+			objects.rotation.z =0 ;
 			objects.name = ""+count;
 			objects.allSelectedID = [];
 			scene.add(objects);
