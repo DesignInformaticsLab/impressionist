@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['cow'];
+var answer = ['knife'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -8,9 +8,15 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
-            objects.rotation.x = 0
-            objects.rotation.y = 7
-            objects.rotation.z = 3.141592653589793
+
+			objects.rotation.x = -3.14 * 1.8
+			objects.rotation.y = 3.14 * 1.8
+			objects.rotation.z = 3.14 * 0
+
+			objects.position.x = -0
+			objects.position.y = 100
+			objects.position.z = -200
+
 			objects.name = ""+count;
 			objects.allSelectedID = [];
             scene.add(objects);
@@ -26,10 +32,10 @@ var loadobject = function(obj_string,scene,count,callback){
 
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
-	THREEScene.name = "P381";
+	THREEScene.name = "P725";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/381.json',];
+	var objstrings = ['obj/Princeton/m2/725.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

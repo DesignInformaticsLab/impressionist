@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['cow'];
+var answer = ['dinosaur'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -8,12 +8,18 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
-            objects.rotation.x = 0
-            objects.rotation.y = 7
-            objects.rotation.z = 3.141592653589793
+
+			objects.rotation.x = 3.14 * 1.0
+			objects.rotation.y = 3.14 * 0.2
+			objects.rotation.z = -3.14 * 0.8
+
+			objects.position.x = 200
+			objects.position.y = -200
+			objects.position.z = 300
+
 			objects.name = ""+count;
 			objects.allSelectedID = [];
-            scene.add(objects);
+			scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
 			count++;
 			loadobject(obj_string,scene,count,callback);
@@ -26,10 +32,10 @@ var loadobject = function(obj_string,scene,count,callback){
 
 THREE.SceneLoad = function (ajax) {
 	THREEScene  = new THREE.Scene();
-	THREEScene.name = "P381";
+	THREEScene.name = "P270";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/381.json',];
+	var objstrings = ['obj/Princeton/m2/270.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});
@@ -50,45 +56,45 @@ THREE.SceneLoad = function (ajax) {
 }
 
 function JSONMeshParser(object) {
-    //var geom = new THREE.Geometry();
-    //var v1 = new THREE.Vector3(0,0,0);
-    //var v2 = new THREE.Vector3(0,500,0);
-    //var v3 = new THREE.Vector3(0,500,500);
-    //
-    //geom.vertices.push(v1);
-    //geom.vertices.push(v2);
-    //geom.vertices.push(v3);
-    //
-    //geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
-    //
-    //var mesh = new THREE.Mesh( geom, new THREE.MeshNormalMaterial() );
+	//var geom = new THREE.Geometry();
+	//var v1 = new THREE.Vector3(0,0,0);
+	//var v2 = new THREE.Vector3(0,500,0);
+	//var v3 = new THREE.Vector3(0,500,500);
+	//
+	//geom.vertices.push(v1);
+	//geom.vertices.push(v2);
+	//geom.vertices.push(v3);
+	//
+	//geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
+	//
+	//var mesh = new THREE.Mesh( geom, new THREE.MeshNormalMaterial() );
 	var geometry = new THREE.Geometry();
 //
 	//parse vertices
 	for (var i = 0; i<object.parsed.vertexArray.length; i++) {
 		geometry.vertices.push(new THREE.Vector3(
 			object.parsed.vertexArray[i][0],
-            object.parsed.vertexArray[i][1],
-            object.parsed.vertexArray[i][2]) );
+			object.parsed.vertexArray[i][1],
+			object.parsed.vertexArray[i][2]) );
 	}
 
 	// parse faces, face normals and vertice normal.
 	// vertices are stored in the same 2D array as the vertices
 	// but are stored in the face object in THREE.JS
 	for (var i = 0; i<object.parsed.faceArray.length; i++) {
-        geometry.faces.push(new THREE.Face3(
-            object.parsed.faceArray[i][0],
-            object.parsed.faceArray[i][1],
-            object.parsed.faceArray[i][2]))
+		geometry.faces.push(new THREE.Face3(
+			object.parsed.faceArray[i][0],
+			object.parsed.faceArray[i][1],
+			object.parsed.faceArray[i][2]))
 
 
 
-        //geometry.faces[i].normal = new THREE.Vector3(
-        //	object.geometries[0].data.faces[3][i],
-        //	object.geometries[0].data.faces[4][i],
-        //	object.geometries[0].data.faces[5][i]);
+		//geometry.faces[i].normal = new THREE.Vector3(
+		//	object.geometries[0].data.faces[3][i],
+		//	object.geometries[0].data.faces[4][i],
+		//	object.geometries[0].data.faces[5][i]);
 
-    }
+	}
 //
 //
 //
@@ -128,8 +134,8 @@ function JSONMeshParser(object) {
 	});
 //	////}
 //    //
-    geometry.computeFaceNormals();
-    geometry.computeVertexNormals();
+	geometry.computeFaceNormals();
+	geometry.computeVertexNormals();
 	var mesh = new THREE.Mesh(geometry,material);
 
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);

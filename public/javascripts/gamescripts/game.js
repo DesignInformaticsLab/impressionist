@@ -371,9 +371,9 @@ var GAME = (function($){
             App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
             App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
             App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
-                +App.$time.width()+App.$score.width()+'px');
+            +App.$time.width()+App.$score.width()+'px');
             App.$guessinput.css('left',margin_left+30+App.$select.width()
-                +App.$time.width()+App.$score.width()+'px');
+            +App.$time.width()+App.$score.width()+'px');
             App.progressbar_size = App.$select.css('opacity')/1;
         },
 
@@ -507,9 +507,9 @@ var GAME = (function($){
             App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
             App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
             App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
-                +App.$time.width()+App.$score.width()+'px');
+            +App.$time.width()+App.$score.width()+'px');
             App.$guessinput.css('left',margin_left+30+App.$select.width()
-                +App.$time.width()+App.$score.width()+'px');
+            +App.$time.width()+App.$score.width()+'px');
             App.progressbar_size = App.$select.css('opacity')/1;
 
             $.each(Obj.object_set, function(i,o){
@@ -549,7 +549,7 @@ var GAME = (function($){
 
 
         /**
-        when mouse button is clicked. If the 's' key is simultaneously pressed the geometry is selected,
+         when mouse button is clicked. If the 's' key is simultaneously pressed the geometry is selected,
          if not, the model is rotated
 
          */
@@ -623,7 +623,7 @@ var GAME = (function($){
             $.post('/getObjectList',{},function(data){
                 $.each(data, function(i,d){
                     $("#objlist").append("<div class='object_div btn' id="
-                        + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
+                    + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
                 })
             })
         },
@@ -1020,60 +1020,64 @@ var GAME = (function($){
              * @param selection: current face ids from meshes
              * @param childnumber: current mesh id
              */
-            this.createMesh = function(selection, childName ) {
-                //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
+                this.createMesh = function(selection, childName ) {
+                    //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
 
-                //update all selected face id, encoded by childname
-                var mesh_id = parseInt(childName);
-                var bias = 0;
-                for(var i=0;i<mesh_id;i++){
-                    bias += d.object.FaceArray[i];
-                }
-                var uniqueValues = [];
-                $.each(selection, function (i,s) {
-                    uniqueValues.push(s+bias);
-                });
-                App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
-
-                $.each(selection, function (i, s) {
-
-
-                    var geom = new THREE.Geometry();
-                    var f = d.object.getObjectByName(childName).geometry.faces[s];
-                    var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
-                    var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
-                    var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
-
-
-                    geom.vertices.push(v1, v2, v3);
-
-                    var nf = new THREE.Face3(0, 1, 2);
-                    nf.vertexNormals = f.vertexNormals;
-                    nf.normal = f.normal;
-                    geom.faces.push(nf);
-
-                    var mesh = new THREE.Mesh(geom, d.object.getObjectByName(childName).material);
-
-                    mesh.rotation.x = d.object.getObjectByName(childName).rotation.x;
-                    mesh.rotation.y = d.object.getObjectByName(childName).rotation.y;
-                    mesh.rotation.z = d.object.getObjectByName(childName).rotation.z;
-
-                    mesh.scale.set(d.scale, d.scale, d.scale);
-                    mesh.castShadow = true;
-
-
-                    if (d.object.CG_emptyObj != undefined) {
-                        mesh.position.x =  d.object.CG_emptyObj[0];
-                        mesh.position.y =  d.object.CG_emptyObj[1];
-                        mesh.position.z =  d.object.CG_emptyObj[2];
-                    } else {
-                        mesh.position.x = 0;
-                        mesh.position.y = 0;
-                        mesh.position.z = 0;
+                    //update all selected face id, encoded by childname
+                    var mesh_id = parseInt(childName);
+                    var bias = 0;
+                    for(var i=0;i<mesh_id;i++){
+                        bias += d.object.FaceArray[i];
                     }
-                    d.emptyobject.add(mesh);
-                });
-            };
+                    var uniqueValues = [];
+                    $.each(selection, function (i,s) {
+                        uniqueValues.push(s+bias);
+                    });
+                    App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
+
+                    $.each(selection, function (i, s) {
+
+
+                        var geom = new THREE.Geometry();
+                        THREE.GeometryUtils.center( geom );
+                        var f = d.object.getObjectByName(childName).geometry.faces[s];
+                        var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
+                        var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
+                        var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
+
+                        /* This code block is used to fix the rotation center */
+                        geom.vertices.push(v1, v2, v3);
+                        var box = new THREE.Box3().setFromObject( geom );
+                        box.center( geom.position );
+
+
+                        var nf = new THREE.Face3(0, 1, 2);
+                        nf.vertexNormals = f.vertexNormals;
+                        nf.normal = f.normal;
+                        geom.faces.push(nf);
+
+                        var mesh = new THREE.Mesh(geom, d.object.getObjectByName(childName).material);
+
+                        mesh.rotation.x = d.object.getObjectByName(childName).rotation.x;
+                        mesh.rotation.y = d.object.getObjectByName(childName).rotation.y;
+                        mesh.rotation.z = d.object.getObjectByName(childName).rotation.z;
+
+                        mesh.scale.set(d.scale, d.scale, d.scale);
+                        mesh.castShadow = true;
+
+
+                        if (d.object.CG_emptyObj != undefined) {
+                            mesh.position.x =  d.object.CG_emptyObj[0];
+                            mesh.position.y =  d.object.CG_emptyObj[1];
+                            mesh.position.z =  d.object.CG_emptyObj[2];
+                        } else {
+                            mesh.position.x = 0;
+                            mesh.position.y = 0;
+                            mesh.position.z = 0;
+                        }
+                        d.emptyobject.add(mesh);
+                    });
+                };
 
             /**
              * 3rd iteration of the mesh selection algorithm, works in conjunction
@@ -1198,18 +1202,19 @@ var GAME = (function($){
                 d.render();
             };
 
+
             this.render = function() {
                 if(App.myRole != 'Player'){
                     if(typeof(d.object)!='undefined'){
 
-                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
-                            d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        d.object.rotation.set( d.object.rotation.x - d.beta,
+                            d.object.rotation.y + d.theta, d.object.rotation.z, 'XYZ' );
                     }
                 }
                 else{
                     if(typeof(d.emptyobject)!='undefined'){
-                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                        d.object.rotation.set( d.object.rotation.x - d.beta,
+                            d.object.rotation.y + d.theta, d.object.rotation.z, 'XYZ' );
                     }
                 }
 
@@ -1245,8 +1250,8 @@ var GAME = (function($){
                     //    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor));
 
                     var col = Obj.getRGB((d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].a].salColor+
-                        d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].b].salColor+
-                        d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor)/3.0);
+                    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].b].salColor+
+                    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor)/3.0);
 
                     //if (w>0){
                     //    d.object.children[0].geometry.faces[i].color.r = Math.min(w+0.5,1.0);
@@ -1485,7 +1490,7 @@ var GAME = (function($){
 
 
         /*
-        calculates the center of an object so that it can be used to center it in the future
+         calculates the center of an object so that it can be used to center it in the future
          */
 
         findCG: function () {
@@ -1511,8 +1516,8 @@ var GAME = (function($){
             CG.z=[boundingBox[2][0],boundingBox[2][boundingBox[2].length-1]];
 
             console.log('[' + 0.5*(CG.x[0] + CG.x[1] ) + ', ' +
-                0.5*(CG.y[0] + CG.y[1] ) + ', ' +
-                0.5*(CG.z[0] + CG.z[1] ) + ']');
+            0.5*(CG.y[0] + CG.y[1] ) + ', ' +
+            0.5*(CG.z[0] + CG.z[1] ) + ']');
         }
     };
 
