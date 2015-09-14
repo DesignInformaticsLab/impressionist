@@ -13,7 +13,7 @@ var loadobject = function(obj_string,scene,count,callback){
             objects.rotation.y = 3.14 * 0.0
 			objects.rotation.z = -3.14 * 0.2
 
-			objects.position.x = -200
+			objects.position.x = -500
 			objects.position.y = 100
 			objects.position.z = 300
 
