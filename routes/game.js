@@ -115,7 +115,7 @@ function joinGame(data) {
         var numOfObjects = objectstring_set.length;
 
         //var objID = Math.floor(Math.random() * numOfObjects);
-        var objID = 34; // up to numOfObjects
+        var objID = 0; // up to numOfObjects
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;

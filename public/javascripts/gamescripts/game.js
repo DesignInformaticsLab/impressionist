@@ -215,6 +215,8 @@ var GAME = (function($){
                         o.height = zheight;
                         o.scale = scale;
 
+
+
                         if(App.myRole == 'Player'){
                             App.$menu.show();
                             App.$guessoutput.hide();
@@ -232,8 +234,8 @@ var GAME = (function($){
                         App.start_obj_time = Date.now();
                         App.currentTime = Date.now();
 
-                        o.object.rotation.y = Math.PI*2;
-                        //o.object.rotation.y = Math.random()*Math.PI*2;
+                        //o.object.rotation.y = Math.PI*2;
+                        o.object.rotation.y = Math.random()*Math.PI*2;
                     }
 
                 }
@@ -830,7 +832,7 @@ var GAME = (function($){
                 var data = {
                     game_id: App.gameId,
                     answer: answer,
-                    correct: $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0,
+                    correct: $.inArray(answer.toLowerCase(), [Obj.object_set[0].correct_answer])>=0,
                     round: App.currentRound,
                     duration: Date.now()-App.start_obj_time, // time from start of the object
                     score: App.score,
@@ -1039,17 +1041,11 @@ var GAME = (function($){
 
 
                         var geom = new THREE.Geometry();
-                        THREE.GeometryUtils.center( geom );
                         var f = d.object.getObjectByName(childName).geometry.faces[s];
                         var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
                         var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
                         var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
-
-                        /* This code block is used to fix the rotation center */
                         geom.vertices.push(v1, v2, v3);
-                        var box = new THREE.Box3().setFromObject( geom );
-                        box.center( geom.position );
-
 
                         var nf = new THREE.Face3(0, 1, 2);
                         nf.vertexNormals = f.vertexNormals;
@@ -1207,14 +1203,14 @@ var GAME = (function($){
                 if(App.myRole != 'Player'){
                     if(typeof(d.object)!='undefined'){
 
-                        d.object.rotation.set( d.object.rotation.x - d.beta,
-                            d.object.rotation.y + d.theta, d.object.rotation.z, 'XYZ' );
+                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                            d.object.rotation.y + d.theta, 0, 'XYZ' );
                     }
                 }
                 else{
                     if(typeof(d.emptyobject)!='undefined'){
-                        d.object.rotation.set( d.object.rotation.x - d.beta,
-                            d.object.rotation.y + d.theta, d.object.rotation.z, 'XYZ' );
+                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                     }
                 }
 
@@ -1278,7 +1274,7 @@ var GAME = (function($){
             background.name = "background";
             o.createTextureCube();
             o.object = THREE.SceneLoad(callback);
-            o.object.name = o.correct_answer[0]; // use the first answer as the object name
+            //o.object.name = o.correct_answer[0]; // use the first answer as the object name
 
             if(App.myRole=='Player'){
                 o.emptyobject = new THREE.Scene();

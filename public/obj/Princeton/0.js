@@ -39,8 +39,18 @@ THREE.SceneLoad = function (ajax) {
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});
+
+	/* This code block is used to fix the rotation center */
+	//var box = new THREE.Box3().setFromObject(o.object);
+	//box.center(o.object.position );
+	//o.object.translation = THREE.GeometryUtils.center( o.object );
+	//
+	//o.object.children[0].center();
+
 	THREEScene.position.y = zheight;
 	return THREEScene;
+
+
 
 	//$.getJSON("obj/TeaPot/data(1).json", function( object) {
 	//	parsedFile = object;
@@ -141,6 +151,8 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
+	mesh.translation = THREE.GeometryUtils.center(geometry); // added to re-center
+
 //
 	return mesh;
 }
