@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['human'];
+var answer = ['skeleton'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -11,6 +11,9 @@ var loadobject = function(obj_string,scene,count,callback){
             objects.rotation.x = -3.14 * 0.5
             objects.rotation.y = 3.14 * 1
 			objects.rotation.z = -3.14 * 0.0
+			objects.position.x = -100
+			objects.position.y = 0
+			objects.position.z = 500
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -136,7 +139,8 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
-//
+	geometry.center();
+
 	return mesh;
 }
 

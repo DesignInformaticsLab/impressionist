@@ -9,12 +9,12 @@ var loadobject = function(obj_string,scene,count,callback){
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
 
-			objects.rotation.x = -3.14 * 0.35
-			objects.rotation.y = 3.14 * 0.1
-			objects.rotation.z = 3.14 * 0
+			objects.rotation.x = -3.14 * 0.15
+			objects.rotation.y = 3.14 * 0.3
+			objects.rotation.z = 3.14 * 0.1
 
 			objects.position.x = -0
-			objects.position.y = -200
+			objects.position.y = 0
 			objects.position.z = 200
 
 			objects.name = ""+count;
@@ -141,7 +141,8 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
-//
+	geometry.center();
+
 	return mesh;
 }
 

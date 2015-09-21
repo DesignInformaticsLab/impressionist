@@ -1,5 +1,5 @@
 var scale = 750;
-var zheight = -120;
+var zheight = 120;
 var answer = ['fish'];
 
 var loadobject = function(obj_string,scene,count,callback){
@@ -14,8 +14,8 @@ var loadobject = function(obj_string,scene,count,callback){
 			objects.rotation.z = 3.14 * 0
 
 			objects.position.x = 0
-			objects.position.y = 0
-			objects.position.z = 0
+			objects.position.y = 100
+			objects.position.z = 600
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -139,9 +139,10 @@ function JSONMeshParser(object) {
 	var mesh = new THREE.Mesh(geometry,material);
 
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
-//    //
+    //
 	mesh.sorted = SortMeshObjects(geometry);
-//
+	geometry.center();
+
 	return mesh;
 }
 

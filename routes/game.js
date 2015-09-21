@@ -34,7 +34,7 @@ var objectstring_set = [
 //    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
 var pg = require('pg');
-var connection = process.env.DATABASE_URL || "postgres://postgres:54093960@localhost:5432/postgres";
+var connection = process.env.DATABASE_URL || "postgres://postgres:GWC464doi@localhost:5432/postgres";
 //for local postgres server, and Heroku server
 
 /**
@@ -101,21 +101,21 @@ function joinGame(data) {
             if(roomid.length==5){
                 temp_room = io.sockets.adapter.rooms[roomid];
                 if(Object.keys(temp_room).length<2){
-                    room = temp_room;
-                    break;
-                }
-            }
+            room = temp_room;
+            break;
         }
     }
+}
+}
 
-    // If find a room...
-    if( room != null ){
-        // attach the socket id to the data object.
- //update this number as the number of models increases
-        var numOfObjects = objectstring_set.length;
+// If find a room...
+if( room != null ){
+    // attach the socket id to the data object.
+    //update this number as the number of models increases
+    var numOfObjects = objectstring_set.length;
 
-        //var objID = Math.floor(Math.random() * numOfObjects);
-        var objID = 0; // up to numOfObjects
+    var objID = Math.floor(Math.random() * numOfObjects);
+    // var objID =  92; // up to numOfObjects
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;

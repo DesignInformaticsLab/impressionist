@@ -8,7 +8,8 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
-			objects.rotation.y = 3.14/1.4;
+			objects.rotation.x = -3.14 * 0.1;
+			objects.rotation.y = 3.14 * 0.2;
 			objects.name = ""+count;
 			objects.allSelectedID = [];
 			scene.add(objects);
@@ -61,7 +62,8 @@ function JSONMeshParser(object) {
     //
     //var mesh = new THREE.Mesh( geom, new THREE.MeshNormalMaterial() );
 	var geometry = new THREE.Geometry();
-//
+	geometry.center();
+
 	//parse vertices
 	for (var i = 0; i<object.parsed.vertexArray.length; i++) {
 		geometry.vertices.push(new THREE.Vector3(

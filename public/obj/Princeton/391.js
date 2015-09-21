@@ -1,5 +1,5 @@
 var scale = 750;
-var zheight = -120;
+var zheight = 120;
 var answer = ['cow', 'bull'];
 
 var loadobject = function(obj_string,scene,count,callback){
@@ -8,8 +8,9 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
-			objects.rotation.y = 3.14/2;
-			objects.rotation.x = -0.4;
+			objects.rotation.y = 3.14/4;
+			objects.rotation.x = 0;
+			objects.position.z = 200;
 			objects.name = ""+count;
 			objects.allSelectedID = [];
 			scene.add(objects);
@@ -134,7 +135,8 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
-//
+	geometry.center();
+
 	return mesh;
 }
 

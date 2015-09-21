@@ -10,12 +10,12 @@ var loadobject = function(obj_string,scene,count,callback){
 			objects.scale.set(scale, scale, scale);
 
             objects.rotation.x = 3.14 * 0.5
-            objects.rotation.y = 3.14 * 0.0
-			objects.rotation.z = -3.14 * 0.2
+            objects.rotation.y = 3.14 * 0
+			objects.rotation.z = -3.14 * 0.3
 
-			objects.position.x = -200
-			objects.position.y = 100
-			objects.position.z = 300
+			objects.position.x = 0
+			objects.position.y = 0
+			objects.position.z = 900
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -141,7 +141,8 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
-//
+	geometry.center();
+
 	return mesh;
 }
 

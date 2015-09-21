@@ -13,9 +13,9 @@ var loadobject = function(obj_string,scene,count,callback){
 			objects.rotation.y = 3.14 * 0.8
 			objects.rotation.z = 3.14 * 0
 
-			objects.position.x = -0
-			objects.position.y = -100
-			objects.position.z = 200
+			objects.position.x = -100
+			objects.position.y = 100
+			objects.position.z = 400
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -141,7 +141,7 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
-//
+	geometry.center();
 	return mesh;
 }
 
