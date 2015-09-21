@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var connection = process.env.DATABASE_URL ||"postgres://postgres:GWC464doi@localhost:5432/postgres"; //old:  "postgres://postgres:54093960@localhost:5432/postgres" wrong password
-//var connection = "postgres://postgres:54093960@localhost:5432/postgres"; //old:  "postgres://postgres:54093960@localhost:5432/postgres" wrong password
+var connection = process.env.DATABASE_URL ||"postgres://postgres:54093960@localhost:5432/postgres"; //old:  "postgres://postgres:54093960@localhost:5432/postgres" wrong password
 
 //for local postgres server, and Heroku server
 var objectstring_set = [

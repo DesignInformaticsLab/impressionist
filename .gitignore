@@ -38,3 +38,8 @@ Thumbs.db
 # WebStorm files #
 ##################
 .idea/
+
+# Object files #
+################
+public/obj/Princeton/m2
+public/obj/Princeton/princeton_geometry
