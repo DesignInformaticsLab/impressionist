@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P520";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/520.json',];
+	var objstrings = ['obj/Princeton/520.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

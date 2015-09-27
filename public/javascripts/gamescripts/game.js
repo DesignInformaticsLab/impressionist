@@ -1434,7 +1434,7 @@ var GAME = (function($){
         },
 
         /**
-         * "show_obj" and "upload_obj" initialize obj parameters, ONLY used initially offline before any game
+         * ONLY used initially offline before any game
          */
         initial_obj: function (id) {
             $.get('/getRawObjectList', function(response){
