@@ -210,7 +210,7 @@ var GAME = (function($){
                     callback = function(){
                         console.log( "New object loaded." );
                         // reset game
-                        App.Host.selection_capacity = 10000; // assign player selection capacity for current obj
+                        App.selection_capacity = 10000; // assign player selection capacity for current obj
                         o.correct_answer = answer[0]; // get correct answers
                         o.height = zheight;
                         o.scale = scale;
@@ -398,14 +398,12 @@ var GAME = (function($){
 
             window.addEventListener( 'resize', App.onWindowResize, false );
 
-            // Host
-
             // Player
-            App.$guessinput.on('keypress', App.Host.onGuessinputKeyPress);
+            App.$guessinput.on('keypress', App.onGuessinputKeyPress);
             App.$entry.click(function(){
                 App.$home.hide();
                 App.$wait.show();
-                App.Player.onJoinClick();
+                App.onJoinClick();
 
                 // move to game
                 App.$home_btn.removeClass('active');
@@ -429,7 +427,7 @@ var GAME = (function($){
             });
 
             App.$game_btn.click(function(){
-                App.Player.onJoinClick();
+                App.onJoinClick();
                 App.$home.hide();
                 App.$wait.show();
                 App.$stat.hide();
@@ -537,8 +535,8 @@ var GAME = (function($){
             App.mouse.x = ( e.clientX / target.width()) * 2 - 1;
             App.mouse.y = - ( e.clientY / target.height() ) * 2 + 1;
             if (App.PRESSED == true){
-                if (App.Host.SELECT == true) {
-                    App.Host.select();
+                if (App.SELECT == true) {
+                    App.select();
                 }
                 else {
                     $.each(Obj.object_set, function(i,o){
@@ -559,10 +557,10 @@ var GAME = (function($){
             e.preventDefault();
             if (!App.isJqmGhostClick(event)) {
                 App.PRESSED = true;
-                if (App.PRESSED == true && App.Host.SELECT == true) {
+                if (App.PRESSED == true && App.SELECT == true) {
                     App.mouse.x = ( e.clientX / target.width() ) * 2 - 1;
                     App.mouse.y = -( e.clientY / target.height() ) * 2 + 1;
-                    App.Host.select();
+                    App.select();
 
                 }
             }
@@ -588,7 +586,7 @@ var GAME = (function($){
         onKeyDown: function (e) {
             e.preventDefault();
             if (e.keyCode == 83 && App.myRole =='Host'){ //s: selection
-                App.Host.SELECT = true;
+                App.SELECT = true;
                 App.$bar.addClass('active');
             }
         },
@@ -613,7 +611,7 @@ var GAME = (function($){
             //}
             e.preventDefault();
             if (e.keyCode == 83 && App.myRole =='Host' ){
-                App.Host.SELECT = false;
+                App.SELECT = false;
                 App.$bar.removeClass('active');
             }
         },
@@ -632,299 +630,245 @@ var GAME = (function($){
 
 
 
-        /* *******************************
-         *         HOST CODE           *
-         ******************************* */
-        Host : {
-
-            /**
-             * Keep track of the number of players that have joined the game.
-             */
-            numPlayersInRoom: 0,
-
-            /**
-             * Handler for the "Start" button on the Title Screen.
-             */
-            onCreateClick: function () {
-                // console.log('Clicked "Create A Game"');
-                IO.socket.emit('createNewGame');
-            },
-
-            /**
-             * all selected face ID for the current object
-             */
-            allSelectedIDMaster: [],
-
-            /**
-             * current selected face ID
-             */
-            selectedStrings: [],
-
-            /**
-             * the maximum number of faces one can select, updated after the game starts
-             */
-            selection_capacity: 0,
-
-            /**
-             * if in the selection mode
-             */
-            SELECT: false,
-
-            /**
-             * check guess
-             * @param e: key event
-             */
-            onGuessinputKeyPress: function (e) {
-                if(e.which == 13) {// submit guess
-                    if (App.$guessinput[0].value!='your guess' && App.$guessinput[0].value!=''){
-                        App.Player.onSubmitAnswer();
-                    }
-                    else{
-                    }
-                }
-            },
-
-            // method invoked if the user clicks on a geometry while pressing s
-            select: function () {
-                if (App.Host.selection_capacity>0){ // if still can select
-
-                    //casts a ray from camera through mouse at object
-                    Obj.object_set[0].raycaster.setFromCamera( App.mouse, Obj.object_set[0].camera );
-                    App.Host.selectedStrings = []; //initialized the selectedStrings array as empty
-                    var intersections=[]; //creates a empty intersection array as multiple selection are possible --
-                    // raycaster might intersect more than one face such as at the front and back of a geometry
-
-                    //attempts to make an intersection
-                    try {
-                        intersections = Obj.object_set[0].raycaster.intersectObjects( Obj.object_set[0].scene.children[0].children);
-                    } catch (e) {
-                        intersections[0] = null ;
-                    }
-
-                    //stores the first (closest) intersection
-                    var intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null;
-
-
-                    if (intersection != null) {
-                        //sends the 3 vertex indices of the selected faces so the neighboring faces can be found
-                        //this is done without looping
-                        if(Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.indexOf(intersection.faceIndex)==-1){
-                            Obj.object_set[0].selectNeighboringFaces3(
-                                Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
-                                Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
-                                Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex,intersection.object.name);
-
-                            // the returned faces are filtered for only unique faces
-                            App.Host.selectedStrings =App.Host.selectedStrings.filter(App.onlyUnique);
-
-                            // the unique faces are compared to the faces that had previusly been selected
-                            App.Host.selectedStrings = App.diff(App.Host.selectedStrings, Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
-
-
-                            $.each(App.Host.selectedStrings, function(i, SS) {
-                                Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
-                            });
-
-
-                            // Max code for encoding face ids from different meshes
-                            var mesh_id = parseInt(intersection.object.name);
-                            var bias = 0;
-                            for(var i=0;i<mesh_id;i++){
-                                bias += Obj.object_set[0].object.FaceArray[i];
-                            }
-                            var uniqueValues = [];
-                            $.each(App.Host.selectedStrings, function (i,s) {
-                                uniqueValues.push(s+bias);
-                            });
-
-
-
-                            $.each(uniqueValues, function(i,UV) {
-                                App.Host.allSelectedIDMaster.push(UV);
-                            });
-
-                            App.Host.selectedStrings.unshift(parseInt(intersection.object.name));
-                            App.Host.selection_capacity = App.Host.selection_capacity - App.Host.selectedStrings.length + 1;
-                            App.$bar.css('opacity', App.Host.selection_capacity/1000*App.progressbar_size);
-
-                            IO.socket.emit('selection',JSON.stringify(App.Host.selectedStrings));
-                        }
-                    }
-                }
-            },
-
-            /**
-             * send out quit signal
-             */
-            quit: function(){
-                IO.socket.emit('playerQuit');
-            },
-
-            /**
-             * both user quit
-             */
-            quitGame: function(){
-                App.$home.show();
-                App.$wait.hide();
-                App.$stat.hide();
-                App.$home_btn.addClass('active');
-                App.$game_btn.removeClass('active');
-                App.$stat_btn.removeClass('active');
-            }
-        },
-
-
-        /* *****************************
-         *        PLAYER CODE        *
-         ***************************** */
-
-        Player : {
-
-            /**
-             * A reference to the socket ID of the Host
-             */
-            hostSocketId: '',
-
-            /**
-             * The player's name entered on the 'Join' screen.
-             */
-            myName: '',
-
-            /**
-             * All face ID for the current object
-             */
-            allSelectedID: [],
-
-            /**
-             * Click handler for the 'JOIN' button
-             */
-            onJoinClick: function () {
-                // console.log('Clicked "Join A Game"');
-
-                // Display the Join Game HTML on the player's screen.
-                //App.$gameArea.html(App.$templateJoinGame);
-
-                console.log('Try finding a player...');
-
-                //collect data to send to the server
-                var data = {
-                    playerName : 'max',
-                    objectId : 999
-                };
-
-                IO.socket.emit('joinGame', data);
-
-                // Set the appropriate properties for the current player.
-                App.myRole = 'Player';
-                App.Player.myName = data.playerName;
-            },
-
-            /**
-             *  Click handler for the Player to submit and store a guess.
-             */
-            onSubmitAnswer: function() {
-                //var weight = [];
-                //$.each(App.allSelectedIDMaster, function(i,d){
-                //    weight.push(1-weight.length/App.allSelectedIDMaster.length);
-                //});
-
-                var answer = $('#guessinput')[0].value;
-                var data = {
-                    game_id: App.gameId,
-                    answer: answer,
-                    correct: $.inArray(answer.toLowerCase(), [Obj.object_set[0].correct_answer])>=0,
-                    round: App.currentRound,
-                    duration: Date.now()-App.start_obj_time, // time from start of the object
-                    score: App.score,
-                    object_name: Obj.object_set[0].object.name,
-                    all_selected_id: JSON.stringify(App.Host.allSelectedIDMaster)
-                    //weight: JSON.stringify(weight)
-                };
-                $.post('/store_selection',data,function(){
-                    IO.socket.emit('checkAnswer',data);
-                });
-            },
-
-            /**
-             *  Click handler for the "Start Again" button that appears
-             *  when a game is over.
-             */
-            onPlayerRestart : function() {
-                //var data = {
-                //    gameId : App.gameId,
-                //    playerName : App.Player.myName
-                //}
-                //IO.socket.emit('playerRestart',data);
-                //App.currentRound = 0;
-                //$('#gameArea').html("<h3>Waiting on host to start new game.</h3>");
-            },
-
-            /**
-             * Display the waiting screen for player 1
-             * @param data
-             */
-            updateWaitingScreen : function(data) {
-                if(IO.socket.id === data.mySocketId){
-                    $('#wait').show();
-                }
-            },
-
-            /**
-             * Display 'Get Ready' while the countdown timer ticks down.
-             * @param hostData
-             */
-            gameCountdown : function(hostData) {
-                //App.Player.hostSocketId = hostData.mySocketId;
-                //$('#gameArea')
-                //    .html('<div class="gameOver">Get Ready!</div>');
-            },
-
-            /**
-             * Show the "Game Over" screen.
-             */
-            endGame : function() {
-
-            }
-        },
-
-
-        /* **************************
-         UTILITY CODE
-         ************************** */
+        /**
+         * Keep track of the number of players that have joined the game.
+         */
+        numPlayersInRoom: 0,
 
         /**
-         * Display the countdown timer on the Host screen
-         *
-         * @param $el The container element for the countdown timer
-         * @param startTime
-         * @param callback The function to call when the timer ends.
+         * Handler for the "Start" button on the Title Screen.
          */
-        countDown : function( $el, startTime, callback) {
+        onCreateClick: function () {
+            // console.log('Clicked "Create A Game"');
+            IO.socket.emit('createNewGame');
+        },
 
-            // Display the starting time on the screen.
-            $el.text(startTime);
-            App.doTextFit('#hostWord');
+        /**
+         * all selected face ID for the current object
+         */
+        allSelectedIDMaster: [],
 
-            // console.log('Starting Countdown...');
+        /**
+         * current selected face ID
+         */
+        selectedStrings: [],
 
-            // Start a 1 second timer
-            var timer = setInterval(countItDown,1000);
+        /**
+         * the maximum number of faces one can select, updated after the game starts
+         */
+        selection_capacity: 0,
 
-            // Decrement the displayed timer value on each 'tick'
-            function countItDown(){
-                startTime -= 1;
-                $el.text(startTime);
-                App.doTextFit('#hostWord');
+        /**
+         * if in the selection mode
+         */
+        SELECT: false,
 
-                if( startTime <= 0 ){
-                    // console.log('Countdown Finished.');
-
-                    // Stop the timer and do the callback.
-                    clearInterval(timer);
-                    callback();
-                    return;
+        /**
+         * check guess
+         * @param e: key event
+         */
+        onGuessinputKeyPress: function (e) {
+            if(e.which == 13) {// submit guess
+                if (App.$guessinput[0].value!='your guess' && App.$guessinput[0].value!=''){
+                    App.onSubmitAnswer();
+                }
+                else{
                 }
             }
+        },
+
+        // method invoked if the user clicks on a geometry while pressing s
+        select: function () {
+            if (App.selection_capacity > 0) { // if still can select
+
+                //casts a ray from camera through mouse at object
+                Obj.object_set[0].raycaster.setFromCamera(App.mouse, Obj.object_set[0].camera);
+                App.selectedStrings = []; //initialized the selectedStrings array as empty
+                var intersections = []; //creates a empty intersection array as multiple selection are possible --
+                // raycaster might intersect more than one face such as at the front and back of a geometry
+
+                //attempts to make an intersection
+                try {
+                    intersections = Obj.object_set[0].raycaster.intersectObjects(Obj.object_set[0].scene.children[0].children);
+                } catch (e) {
+                    intersections[0] = null;
+                }
+
+                //stores the first (closest) intersection
+                var intersection = ( intersections.length ) > 0 ? intersections[0] : null;
+
+
+                if (intersection != null) {
+                    //sends the 3 vertex indices of the selected faces so the neighboring faces can be found
+                    //this is done without looping
+                    if (Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.indexOf(intersection.faceIndex) == -1) {
+                        Obj.object_set[0].selectNeighboringFaces3(
+                            Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].a,
+                            Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].b,
+                            Obj.object_set[0].scene.children[0].getObjectByName(intersection.object.name).geometry.faces[intersection.faceIndex].c, 1, intersection.faceIndex, intersection.object.name);
+
+                        // the returned faces are filtered for only unique faces
+                        App.selectedStrings = App.selectedStrings.filter(App.onlyUnique);
+
+                        // the unique faces are compared to the faces that had previusly been selected
+                        App.selectedStrings = App.diff(App.selectedStrings, Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID); // only emit new selection
+
+
+                        $.each(App.selectedStrings, function (i, SS) {
+                            Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
+                        });
+
+
+                        // Max code for encoding face ids from different meshes
+                        var mesh_id = parseInt(intersection.object.name);
+                        var bias = 0;
+                        for (var i = 0; i < mesh_id; i++) {
+                            bias += Obj.object_set[0].object.FaceArray[i];
+                        }
+                        var uniqueValues = [];
+                        $.each(App.selectedStrings, function (i, s) {
+                            uniqueValues.push(s + bias);
+                        });
+
+
+                        $.each(uniqueValues, function (i, UV) {
+                            App.allSelectedIDMaster.push(UV);
+                        });
+
+                        App.selectedStrings.unshift(parseInt(intersection.object.name));
+                        App.selection_capacity = App.selection_capacity - App.selectedStrings.length + 1;
+                        App.$bar.css('opacity', App.selection_capacity / 1000 * App.progressbar_size);
+
+                        IO.socket.emit('selection', JSON.stringify(App.selectedStrings));
+                    }
+                }
+            }
+        },
+
+        /**
+         * send out quit signal
+         */
+        quit: function(){
+            IO.socket.emit('playerQuit');
+        },
+
+        /**
+         * both user quit
+         */
+        quitGame: function(){
+            App.$home.show();
+            App.$wait.hide();
+            App.$stat.hide();
+            App.$home_btn.addClass('active');
+            App.$game_btn.removeClass('active');
+            App.$stat_btn.removeClass('active');
+        },
+
+
+        /**
+         * A reference to the socket ID of the Host
+         */
+        hostSocketId: '',
+
+        /**
+         * The player's name entered on the 'Join' screen.
+         */
+        myName: '',
+
+        /**
+         * All face ID for the current object
+         */
+        allSelectedID: [],
+
+        /**
+         * Click handler for the 'JOIN' button
+         */
+        onJoinClick: function () {
+            // console.log('Clicked "Join A Game"');
+
+            // Display the Join Game HTML on the player's screen.
+            //App.$gameArea.html(App.$templateJoinGame);
+
+            console.log('Try finding a player...');
+
+            //collect data to send to the server
+            var data = {
+                playerName : 'max',
+                objectId : 999
+            };
+
+            IO.socket.emit('joinGame', data);
+
+            // Set the appropriate properties for the current player.
+            App.myRole = 'Player';
+            App.myName = data.playerName;
+        },
+
+        /**
+         *  Click handler for the Player to submit and store a guess.
+         */
+        onSubmitAnswer: function() {
+            //var weight = [];
+            //$.each(App.allSelectedIDMaster, function(i,d){
+            //    weight.push(1-weight.length/App.allSelectedIDMaster.length);
+            //});
+
+            var answer = $('#guessinput')[0].value;
+            var data = {
+                game_id: App.gameId,
+                answer: answer,
+                correct: $.inArray(answer.toLowerCase(), [Obj.object_set[0].correct_answer])>=0,
+                round: App.currentRound,
+                duration: Date.now()-App.start_obj_time, // time from start of the object
+                score: App.score,
+                object_name: Obj.object_set[0].object.name,
+                all_selected_id: JSON.stringify(App.allSelectedIDMaster)
+                //weight: JSON.stringify(weight)
+            };
+            $.post('/store_selection',data,function(){
+                IO.socket.emit('checkAnswer',data);
+            });
+        },
+
+        /**
+         *  Click handler for the "Start Again" button that appears
+         *  when a game is over.
+         */
+        onPlayerRestart : function() {
+            //var data = {
+            //    gameId : App.gameId,
+            //    playerName : App.Player.myName
+            //}
+            //IO.socket.emit('playerRestart',data);
+            //App.currentRound = 0;
+            //$('#gameArea').html("<h3>Waiting on host to start new game.</h3>");
+        },
+
+        /**
+         * Display the waiting screen for player 1
+         * @param data
+         */
+        updateWaitingScreen : function(data) {
+            if(IO.socket.id === data.mySocketId){
+                $('#wait').show();
+            }
+        },
+
+        /**
+         * Display 'Get Ready' while the countdown timer ticks down.
+         * @param hostData
+         */
+        gameCountdown : function(hostData) {
+            //App.Player.hostSocketId = hostData.mySocketId;
+            //$('#gameArea')
+            //    .html('<div class="gameOver">Get Ready!</div>');
+        },
+
+        /**
+         * Show the "Game Over" screen.
+         */
+        endGame : function() {
+
         },
 
         /**
@@ -965,7 +909,6 @@ var GAME = (function($){
                 return true;
             }
         }
-
     };
 
     // Anything associated with the scene and objects in it can be accessed under GAME.Obj
@@ -1035,7 +978,7 @@ var GAME = (function($){
                     $.each(selection, function (i,s) {
                         uniqueValues.push(s+bias);
                     });
-                    App.Host.allSelectedIDMaster = App.Host.allSelectedIDMaster.concat(uniqueValues);
+                    App.allSelectedIDMaster = App.allSelectedIDMaster.concat(uniqueValues);
 
                     $.each(selection, function (i, s) {
 
@@ -1137,7 +1080,7 @@ var GAME = (function($){
              */
             this.selectNeigboringFaces2 = function(a, b, c, iteration, faceIndex, name) {
 
-                App.Host.selectedStrings.push(faceIndex);
+                App.selectedStrings.push(faceIndex);
 
                 if (d.object.getObjectByName(name).sorted[0][0][a] == faceIndex) {
                     if (iteration != 0) {
