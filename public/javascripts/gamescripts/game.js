@@ -2,6 +2,11 @@
  * Created by Max Yi Ren on 3/7/2015.
  */
 
+//TODO: mesh selection is still too slow
+//TODO: scale, height and centering are not the same for object and emptyobject
+
+
+
 var GAME = (function($){
     'use strict';
     var game = {};
