@@ -147,19 +147,16 @@ var GAME = (function($){
         // on correct guess
         onAnswerCorrect : function() {
             App.$guessinput.css('background-color', '#ffffff');
-            App.$guessinput.html('You got it!'); // show something when correct
-            setTimeout(function () {
-                App.$guessinput.css('background-color', '#f5f5ff');
-                App.$guessinput.html(''); // clean input area
-                App.score += 1; // this needs to change depending on the difficulty of the object
-                App.currentRound += 1;
-                App.$score.html(App.score); // update score
-                App.$guessoutput.html(''); // clean output area
 
-                App.$game.hide();
-                App.$continue.show();
-                //IO.onNewObjData(); // get a new object and start a new round
-            },800);
+            App.$guessinput.css('background-color', '#f5f5ff');
+            App.$guessinput.html(''); // clean input area
+            App.score += 1; // this needs to change depending on the difficulty of the object
+            App.currentRound += 1;
+            App.$score.html(App.score); // update score
+            App.$guessoutput.html(''); // clean output area
+
+            App.$game.hide();
+            App.$continue.show();
         },
 
         // on wrong guess
@@ -484,6 +481,12 @@ var GAME = (function($){
             App.$continue_btn.click(function(){
                 App.$continue.hide();
                 App.$wait.show();
+
+                // clean memory
+                $.each(Obj.object_set, function(i,o){
+                    o.desposeMesh();
+                })
+
                 IO.socket.emit('playerReady');
                 IO.getSocketStats();
             });
@@ -528,7 +531,10 @@ var GAME = (function($){
             });
 
             App.$stat.on('click', '.object_div', function(){
-                // clear previoius drawings
+                // clean memory
+                $.each(Obj.object_set, function(i,o){
+                    o.desposeMesh();
+                })
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
@@ -984,6 +990,23 @@ var GAME = (function($){
                     //}
                     d.emptyobject.add(mesh);
                 });
+            };
+
+            this.desposeMesh = function() {
+                if (typeof(d.object.children)!='undefined'){
+                    $.each(d.object.children, function(i,mesh){
+                        mesh.geometry.dispose();
+                        mesh.material.dispose();
+                        d.object.remove(mesh);
+                    });
+                }
+                if (typeof(d.emptyobject.children)!='undefined') {
+                    $.each(d.emptyobject.children, function (i, mesh) {
+                        mesh.geometry.dispose();
+                        mesh.material.dispose();
+                        d.emptyobject.remove(mesh);
+                    });
+                }
             };
 
             /**
