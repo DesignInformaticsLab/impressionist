@@ -193,7 +193,19 @@ function checkAnswer(data) {
 
 function playerQuit(){
     var roomid = this.gameId;
-    io.sockets.in(roomid).emit('quitGame');
+    if (roomid){
+        io.sockets.in(roomid).emit('quitGame');
+        //var sock = this;
+
+        // once a player quits, all quit
+        var room = io.sockets.adapter.rooms[roomid];
+        if (typeof(room)!='undefined'){
+            var ids = Object.keys(room);
+            for (var s = 0; s<ids.length; s++) {
+                io.sockets.connected[ids[s]].leave(roomid);
+            }
+        }
+    }
 }
 
 /*
@@ -229,11 +241,11 @@ function getSocketStats(){
     var count = 0;
     if(roomsid != undefined){
         for(var i=0;i<roomsid.length;i++){
-            if(roomsid[i].length==5){
+            if(roomsid[i].length!=5){// length==5 is defined for room id, length>5 are for player id
                 count+=1;
             }
         }
     }
-    var sock  = this;
-    io.sockets.in(sock.gameId).emit('updateSocketStats', {'numPlayer':count*2});
+    this.emit('updateSocketStats', {'numPlayer':count});
+    //io.sockets.emit('updateSocketStats', {'numPlayer':count});
 }

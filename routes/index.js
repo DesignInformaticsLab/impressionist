@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 
-var connection = process.env.DATABASE_URL ||"postgres://postgres:54093960@localhost:5432/postgres"
-    || "postgres://postgres:GWC464doi@localhost:5432/postgres";
+var connection = process.env.DATABASE_URL ||"postgres://postgres:54093960@127.0.0.1:5432/postgres"
+    || "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
 
 //for local postgres server, and Heroku server
 var objectstring_set = [
