@@ -20,20 +20,8 @@ var objectstring_set = [
     "obj/Princeton/388.js","obj/Princeton/389.js","obj/Princeton/390.js","obj/Princeton/391.js","obj/Princeton/392.js",
     "obj/Princeton/393.js","obj/Princeton/394.js","obj/Princeton/395.js","obj/Princeton/396.js","obj/Princeton/397.js",
     "obj/Princeton/398.js","obj/Princeton/400.js"
+];
 
-    //,"obj/Princeton/430.js","obj/Princeton/485.js","obj/Princeton/490.js",
-    //
-    //"obj/Princeton/495.js","obj/Princeton/520.js","obj/Princeton/550.js","obj/Princeton/560.js","obj/Princeton/575.js",
-    //"obj/Princeton/585.js","obj/Princeton/590.js","obj/Princeton/595.js","obj/Princeton/600.js","obj/Princeton/605.js",
-    //"obj/Princeton/615.js","obj/Princeton/630.js","obj/Princeton/645.js","obj/Princeton/650.js","obj/Princeton/670.js",
-    //"obj/Princeton/705.js","obj/Princeton/720.js","obj/Princeton/725.js","obj/Princeton/735.js","obj/Princeton/775.js",
-    //
-    //"obj/Princeton/785.js","obj/Princeton/795.js","obj/Princeton/825.js","obj/Princeton/850.js","obj/Princeton/870.js",
-    //"obj/Princeton/945.js","obj/Princeton/980.js","obj/Princeton/985.js","obj/Princeton/995.js","obj/Princeton/1085.js",
-    //"obj/Princeton/1095.js","obj/Princeton/1105.js","obj/Princeton/1125.js"
-]; //["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
-//    "obj/Helmet/helmet.js", "obj/iPhone/iPhone.js", "obj/Lampost/LampPost.js", "obj/TeaPot/TeaPot.js",
-//    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
 var pg = require('pg');
 var connection = process.env.DATABASE_URL || "postgres://postgres:54093960@localhost:5432/postgres"
@@ -59,6 +47,7 @@ exports.initGame = function(sio, socket){
     gameSocket.on('selection', selection);
     gameSocket.on('playerReady', playerReady);
     gameSocket.on('playerQuit', playerQuit);
+    gameSocket.on('getSocketStats', getSocketStats);
 };
 
 /* *******************************
@@ -88,7 +77,7 @@ function createNewGame(data) {
  * Attempt to connect them to the room with one person.
  * @param data Contains data entered via player's input - playerName and gameId.
  */
-function joinGame(data) {
+function joinGame() {
     //console.log('Player ' + data.playerName + 'attempting to join game: ' + data.gameId );
 
     // A reference to the player's Socket.IO socket object
@@ -106,18 +95,18 @@ function joinGame(data) {
                 if(Object.keys(temp_room).length<2){
             room = temp_room;
             break;
+                }
+            }
         }
     }
-}
-}
 
-// If find a room...
-if( room != null ){
-    // attach the socket id to the data object.
-    //update this number as the number of models increases
-    var numOfObjects = objectstring_set.length;
-
-    var objID = Math.floor(Math.random() * numOfObjects);
+    // If find a room...
+    if( room != null ){
+        // attach the socket id to the data object.
+        //update this number as the number of models increases
+        var numOfObjects = objectstring_set.length;
+        var data = {};
+        var objID = Math.floor(Math.random() * numOfObjects);
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;
@@ -149,7 +138,6 @@ if( room != null ){
         // Join the Room and wait for the players
         sock.join(thisGameId.toString());
         sock.gameId = thisGameId; // assign room id to sock
-        data.mySocketId = sock.id;
 
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
@@ -205,7 +193,7 @@ function checkAnswer(data) {
 
 function playerQuit(){
     var roomid = this.gameId;
-    io.sockets.in(roomid).emit('quitGame', data);
+    io.sockets.in(roomid).emit('quitGame');
 }
 
 /*
@@ -233,4 +221,19 @@ function shuffle(array) {
     return array;
 }
 
-var objPool = [];
+/**
+ * get current socket status
+ */
+function getSocketStats(){
+    var roomsid = Object.keys(io.sockets.adapter.rooms);
+    var count = 0;
+    if(roomsid != undefined){
+        for(var i=0;i<roomsid.length;i++){
+            if(roomsid[i].length==5){
+                count+=1;
+            }
+        }
+    }
+    var sock  = this;
+    io.sockets.in(sock.gameId).emit('updateSocketStats', {'numPlayer':count*2});
+}

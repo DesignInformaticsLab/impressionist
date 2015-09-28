@@ -37,6 +37,8 @@ var GAME = (function($){
             IO.socket.on('error', IO.error );
             IO.socket.on('selection', IO.onSelection); // when faces are selected
             IO.socket.on('playerReady', IO.onPlayerReady); // when faces are selected
+            IO.socket.on('getSocketStats', IO.getSocketStats);
+            IO.socket.on('updateSocketStats', IO.updateSocketStats);
         },
 
         /**
@@ -259,6 +261,17 @@ var GAME = (function($){
          */
         error : function(data) {
             alert(data.message);
+        },
+
+        /**
+         * update number of players online and other miscs.
+         */
+        getSocketStats: function () {
+            IO.socket.emit('getSocketStats');
+        },
+        updateSocketStats: function (data) {
+            var numPlayer = data.numPlayer;
+            $('#numPlayer').html(numPlayer + ' players online');
         }
     };
 
@@ -408,11 +421,13 @@ var GAME = (function($){
                 // move to game
                 App.$home_btn.removeClass('active');
                 App.$game_btn.addClass('active');
+                IO.getSocketStats();
             });
             App.$continue_btn.click(function(){
                 App.$continue.hide();
                 App.$wait.show();
                 IO.socket.emit('playerReady');
+                IO.getSocketStats();
             });
 
             // navigation
@@ -791,17 +806,10 @@ var GAME = (function($){
 
             console.log('Try finding a player...');
 
-            //collect data to send to the server
-            var data = {
-                playerName : 'max',
-                objectId : 999
-            };
-
-            IO.socket.emit('joinGame', data);
+            IO.socket.emit('joinGame');
 
             // Set the appropriate properties for the current player.
             App.myRole = 'Player';
-            App.myName = data.playerName;
         },
 
         /**
