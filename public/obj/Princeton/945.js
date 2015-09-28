@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1000;
 var zheight = -120;
 var answer = ['bed'];
 
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = -0
 			objects.position.y = 100
-			objects.position.z = 400
+			objects.position.z = 1
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P945";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/945.json',];
+	var objstrings = ['obj/Princeton/945.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

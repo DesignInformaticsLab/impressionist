@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1000;
 var zheight = -120;
 var answer = ['dagger'];
 
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = -100
 			objects.position.y = -300
-			objects.position.z = 400
+			objects.position.z = 100
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P720";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/720.json',];
+	var objstrings = ['obj/Princeton/720.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

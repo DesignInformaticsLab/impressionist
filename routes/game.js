@@ -6,27 +6,24 @@ var gameSocket;
 var playerReady;
 
 var objectstring_set = [
-    "obj/Princeton/0.js","obj/Princeton/2.js","obj/Princeton/5.js","obj/Princeton/10.js","obj/Princeton/12.js",
+    "obj/Princeton/0.js","obj/Princeton/2.js","obj/Princeton/5.js","obj/Princeton/10.js",
     "obj/Princeton/15.js","obj/Princeton/20.js","obj/Princeton/25.js","obj/Princeton/40.js","obj/Princeton/45.js",
-    "obj/Princeton/55.js","obj/Princeton/60.js","obj/Princeton/65.js","obj/Princeton/70.js","obj/Princeton/80.js",
-    "obj/Princeton/85.js","obj/Princeton/90.js","obj/Princeton/95.js","obj/Princeton/105.js","obj/Princeton/110.js",
+    "obj/Princeton/55.js","obj/Princeton/60.js","obj/Princeton/65.js","obj/Princeton/80.js","obj/Princeton/85.js",
+    "obj/Princeton/90.js","obj/Princeton/95.js","obj/Princeton/105.js","obj/Princeton/110.js","obj/Princeton/115.js",
+    "obj/Princeton/200.js","obj/Princeton/201.js","obj/Princeton/206.js", "obj/Princeton/269.js", "obj/Princeton/281.js",
 
-    "obj/Princeton/115.js","obj/Princeton/200.js","obj/Princeton/201.js","obj/Princeton/202.js","obj/Princeton/203.js",
-    "obj/Princeton/204.js","obj/Princeton/205.js","obj/Princeton/206.js","obj/Princeton/207.js","obj/Princeton/208.js",
-    "obj/Princeton/209.js","obj/Princeton/210.js","obj/Princeton/269.js","obj/Princeton/270.js","obj/Princeton/281.js",
-    "obj/Princeton/285.js","obj/Princeton/299.js","obj/Princeton/300.js", "obj/Princeton/381.js","obj/Princeton/382.js",
-
+    "obj/Princeton/285.js","obj/Princeton/299.js",  "obj/Princeton/381.js","obj/Princeton/382.js",
     "obj/Princeton/383.js","obj/Princeton/384.js","obj/Princeton/385.js","obj/Princeton/386.js","obj/Princeton/387.js",
     "obj/Princeton/388.js","obj/Princeton/389.js","obj/Princeton/390.js","obj/Princeton/391.js","obj/Princeton/392.js",
     "obj/Princeton/393.js","obj/Princeton/394.js","obj/Princeton/395.js","obj/Princeton/396.js","obj/Princeton/397.js",
     "obj/Princeton/398.js","obj/Princeton/400.js","obj/Princeton/430.js","obj/Princeton/485.js","obj/Princeton/490.js",
 
-    "obj/Princeton/495.js","obj/Princeton/520.js","obj/Princeton/550.js","obj/Princeton/560.js","obj/Princeton/575.js",
+    "obj/Princeton/495.js", "obj/Princeton/560.js","obj/Princeton/575.js",
     "obj/Princeton/585.js","obj/Princeton/590.js","obj/Princeton/595.js","obj/Princeton/600.js","obj/Princeton/605.js",
     "obj/Princeton/615.js","obj/Princeton/630.js","obj/Princeton/645.js","obj/Princeton/650.js","obj/Princeton/670.js",
     "obj/Princeton/705.js","obj/Princeton/720.js","obj/Princeton/725.js","obj/Princeton/735.js","obj/Princeton/775.js",
 
-    "obj/Princeton/785.js","obj/Princeton/795.js","obj/Princeton/825.js","obj/Princeton/850.js","obj/Princeton/870.js",
+    "obj/Princeton/785.js","obj/Princeton/795.js","obj/Princeton/870.js",
     "obj/Princeton/945.js","obj/Princeton/980.js","obj/Princeton/985.js","obj/Princeton/995.js","obj/Princeton/1085.js",
     "obj/Princeton/1095.js","obj/Princeton/1105.js","obj/Princeton/1125.js"
 ]; //["obj/BMW 328/BMW328MP.js", "obj/Dino/Dino.js", "obj/fedora/fedora.js",
@@ -115,7 +112,7 @@ if( room != null ){
     var numOfObjects = objectstring_set.length;
 
     var objID = Math.floor(Math.random() * numOfObjects);
-    // var objID =  92; // up to numOfObjects
+    // var objID =  4; // up to numOfObjects
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;

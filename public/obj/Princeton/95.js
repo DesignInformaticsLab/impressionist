@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 2000;
 var zheight = -120;
 var answer = ['tiger'];
 
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = 0
 			objects.position.y = 0
-			objects.position.z = 800
+			objects.position.z = 200
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P095";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/95.json',];
+	var objstrings = ['obj/Princeton/96.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

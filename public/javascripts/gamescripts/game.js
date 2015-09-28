@@ -235,7 +235,7 @@ var GAME = (function($){
                         App.currentTime = Date.now();
 
                         //o.object.rotation.y = Math.PI*2;
-                        o.object.rotation.y = Math.random()*Math.PI*2;
+                        o.object.rotation.y = Math.random()*Math.PI/2;
                     }
 
                 }
@@ -1208,7 +1208,7 @@ var GAME = (function($){
                     }
                 }
                 else{
-                    if(typeof(d.emptyobject)!='undefined'){
+                    if(typeof(d.emptyobject.rotation)!='undefined'){
                         d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
                             d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                     }

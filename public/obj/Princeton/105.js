@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1500;
 var zheight = -120;
 var answer = ['horse'];
 
@@ -9,13 +9,13 @@ var loadobject = function(obj_string,scene,count,callback){
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
 
-			objects.rotation.x = -3.14 * 1.8
-			objects.rotation.y = 3.14 * 1.8
+			objects.rotation.x = -3.14 * 1.9
+			objects.rotation.y = 3.14 * 2.2
 			objects.rotation.z = 3.14 * 0
 
 			objects.position.x = -0
-			objects.position.y = 100
-			objects.position.z = 600
+			objects.position.y = 0
+			objects.position.z = 100
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P105";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/105.json',];
+	var objstrings = ['obj/Princeton/108.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

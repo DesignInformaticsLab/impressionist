@@ -1,5 +1,5 @@
-var scale = 750;
-var zheight = 120;
+var scale = 1500;
+var zheight = 0;
 var answer = ['fish'];
 
 var loadobject = function(obj_string,scene,count,callback){
@@ -15,12 +15,21 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = 0
 			objects.position.y = 100
-			objects.position.z = 600
+			objects.position.z = 300
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
             scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
+
+			/*
+			var box = new THREE.Box3().setFromObject( objects );
+			box.center( objects.position ); //
+			var pivot = new THREE.Group();
+			scene.add( pivot );
+			pivot.add( objects );
+*/
+
 			count++;
 			loadobject(obj_string,scene,count,callback);
 		});
@@ -35,7 +44,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P055";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/55.json',];
+	var objstrings = ['obj/Princeton/55.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

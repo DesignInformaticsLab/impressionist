@@ -1,5 +1,5 @@
 var scale = 750;
-var zheight = -120;
+var zheight = 220;
 var answer = ['chair'];
 
 var loadobject = function(obj_string,scene,count,callback){
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P785";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/785.json',];
+	var objstrings = ['obj/Princeton/785.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1500;
 var zheight = -120;
 var answer = ['tree'];
 
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = -0
 			objects.position.y = 0
-			objects.position.z = 600
+			objects.position.z = 1
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P1085";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/1085.json',];
+	var objstrings = ['obj/Princeton/1085.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

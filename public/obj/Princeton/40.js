@@ -1,6 +1,6 @@
-var scale = 750;
-var zheight = -120;
-var answer = ['bird'];
+var scale = 2000;
+var zheight = 0;
+var answer = ['hawk'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = 0
 			objects.position.y = 0
-			objects.position.z = 900
+			objects.position.z = 300
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
@@ -35,7 +35,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P040";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/40.json',];
+	var objstrings = ['obj/Princeton/40.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});

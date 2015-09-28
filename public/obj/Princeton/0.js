@@ -1,5 +1,5 @@
 var scale = 750;
-var zheight = 900;
+var zheight = 0;
 var answer = ['ant'];
 
 var loadobject = function(obj_string,scene,count,callback){
@@ -9,20 +9,33 @@ var loadobject = function(obj_string,scene,count,callback){
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
 
+
 			objects.rotation.x = 3.14 * 0
 			objects.rotation.y = 3.14 * 0.3
 			objects.rotation.z = 3.14 * 0
 
 			objects.position.x = 0
 			objects.position.y = 0
-			objects.position.z = 300
+			objects.position.z = 0
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
             scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
 			count++;
+
+			/*
+			var box = new THREE.Box3().setFromObject( mesh );
+			box.center( mesh.position ); //
+			var pivot = new THREE.Group();
+			scene.add( pivot );
+			pivot.add( mesh );
+*/
+
 			loadobject(obj_string,scene,count,callback);
+
+
+
 		});
 	}
 	else{
@@ -35,7 +48,7 @@ THREE.SceneLoad = function (ajax) {
 	THREEScene.name = "P000";
 	THREEScene.FaceArray = [];
 
-	var objstrings = ['obj/Princeton/m2/0.json',];
+	var objstrings = ['obj/Princeton/0.json',];
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});
@@ -153,7 +166,8 @@ function JSONMeshParser(object) {
 	mesh.sorted = SortMeshObjects(geometry);
 //	mesh.translation = THREE.GeometryUtils.center(geometry); // added to re-center
 	geometry.center();
-//
+
+
 	return mesh;
 }
 
