@@ -44,6 +44,7 @@ var GAME = (function($){
             IO.socket.on('quitGame', App.quitGame);
             IO.socket.on('getSocketStats', IO.getSocketStats);
             IO.socket.on('updateSocketStats', IO.updateSocketStats);
+            IO.socket.on('objectGrabbed', IO.onObjectGrabbed);
         },
 
         /**
@@ -60,9 +61,13 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             App.myRole = 'Host';
-
-            // this should be randomly chosen from the server
             console.log('my id:'+data.mySocketId);
+
+            // wait for the player, if no one shows up, play with a computer
+            setTimeout(function () {
+                App.playComputer();
+            },2000);
+
         },
 
         /**
@@ -130,7 +135,7 @@ var GAME = (function($){
             //}
             if(Obj.object_set[0].object != undefined) { // if model exists
                 var selections = JSON.parse(sig);
-                var childName = selections.shift().toString();
+                var childName = selections.shift().toString(); // use childName only when the object contains multiple meshes
                 if (App.myRole == 'Player') {
                     // create meshes on fly
 
@@ -239,11 +244,40 @@ var GAME = (function($){
                         //o.object.rotation.y = Math.PI*2;
                         o.object.rotation.y = Math.random()*Math.PI*2;
                     }
-
                 }
                 App.$model.html('');
                 var o = Obj.init(target, callback);
                 o.animate();
+            });
+        },
+
+        // response to new object grabbed during human-computer games
+        onObjectGrabbed: function (data){
+            App.objectString = data.objectAdd;
+            $.post('/newGame',{},function(data) {
+                // create a new object and start the game
+                Obj.object_set = [];
+                var callback = function () {
+                    var o = Obj.object_set[0]; // there is only one object in each round
+                    // read saliency from Chen
+                    //TODO: read saliency from database for validation
+                    var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
+                    $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
+                        response = response.split('\n');
+                        if (response[response.length - 1] == '') {
+                            response = response.splice(0, response.length - 1);
+                        }
+                        $.each(response, function (i, r) {
+                            response[i] = parseFloat(r);
+                        });
+                        o.saliency = response;
+                        o.height = zheight;
+                        o.scale = scale;
+                        App.sortWithIndeces(o.saliency); // sort from low to high
+                        App.autoSelect();
+                    });
+                };
+                IO.onNewObjData(App.$model, callback);
             });
         },
 
@@ -296,6 +330,7 @@ var GAME = (function($){
          */
         refresh: function () {
             window.cancelAnimationFrame(App.rendering);
+            if(App.autoSelecting){clearInterval(App.autoSelecting);}
             App.setInitParameter();
             Obj.object_set = [];
         },
@@ -396,6 +431,12 @@ var GAME = (function($){
              * object rendering on or off
              */
             App.rendering = false;
+
+            // keep selecting meshes in setinterval
+            App.autoSelecting = false;
+
+            // true if currently playing with a computer
+            App.playWithComputer = true;
         },
 
         /**
@@ -871,6 +912,30 @@ var GAME = (function($){
             });
         },
 
+        /**
+         * Play with computer if no human players available
+         */
+        playComputer: function() {
+            App.$wait.hide();
+            App.$game.show();
+            App.playWithComputer = true;
+            App.myRole = 'Player';
+            IO.socket.emit('grabBestObject');
+        },
+
+        /**
+         * The computer automatically selects meshes to show
+         */
+        autoSelect: function (){
+            // reveal meshes at a fixed rate
+            // TODO: change the rate depending on the total mesh size
+            var o = Obj.object_set[0];
+            App.autoSelecting = setInterval(function(){
+                var selection = o.saliency.sortIndices.pop();
+                o.createMesh([selection],"0");
+            }, 100);
+        },
+
         diff: function(a, b) {
             return a.filter(function(i) {return b.indexOf(i) < 0;});
         },
@@ -889,7 +954,22 @@ var GAME = (function($){
             else {
                 return true;
             }
-        }
+        },
+
+        sortWithIndeces: function(toSort) {
+            for (var i = 0; i < toSort.length; i++) {
+                toSort[i] = [toSort[i], i];
+            }
+            toSort.sort(function(left, right) {
+                return left[0] < right[0] ? -1 : 1;
+            });
+            toSort.sortIndices = [];
+            for (var j = 0; j < toSort.length; j++) {
+                toSort.sortIndices.push(toSort[j][1]);
+                toSort[j] = toSort[j][0];
+            }
+            return toSort;
+        },
     };
 
     // Anything associated with the scene and objects in it can be accessed under GAME.Obj
@@ -1146,7 +1226,7 @@ var GAME = (function($){
                     }
                 }
                 else{
-                    if(typeof(d.emptyobject)!='undefined'){
+                    if(typeof(d.emptyobject)!='undefined' && d.emptyobject.length>0){
                         d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
                             d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                     }

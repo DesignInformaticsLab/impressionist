@@ -48,6 +48,7 @@ exports.initGame = function(sio, socket){
     gameSocket.on('playerReady', playerReady);
     gameSocket.on('playerQuit', playerQuit);
     gameSocket.on('getSocketStats', getSocketStats);
+    gameSocket.on('grabBestObject', grabBestObject);
 };
 
 /* *******************************
@@ -168,6 +169,15 @@ function playerReady(data){
         playerReady[roomid] = false;
         io.sockets.in(roomid).emit('playerReady', {objectID: objID});
     }
+}
+
+// during human-computer games, grab an object that requires validation
+function grabBestObject(){
+    // TODO: read from database
+    //var numOfObjects = objectstring_set.length;
+    //var objID = Math.floor(Math.random() * numOfObjects);
+    var objID = 40; //the 383 th model
+    this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
 
 // player selected meshes, emit to the other player
