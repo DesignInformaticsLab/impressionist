@@ -270,10 +270,24 @@ var GAME = (function($){
                         $.each(response, function (i, r) {
                             response[i] = parseFloat(r);
                         });
-                        o.saliency = response;
+                        o.vertexSaliency = response;
+                        o.faceSaliency = [];
                         o.height = zheight;
                         o.scale = scale;
-                        App.sortWithIndeces(o.saliency); // sort from low to high
+
+                        // convert vertex saliency to face saliency
+                        var max_weight = Math.max.apply(Math, response);
+                        $.each(response, function (i, r) {
+                            o.object.children[0].geometry.vertices[i].salColor = r/max_weight;
+                        });
+                        $.each(o.object.children[0].geometry.faces, function(i,f){
+                            o.faceSaliency.push((o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].a].salColor+
+                                o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].b].salColor+
+                                o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].c].salColor)/3.0);
+                        });
+
+                        App.sortWithIndeces(o.faceSaliency); // sort from low to high
+
                         App.autoSelect();
                     });
                 };
@@ -931,7 +945,7 @@ var GAME = (function($){
             // TODO: change the rate depending on the total mesh size
             var o = Obj.object_set[0];
             App.autoSelecting = setInterval(function(){
-                var selection = o.saliency.sortIndices.pop();
+                var selection = o.faceSaliency.sortIndices.pop();
                 o.createMesh([selection],"0");
             }, 100);
         },
@@ -1226,7 +1240,7 @@ var GAME = (function($){
                     }
                 }
                 else{
-                    if(typeof(d.emptyobject)!='undefined' && d.emptyobject.length>0){
+                    if(typeof(d.emptyobject)!='undefined'){
                         d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
                             d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                     }
