@@ -4,7 +4,8 @@
 
 //TODO: mesh selection is still too slow
 //TODO: scale, height and centering are not the same for object and emptyobject
-
+//TODO: moving from one round to the next needs some polish
+//TODO: score and timer needs to be exciting
 
 
 var GAME = (function($){
@@ -61,12 +62,14 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             App.myRole = 'Host';
-            console.log('my id:'+data.mySocketId);
+            App.gameId = data.gameId; // this is the room id
+            console.log('my id:'+data.mySocketId); // this is the user id
+            App.playWithComputer = true;
 
             // wait for the player, if no one shows up, play with a computer
             setTimeout(function () {
-                App.playComputer();
-            },2000);
+                if(App.playWithComputer){App.playComputer();}
+            },5000);
 
         },
 
@@ -75,11 +78,21 @@ var GAME = (function($){
          * @param data {{playerName: string, gameId: int, mySocketId: int}}
          */
         playerJoinedRoom : function(data) {
+            // if player joined, do not play with computer
+            App.playWithComputer = false;
+
+            // refresh a bunch of stuff
+            App.currentRound = 0;
+            App.score = 0;
+            App.$guessinput.html(''); // clean input area
+            App.$score.html(App.score); // update score
+            App.$guessoutput.html(''); // clean output area
+
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
             App.objectstring_set = data.objectstring_set;
             App.objectString = App.objectstring_set[data.objectID];
 
-            App.$wait.hide();
+            $('#wait.inner.cover p.lead').html('A human joined the game...');
             App.$game.show();
             App.totalTime = 5; // total game time is 5 min
 
@@ -166,7 +179,31 @@ var GAME = (function($){
             App.$guessoutput.html(''); // clean output area
 
             App.$game.hide();
-            App.$continue.show();
+
+            IO.getSocketStats();
+
+
+            // stop loops
+            window.cancelAnimationFrame(App.rendering);
+            if(App.autoSelecting){clearInterval(App.autoSelecting);}
+            // clean memory
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            })
+            if (App.playWithComputer){
+                // look for a human player, if none, keep playing with the computer
+                $('#wait.inner.cover p.lead').html('Looking for another human...');
+                App.$wait.show();
+
+                IO.onNewGameCreated(App);
+            }
+            else{
+                //App.$continue.show();
+                $('#wait.inner.cover p.lead').html('Waiting for the other player...');
+                App.$wait.show();
+
+                IO.socket.emit('playerReady');
+            }
         },
 
         // on wrong guess
@@ -243,6 +280,9 @@ var GAME = (function($){
 
                         //o.object.rotation.y = Math.PI*2;
                         o.object.rotation.y = Math.random()*Math.PI*2;
+
+                        // show object when everything is ready
+                        App.$wait.show();
                     }
                 }
                 App.$model.html('');
@@ -255,9 +295,11 @@ var GAME = (function($){
         onObjectGrabbed: function (data){
             App.objectString = data.objectAdd;
             $.post('/newGame',{},function(data) {
+
                 // create a new object and start the game
                 Obj.object_set = [];
                 var callback = function () {
+                    // do the following after a new game is created
                     var o = Obj.object_set[0]; // there is only one object in each round
                     // read saliency from Chen
                     //TODO: read saliency from database for validation
@@ -272,8 +314,6 @@ var GAME = (function($){
                         });
                         o.vertexSaliency = response;
                         o.faceSaliency = [];
-                        o.height = zheight;
-                        o.scale = scale;
 
                         // convert vertex saliency to face saliency
                         var max_weight = Math.max.apply(Math, response);
@@ -286,11 +326,28 @@ var GAME = (function($){
                                 o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].c].salColor)/3.0);
                         });
 
-                        App.sortWithIndeces(o.faceSaliency); // sort from low to high
+                        App.sortWithIndeces(o.faceSaliency); // sort saliency from low to high
 
+
+                        // prepare the interface and misc. data
+                        o.correct_answer = answer[0]; // get correct answers
+                        o.height = zheight;
+                        o.scale = scale;
+                        App.$wait.hide();
+                        App.$menu.show();
+                        App.$guessoutput.hide();
+                        App.$guessinput.show();
+                        App.$guessinput[0].value='';
+                        App.$model.focus(); // focus on $model so that key events can work
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
+                        o.object.rotation.y = Math.random()*Math.PI*2;
+
+                        // let computer select faces
                         App.autoSelect();
                     });
                 };
+                App.$game.show();
                 IO.onNewObjData(App.$model, callback);
             });
         },
@@ -346,6 +403,7 @@ var GAME = (function($){
             window.cancelAnimationFrame(App.rendering);
             if(App.autoSelecting){clearInterval(App.autoSelecting);}
             App.setInitParameter();
+            $('#wait.inner.cover p.lead').html('Looking for another human...');
             Obj.object_set = [];
         },
 
@@ -872,7 +930,7 @@ var GAME = (function($){
                 App.$stat.hide();
                 App.$game.hide();
                 setTimeout(function () {
-                    $('#wait.inner.cover p.lead').html('Waiting for another player...');
+                    $('#wait.inner.cover p.lead').html('Looking for another human...');
                     App.$wait.hide();
                     App.$home.show();
                     App.$home_btn.addClass('active');
@@ -930,8 +988,7 @@ var GAME = (function($){
          * Play with computer if no human players available
          */
         playComputer: function() {
-            App.$wait.hide();
-            App.$game.show();
+            $('#wait.inner.cover p.lead').html('A computer is joining the game...');
             App.playWithComputer = true;
             App.myRole = 'Player';
             IO.socket.emit('grabBestObject');
@@ -1094,16 +1151,20 @@ var GAME = (function($){
             this.desposeMesh = function() {
                 if (typeof(d.object.children)!='undefined'){
                     $.each(d.object.children, function(i,mesh){
-                        mesh.geometry.dispose();
-                        mesh.material.dispose();
-                        d.object.remove(mesh);
+                        if(typeof(mesh)!='undefined'){
+                            mesh.geometry.dispose();
+                            mesh.material.dispose();
+                            d.object.remove(mesh);
+                        }
                     });
                 }
                 if (typeof(d.emptyobject.children)!='undefined') {
                     $.each(d.emptyobject.children, function (i, mesh) {
-                        mesh.geometry.dispose();
-                        mesh.material.dispose();
-                        d.emptyobject.remove(mesh);
+                        if(typeof(mesh)!='undefined'){
+                            mesh.geometry.dispose();
+                            mesh.material.dispose();
+                            d.emptyobject.remove(mesh);
+                        }
                     });
                 }
             };

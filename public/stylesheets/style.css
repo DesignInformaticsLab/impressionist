@@ -42,6 +42,8 @@
     /*color: #333333;*/
     /*-webkit-transition: background-color 0.5s, -webkit-transform 0.5s;*/
     /*transition: background-color 0.5s, transform 0.5s;*/
+    transition: all 0.5s;
+    z-index: 5;
 }
 
 #continue {

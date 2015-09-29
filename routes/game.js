@@ -3,7 +3,7 @@
  */
 var io;
 var gameSocket;
-var playerReady;
+var playerReady = [];
 
 var objectstring_set = [
     "obj/Princeton/0.js","obj/Princeton/2.js","obj/Princeton/5.js","obj/Princeton/10.js","obj/Princeton/12.js",
@@ -45,7 +45,7 @@ exports.initGame = function(sio, socket){
     gameSocket.on('broadcastGameID', broadcastGameID);
     gameSocket.on('checkAnswer', checkAnswer);
     gameSocket.on('selection', selection);
-    gameSocket.on('playerReady', playerReady);
+    gameSocket.on('playerReady', onPlayerReady);
     gameSocket.on('playerQuit', playerQuit);
     gameSocket.on('getSocketStats', getSocketStats);
     gameSocket.on('grabBestObject', grabBestObject);
@@ -150,7 +150,7 @@ function broadcastGameID(data){
     io.sockets.in(roomid).emit('newGameId', {gameId: data});
 }
 
-function playerReady(data){
+function onPlayerReady(data){
 
     var roomid = this.gameId;
     if (!playerReady[roomid]){
