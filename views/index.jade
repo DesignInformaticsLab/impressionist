@@ -29,7 +29,8 @@ block content
                           | Try it out
                   #wait.inner.cover
                       p.lead
-                          | Waiting ...
+                          | Looking for another human...
+                      span.glyphicon.glyphicon-refresh.spinning
                   #continue.inner.cover
                       #continue_btn.btn.btn-lg.btn-default
                           | Continue
@@ -57,7 +58,8 @@ block content
                       #comp_model2(tabindex='0')
                   .mastfoot
                       .inner
+                          #numPlayer
                           p
-                              | by Max Yi Ren and Fabian Gadau, Arizona State University, 2015
+                              | by Max Yi Ren, Fabian Gadau and Hope Yao, Arizona State University, 2015
       script(src="stylesheets/bootstrap/js/bootstrap.min.js")
       script(src="javascripts/gamescripts/game.js")

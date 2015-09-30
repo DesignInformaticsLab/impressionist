@@ -3,7 +3,7 @@
  */
 var io;
 var gameSocket;
-var playerReady;
+var playerReady = [];
 
 var objectstring_set = [
     "obj/Princeton/0.js","obj/Princeton/2.js","obj/Princeton/5.js","obj/Princeton/10.js",
@@ -31,7 +31,8 @@ var objectstring_set = [
 //    "obj/Princeton/381.js", "obj/Princeton/382.js", "obj/Princeton/383.js"];
 
 var pg = require('pg');
-var connection = process.env.DATABASE_URL || "postgres://postgres:GWC464doi@localhost:5432/postgres";
+var connection = process.env.DATABASE_URL || "postgres://postgres:54093960@localhost:5432/postgres"
+    || "postgres://postgres:GWC464doi@localhost:5432/postgres";
 //for local postgres server, and Heroku server
 
 /**
@@ -51,8 +52,10 @@ exports.initGame = function(sio, socket){
     gameSocket.on('broadcastGameID', broadcastGameID);
     gameSocket.on('checkAnswer', checkAnswer);
     gameSocket.on('selection', selection);
-    gameSocket.on('playerReady', playerReady);
+    gameSocket.on('playerReady', onPlayerReady);
     gameSocket.on('playerQuit', playerQuit);
+    gameSocket.on('getSocketStats', getSocketStats);
+    gameSocket.on('grabBestObject', grabBestObject);
 };
 
 /* *******************************
@@ -82,7 +85,7 @@ function createNewGame(data) {
  * Attempt to connect them to the room with one person.
  * @param data Contains data entered via player's input - playerName and gameId.
  */
-function joinGame(data) {
+function joinGame() {
     //console.log('Player ' + data.playerName + 'attempting to join game: ' + data.gameId );
 
     // A reference to the player's Socket.IO socket object
@@ -100,16 +103,18 @@ function joinGame(data) {
                 if(Object.keys(temp_room).length<2){
             room = temp_room;
             break;
+                }
+            }
         }
     }
-}
-}
 
-// If find a room...
-if( room != null ){
-    // attach the socket id to the data object.
-    //update this number as the number of models increases
-    var numOfObjects = objectstring_set.length;
+    // If find a room...
+    if( room != null ){
+        // attach the socket id to the data object.
+        //update this number as the number of models increases
+        var numOfObjects = objectstring_set.length;
+        var data = {};
+        var objID = Math.floor(Math.random() * numOfObjects);
 
     var objID = Math.floor(Math.random() * numOfObjects);
     // var objID =  4; // up to numOfObjects
@@ -144,7 +149,6 @@ if( room != null ){
         // Join the Room and wait for the players
         sock.join(thisGameId.toString());
         sock.gameId = thisGameId; // assign room id to sock
-        data.mySocketId = sock.id;
 
         // Emit an event notifying the clients that the player has joined the room.
         io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
@@ -156,7 +160,7 @@ function broadcastGameID(data){
     io.sockets.in(roomid).emit('newGameId', {gameId: data});
 }
 
-function playerReady(data){
+function onPlayerReady(data){
 
     var roomid = this.gameId;
     if (!playerReady[roomid]){
@@ -175,6 +179,15 @@ function playerReady(data){
         playerReady[roomid] = false;
         io.sockets.in(roomid).emit('playerReady', {objectID: objID});
     }
+}
+
+// during human-computer games, grab an object that requires validation
+function grabBestObject(){
+    // TODO: read from database
+    //var numOfObjects = objectstring_set.length;
+    //var objID = Math.floor(Math.random() * numOfObjects);
+    var objID = 40; //the 383 th model
+    this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
 
 // player selected meshes, emit to the other player
@@ -200,7 +213,19 @@ function checkAnswer(data) {
 
 function playerQuit(){
     var roomid = this.gameId;
-    io.sockets.in(roomid).emit('quitGame', data);
+    if (roomid){
+        io.sockets.in(roomid).emit('quitGame');
+        //var sock = this;
+
+        // once a player quits, all quit
+        var room = io.sockets.adapter.rooms[roomid];
+        if (typeof(room)!='undefined'){
+            var ids = Object.keys(room);
+            for (var s = 0; s<ids.length; s++) {
+                io.sockets.connected[ids[s]].leave(roomid);
+            }
+        }
+    }
 }
 
 /*
@@ -228,4 +253,19 @@ function shuffle(array) {
     return array;
 }
 
-var objPool = [];
+/**
+ * get current socket status
+ */
+function getSocketStats(){
+    var roomsid = Object.keys(io.sockets.adapter.rooms);
+    var count = 0;
+    if(roomsid != undefined){
+        for(var i=0;i<roomsid.length;i++){
+            if(roomsid[i].length!=5){// length==5 is defined for room id, length>5 are for player id
+                count+=1;
+            }
+        }
+    }
+    this.emit('updateSocketStats', {'numPlayer':count});
+    //io.sockets.emit('updateSocketStats', {'numPlayer':count});
+}
