@@ -61,6 +61,7 @@ var GAME = (function($){
          * @param data {{ gameId: int, mySocketId: * }}
          */
         onNewGameCreated : function(data) {
+            App.$instruction.hide();
             App.myRole = 'Host';
             App.gameId = data.gameId; // this is the room id
             console.log('my id:'+data.mySocketId); // this is the user id
@@ -93,7 +94,7 @@ var GAME = (function($){
             App.objectString = App.objectstring_set[data.objectID];
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
-            App.$game.show();
+            App.$game.fadeIn();
             App.totalTime = 5; // total game time is 5 min
 
             // host saves the game
@@ -121,8 +122,8 @@ var GAME = (function($){
         },
 
         playerLeft: function(data){
-            App.$wait.show();
-            App.$game.hide();
+            App.$wait.fadeIn();
+            App.$game.fadeOut();
             App.$model.html('');
             App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
@@ -155,7 +156,7 @@ var GAME = (function($){
                     Obj.object_set[0].createMesh(selections, childName);
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
-                    App.$bar.css('opacity', App.selection_capacity / 1000 * App.progressbar_size);
+                    App.$bar.css('opacity', App.selection_capacity / Obj.object_set[0].object.FaceArray[0] * App.progressbar_size);
                     App.$bar.css('background-color', '#333333');
                 }
                 else if (App.myRole == 'Host') {
@@ -178,7 +179,7 @@ var GAME = (function($){
             App.$score.html(App.score); // update score
             App.$guessoutput.html(''); // clean output area
 
-            App.$game.hide();
+            App.$game.fadeOut();
 
             IO.getSocketStats();
 
@@ -189,18 +190,25 @@ var GAME = (function($){
             // clean memory
             $.each(Obj.object_set, function(i,o){
                 o.desposeMesh();
-            })
+            });
+
+            // if playing with a computer now
             if (App.playWithComputer){
                 // look for a human player, if none, keep playing with the computer
                 $('#wait.inner.cover p.lead').html('Looking for another human...');
-                App.$wait.show();
+                App.$wait.fadeIn();
 
                 IO.onNewGameCreated(App);
             }
+            // if during the tutorial
+            else if (!App.tutorial_shown && App.myRole=='Player'){
+                App.$instruction.html('Press "S" on your keyboard to select parts of the object for the other player to guess. Move quick and wisely to get high scores!');
+                App.tutorialChoose();
+            }
             else{
-                //App.$continue.show();
+                //App.$continue.fadeIn();
                 $('#wait.inner.cover p.lead').html('Waiting for the other player...');
-                App.$wait.show();
+                App.$wait.fadeIn();
 
                 IO.socket.emit('playerReady');
             }
@@ -232,8 +240,8 @@ var GAME = (function($){
                 App.myRole = 'Host';
             }
 
-            App.$wait.hide();
-            App.$game.show();
+            App.$wait.fadeOut();
+            App.$game.fadeIn();
             App.objectString = "";
 
             //var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
@@ -256,22 +264,22 @@ var GAME = (function($){
                     callback = function(){
                         console.log( "New object loaded." );
                         // reset game
-                        App.selection_capacity = 10000; // assign player selection capacity for current obj
+                        App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                         o.correct_answer = answer[0]; // get correct answers
                         o.height = zheight;
                         o.scale = scale;
 
                         if(App.myRole == 'Player'){
-                            App.$menu.show();
-                            App.$guessoutput.hide();
-                            App.$guessinput.show();
+                            App.$menu.fadeIn();
+                            App.$guessoutput.fadeOut();
+                            App.$guessinput.fadeIn();
                             App.$guessinput[0].value='';
                         }
                         else if(App.myRole == 'Host'){
-                            App.$menu.show();
-                            App.$guessoutput.show();
+                            App.$menu.fadeIn();
+                            App.$guessoutput.fadeIn();
                             App.$guessoutput[0].value='';
-                            App.$guessinput.hide();
+                            App.$guessinput.fadeOut();
                         }
                         App.$model.focus(); // focus on $model so that key events can work
 
@@ -282,7 +290,7 @@ var GAME = (function($){
                         o.object.rotation.y = Math.random()*Math.PI*2;
 
                         // show object when everything is ready
-                        App.$wait.show();
+                        App.$wait.fadeIn();
                     }
                 }
                 App.$model.html('');
@@ -294,62 +302,59 @@ var GAME = (function($){
         // response to new object grabbed during human-computer games
         onObjectGrabbed: function (data){
             App.objectString = data.objectAdd;
-            $.post('/newGame',{},function(data) {
-
-                // create a new object and start the game
-                Obj.object_set = [];
-                var callback = function () {
-                    // do the following after a new game is created
-                    var o = Obj.object_set[0]; // there is only one object in each round
-                    // read saliency from Chen
-                    //TODO: read saliency from database for validation
-                    var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
-                    $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
-                        response = response.split('\n');
-                        if (response[response.length - 1] == '') {
-                            response = response.splice(0, response.length - 1);
-                        }
-                        $.each(response, function (i, r) {
-                            response[i] = parseFloat(r);
-                        });
-                        o.vertexSaliency = response;
-                        o.faceSaliency = [];
-
-                        // convert vertex saliency to face saliency
-                        var max_weight = Math.max.apply(Math, response);
-                        $.each(response, function (i, r) {
-                            o.object.children[0].geometry.vertices[i].salColor = r/max_weight;
-                        });
-                        $.each(o.object.children[0].geometry.faces, function(i,f){
-                            o.faceSaliency.push((o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].a].salColor+
-                                o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].b].salColor+
-                                o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].c].salColor)/3.0);
-                        });
-
-                        App.sortWithIndeces(o.faceSaliency); // sort saliency from low to high
-
-
-                        // prepare the interface and misc. data
-                        o.correct_answer = answer[0]; // get correct answers
-                        o.height = zheight;
-                        o.scale = scale;
-                        App.$wait.hide();
-                        App.$menu.show();
-                        App.$guessoutput.hide();
-                        App.$guessinput.show();
-                        App.$guessinput[0].value='';
-                        App.$model.focus(); // focus on $model so that key events can work
-                        App.start_obj_time = Date.now();
-                        App.currentTime = Date.now();
-                        o.object.rotation.y = Math.random()*Math.PI*2;
-
-                        // let computer select faces
-                        App.autoSelect();
+            // create a new object and start the game
+            Obj.object_set = [];
+            var callback = function () {
+                // do the following after a new game is created
+                var o = Obj.object_set[0]; // there is only one object in each round
+                // read saliency from Chen
+                //TODO: read saliency from database for validation
+                var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
+                $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
+                    response = response.split('\n');
+                    if (response[response.length - 1] == '') {
+                        response = response.splice(0, response.length - 1);
+                    }
+                    $.each(response, function (i, r) {
+                        response[i] = parseFloat(r);
                     });
-                };
-                App.$game.show();
-                IO.onNewObjData(App.$model, callback);
-            });
+                    o.vertexSaliency = response;
+                    o.faceSaliency = [];
+
+                    // convert vertex saliency to face saliency
+                    var max_weight = Math.max.apply(Math, response);
+                    $.each(response, function (i, r) {
+                        o.object.children[0].geometry.vertices[i].salColor = r/max_weight;
+                    });
+                    $.each(o.object.children[0].geometry.faces, function(i,f){
+                        o.faceSaliency.push((o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].a].salColor+
+                            o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].b].salColor+
+                            o.object.children[0].geometry.vertices[o.object.children[0].geometry.faces[i].c].salColor)/3.0);
+                    });
+
+                    App.sortWithIndeces(o.faceSaliency); // sort saliency from low to high
+
+
+                    // prepare the interface and misc. data
+                    o.correct_answer = answer[0]; // get correct answers
+                    o.height = zheight;
+                    o.scale = scale;
+                    App.$wait.fadeOut();
+                    App.$menu.fadeIn();
+                    App.$guessoutput.fadeOut();
+                    App.$guessinput.fadeIn();
+                    App.$guessinput[0].value='';
+                    App.$model.focus(); // focus on $model so that key events can work
+                    App.start_obj_time = Date.now();
+                    App.currentTime = Date.now();
+                    o.object.rotation.y = Math.random()*Math.PI*2;
+
+                    // let computer select faces
+                    App.autoSelect();
+                });
+            };
+            App.$game.fadeIn();
+            IO.onNewObjData(App.$model, callback);
         },
 
         /**
@@ -510,6 +515,9 @@ var GAME = (function($){
 
             // true if currently playing with a computer
             App.playWithComputer = false;
+
+            // show tutorial at the beginning
+            App.tutorial_shown = false;
         },
 
         /**
@@ -545,6 +553,9 @@ var GAME = (function($){
             App.$home_btn = $($('li')[0]);
             App.$game_btn = $($('li')[1]);
             App.$stat_btn = $($('li')[2]);
+
+            // instruction
+            App.$instruction = $('#instruction')
 
             // interface
             //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
@@ -587,24 +598,28 @@ var GAME = (function($){
 
             // Player
             App.$guessinput.on('keypress', App.onGuessinputKeyPress);
-            App.$entry.click(function(){
-                App.$home.hide();
-                App.$wait.show();
-                App.onJoinClick();
 
-                // move to game
-                App.$home_btn.removeClass('active');
-                App.$game_btn.addClass('active');
+            App.$entry.click(function(){
                 IO.getSocketStats();
+                if (App.tutorial_shown){
+                    App.$wait.fadeIn();
+                    App.onJoinClick();
+                }
+                // show tutorial
+                else{
+                    App.gameId = -1; // -1 is for tutorials
+                    App.showTutorial();
+                }
             });
+
             App.$continue_btn.click(function(){
-                App.$continue.hide();
-                App.$wait.show();
+                App.$continue.fadeOut();
+                App.$wait.fadeIn();
 
                 // clean memory
                 $.each(Obj.object_set, function(i,o){
                     o.desposeMesh();
-                })
+                });
 
                 IO.socket.emit('playerReady');
                 IO.getSocketStats();
@@ -613,10 +628,10 @@ var GAME = (function($){
             // navigation
             App.$home_btn.click(function(){
                 App.quit(); // quit game
-                App.$home.show();
-                App.$wait.hide();
-                App.$stat.hide();
-                App.$game.hide();
+                App.$home.fadeIn();
+                App.$wait.fadeOut();
+                App.$stat.fadeOut();
+                App.$game.fadeOut();
                 App.$home_btn.addClass('active');
                 App.$game_btn.removeClass('active');
                 App.$stat_btn.removeClass('active');
@@ -625,9 +640,9 @@ var GAME = (function($){
 
             App.$game_btn.click(function(){
                 App.onJoinClick();
-                App.$home.hide();
-                App.$wait.show();
-                App.$stat.hide();
+                App.$home.fadeOut();
+                App.$wait.fadeIn();
+                App.$stat.fadeOut();
                 App.$home_btn.removeClass('active');
                 App.$game_btn.addClass('active');
                 App.$stat_btn.removeClass('active');
@@ -637,10 +652,10 @@ var GAME = (function($){
             App.$stat_btn.click(function(){
                 App.quit(); // quit game
                 App.myRole = 'None';
-                App.$home.hide();
-                App.$wait.hide();
-                App.$game.hide();
-                App.$stat.show();
+                App.$home.fadeOut();
+                App.$wait.fadeOut();
+                App.$game.fadeOut();
+                App.$stat.fadeIn();
                 App.$comp_model1.html(""); // clean div for new models
                 App.$comp_model2.html("");
                 App.showList(); // show all objects available
@@ -668,6 +683,55 @@ var GAME = (function($){
             });
         },
 
+        // show the first tutorial on guessing
+        showTutorial: function(){
+            // move to game
+            App.$home_btn.removeClass('active');
+            App.$game_btn.addClass('active');
+            App.$home.fadeOut();
+
+            // start a game with the computer
+            App.myRole = 'Player';
+            IO.socket.emit('grabBestObject');
+            App.$instruction.html('An object will be gradually revealed. Guess what it is! Do it quick and correct to get high score!');
+        },
+
+        // show the second tutorial on choosing
+        tutorialChoose: function(){
+            App.myRole = 'Host';
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            });
+            Obj.object_set = [];
+            $('#wait.inner.cover p.lead').html('Well done! One more tutorial to go...');
+            App.$wait.fadeIn();
+            App.$game.fadeIn();
+
+            // create a new object and start the game
+            var callback = function(){
+                console.log( "New object loaded." );
+                // reset game
+                App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
+                Obj.object_set[0].correct_answer = answer[0]; // get correct answers
+                Obj.object_set[0].height = zheight;
+                Obj.object_set[0].scale = scale;
+
+                App.$menu.fadeIn();
+                App.$guessoutput.fadeIn();
+                App.$guessoutput[0].value='';
+                App.$guessinput.fadeOut();
+
+                App.$model.focus(); // focus on $model so that key events can work
+
+                App.start_obj_time = Date.now();
+                App.currentTime = Date.now();
+
+                Obj.object_set[0].object.rotation.y = Math.random()*Math.PI*2;
+
+                App.$wait.fadeOut();
+            };
+            IO.onNewObjData(App.$model, callback);
+        },
 
         /**
          * check if the global list objectstring_set in routes\games.js is the same as the object table,
@@ -903,9 +967,23 @@ var GAME = (function($){
 
                         App.selectedStrings.unshift(parseInt(intersection.object.name));
                         App.selection_capacity = App.selection_capacity - App.selectedStrings.length + 1;
-                        App.$bar.css('opacity', App.selection_capacity / 1000 * App.progressbar_size);
+                        App.$bar.css('opacity', App.selection_capacity / Obj.object_set[0].object.FaceArray[0] * App.progressbar_size);
 
-                        IO.socket.emit('selection', JSON.stringify(App.selectedStrings));
+                        // if tutorial
+                        if (!App.tutorial_shown){
+                            var selections = App.selectedStrings;
+                            var childName = selections.shift().toString(); // use childName only when the object contains multiple meshes
+                            $.each(selections, function(id,i){
+                                Obj.object_set[0].object.getObjectByName(childName).geometry.faces[i].color.setHex(0xff7777);
+                            });
+                            Obj.object_set[0].object.getObjectByName(childName).geometry.colorsNeedUpdate = true;
+                        }
+                        // if real game
+                        else{
+                            IO.socket.emit('selection', JSON.stringify(App.selectedStrings));
+                        }
+
+
                     }
                 }
             }
@@ -927,13 +1005,13 @@ var GAME = (function($){
             if (App.$home.css('display')=='none' &&
                 App.$stat.css('display')=='none'){
                 $('#wait.inner.cover p.lead').html('Oops...the other player dropped offline...');
-                App.$wait.show();
-                App.$stat.hide();
-                App.$game.hide();
+                App.$wait.fadeIn();
+                App.$stat.fadeOut();
+                App.$game.fadeOut();
                 setTimeout(function () {
                     $('#wait.inner.cover p.lead').html('Looking for another human...');
-                    App.$wait.hide();
-                    App.$home.show();
+                    App.$wait.fadeOut();
+                    App.$home.fadeIn();
                     App.$home_btn.addClass('active');
                     App.$game_btn.removeClass('active');
                     App.$stat_btn.removeClass('active');
@@ -954,9 +1032,6 @@ var GAME = (function($){
             console.log('Try finding a player...');
 
             IO.socket.emit('joinGame');
-
-            // Set the appropriate properties for the current player.
-            App.myRole = 'Player';
         },
 
         /**
@@ -980,15 +1055,32 @@ var GAME = (function($){
                 all_selected_id: JSON.stringify(App.allSelectedIDMaster)
                 //weight: JSON.stringify(weight)
             };
-            $.post('/store_selection',data,function(){
-                IO.socket.emit('checkAnswer',data);
-            });
+            if (App.playWithComputer){data.game_id = -1;}
+
+            // if during a real game
+            if (App.tutorial_shown){
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
+            }
+            // if during tutorial
+            else{
+                var correct = $.inArray(answer.toLowerCase(), [Obj.object_set[0].correct_answer])>=0;
+                if (correct){
+                    IO.onAnswerCorrect();
+                }
+                else{
+                    IO.onAnswerWrong();
+                }
+            }
+
         },
 
         /**
          * Play with computer if no human players available
          */
         playComputer: function() {
+            App.gameId = -2; // -2 for playing with a computer outside of a tutorial
             $('#wait.inner.cover p.lead').html('A computer is joining the game...');
             App.playWithComputer = true;
             App.myRole = 'Player';
@@ -1295,6 +1387,26 @@ var GAME = (function($){
 
 
             this.render = function() {
+                // if in tutorial
+                if(!App.tutorial_shown && App.myRole=='Host'){
+                    // finish tutorial once the player selected a few
+                    if (App.selection_capacity <= Obj.object_set[0].object.FaceArray[0]*0.95){
+                        App.tutorial_shown = true;
+                        App.$game.fadeOut();
+                        // moving to a real game
+
+                        // clean memory
+                        $.each(Obj.object_set, function(i,o){
+                            o.desposeMesh();
+                        });
+                        App.refresh();
+
+                        $('#wait.inner.cover p.lead').html('OK you got it! Now moving on to a real game...');
+                        App.$wait.fadeIn();
+                        App.onJoinClick();
+                    }
+                }
+
                 if(App.myRole != 'Player'){
                     if(typeof(d.object)!='undefined'){
                         d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),

@@ -204,6 +204,20 @@
     color: #222;
 }
 
+#instruction {
+    position: absolute;
+    top: 100px;
+    width: 100%;
+    height: 50px;
+    z-index: 1;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+    background-color: #aaaaaa;
+    transition: all 0.5s;
+}
+
+
 
 /* From bootstrap cover template */
 /*
@@ -279,6 +293,7 @@ body {
 
 .masthead-nav > li {
     display: inline-block;
+    cursor: pointer;
 }
 .masthead-nav > li + li {
     margin-left: 20px;

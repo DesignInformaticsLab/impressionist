@@ -68,7 +68,7 @@ router.post('/newGame', function(req, res, next) {
         //var host_id = req.body.host_id;
         client.query('INSERT INTO impressionist_game_table (time) ' +
             'VALUES (clock_timestamp()) RETURNING id', function(err, result){
-            if (err) handle_error.bind(this, err)
+            if (err) handle_error.bind(this, err);
             else {
                 res.send( result.rows );
                 done();
