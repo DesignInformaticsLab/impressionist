@@ -26,7 +26,7 @@ block content
                       p.lead
                           | This is a collaborative game to test your knowledge about shapes
                       #entry.btn.btn-lg.btn-default
-                          | Try it out
+                          | Let's try it out!
                   #wait.inner.cover
                       p.lead
                           | Looking for another human...
@@ -52,6 +52,7 @@ block content
                           input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
                           #guessoutput
                       #model(tabindex='0')
+                      #instruction
                   #stat
                       #objlist
                       #comp_model1(tabindex='0')
