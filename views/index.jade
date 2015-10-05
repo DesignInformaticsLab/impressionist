@@ -42,17 +42,19 @@ block content
                       //      | Start VR Mode
                       #menu
                           #bar
-                          #timebar
-                          #time
-                              | T
+                          //#timebar
+                          //#time
+                          //    | T
                           #score
                               | 0
                           #select
                               | S
                           input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
                           #guessoutput
+                      #gamescore
                       #model(tabindex='0')
                       #instruction
+                          p
                   #stat
                       #objlist
                       #comp_model1(tabindex='0')

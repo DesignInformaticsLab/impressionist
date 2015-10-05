@@ -128,6 +128,8 @@ router.post('/initial_obj', function(req,res){
         var num_selections = [];
         var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, face_per_mesh, num_selections) VALUES ($1, $2, $3)',
             [object_name, face_per_mesh, num_selections]);
+        //var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, three_scene, face_per_mesh, num_selections) VALUES ($1, $2, $3, $4)',
+        //    [object_name, three_scene, face_per_mesh, num_selections]);
         insert_query.on('err', handle_error.bind(this, err));
         insert_query.on('end', function(result){res.status(202).send("Accepted data");});
         done();

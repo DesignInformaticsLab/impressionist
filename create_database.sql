@@ -19,7 +19,9 @@ CREATE TABLE impressionist_object_table
     id serial NOT NULL,
     object_name text,
     face_per_mesh integer[],
+--    three_scene_sorted integer[][],
     num_selections integer[],
+
     PRIMARY KEY(id)
 );
 
