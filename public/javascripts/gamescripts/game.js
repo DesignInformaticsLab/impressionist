@@ -87,7 +87,7 @@ var GAME = (function($){
             // refresh a bunch of stuff
             App.currentRound = 0;
             // score of the entire game
-            App.game_score = 0;
+            App.game_score = App.current_score;
 
             App.$guessinput.html(''); // clean input area
             App.$gamescore.html(App.game_score); // update score
@@ -130,11 +130,13 @@ var GAME = (function($){
         },
 
         playerLeft: function(data){
+            $('#wait.inner.cover p.lead').html('Oops...the other player dropped.');
             App.$wait.show();
             App.$game.hide();
             App.$model.html('');
             App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
+
             IO.gameOver();
         },
 
@@ -182,9 +184,10 @@ var GAME = (function($){
 
             App.$guessinput.css('background-color', '#f5f5ff');
             App.$guessinput.html(''); // clean input area
-            App.score += 1; // this needs to change depending on the difficulty of the object
+            //if(typeof(App.game_score)=='undefined'){App.game_score = 0;}
+            //App.game_score += Math.round(App.current_score); // this needs to change depending on the difficulty of the object
             App.currentRound += 1;
-            App.$gamescore.html(App.game_score); // update score
+            //App.$gamescore.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
 
             App.$game.hide();
@@ -219,6 +222,8 @@ var GAME = (function($){
                 App.$wait.show();
 
                 IO.socket.emit('playerReady');
+
+                App.game_score = App.current_score; // update game score
             }
         },
 
@@ -387,7 +392,18 @@ var GAME = (function($){
          * @param data
          */
         gameOver : function() {
-
+            App.refresh();
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            });
+            App.$home.show();
+            App.$wait.hide();
+            App.$stat.hide();
+            App.$game.hide();
+            App.$home_btn.addClass('active');
+            App.$game_btn.removeClass('active');
+            App.$stat_btn.removeClass('active');
+            IO.getSocketStats();
         },
 
         /**
@@ -540,7 +556,7 @@ var GAME = (function($){
             App.tutorial_shown = false;
 
             // score of this round
-            App.current_score = 0;
+            App.current_score = 9999;
 
             // number of guesses made
             App.guess_made = 0;
@@ -567,6 +583,7 @@ var GAME = (function($){
             App.$time = $('#time');
             App.$timebar = $('#timebar');
             App.$entry = $('#entry');
+            App.$tutorial = $('#tutorial');
             App.$continue = $('#continue');
 
             // div for stats
@@ -637,15 +654,23 @@ var GAME = (function($){
 
             App.$entry.click(function(){
                 IO.getSocketStats();
-                if (App.tutorial_shown){
-                    App.$wait.show();
-                    App.onJoinClick();
-                }
-                // show tutorial
-                else{
-                    App.gameId = -1; // -1 is for tutorials
-                    App.showTutorial();
-                }
+                App.tutorial_shown = true; // skip tutorial
+                App.$home.hide();
+                App.$wait.show();
+                App.$home_btn.removeClass('active');
+                App.$game_btn.addClass('active');
+                App.$stat_btn.removeClass('active');
+                IO.getSocketStats();
+                App.onJoinClick();
+            });
+
+            App.$tutorial.click(function(){
+                App.gameId = -1; // -1 is for tutorials
+                App.$home_btn.removeClass('active');
+                App.$game_btn.addClass('active');
+                App.$stat_btn.removeClass('active');
+                IO.getSocketStats();
+                App.showTutorial();
             });
 
             App.$continue_btn.click(function(){
@@ -1503,7 +1528,7 @@ var GAME = (function($){
                     var penalty = (Date.now()-App.currentTime)*0.1;
                     penalty += (Obj.object_set[0].object.FaceArray[0] - App.selection_capacity);
                     penalty += App.guess_made*1000;
-                    App.current_score = 9999 - penalty;
+                    App.current_score = App.game_score - penalty;
                     App.$roundscore.html(Math.round(App.current_score));
                 }
             };

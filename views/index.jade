@@ -25,8 +25,11 @@ block content
                           | Welcome to Impressionist
                       p.lead
                           | This is a collaborative game to test your knowledge about shapes
+                      #tutorial.btn.btn-lg.btn-default
+                          | Teach me how to play!
+                      | &nbsp;
                       #entry.btn.btn-lg.btn-default
-                          | Let's try it out!
+                          | Let's just try it out!
                   #wait.inner.cover
                       p.lead
                           | Looking for another human...
@@ -51,7 +54,7 @@ block content
                               | S
                           input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
                           #guessoutput
-                      #gamescore
+                      //#gamescore
                       #model(tabindex='0')
                       #instruction
                           p

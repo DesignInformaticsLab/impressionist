@@ -227,9 +227,8 @@
 }
 
 #gamescore{
-    display: none;
     position: absolute;
-    bottom: 100px;
+    bottom: 140px;
     width: 100%;
     margin: auto;
     height: 60px;
