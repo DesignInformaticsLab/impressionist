@@ -401,7 +401,8 @@ var GAME = (function($){
          */
         refresh: function () {
             window.cancelAnimationFrame(App.rendering);
-            if(App.autoSelecting){clearInterval(App.autoSelecting);}
+            if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
+
             App.setInitParameter();
             $('#wait.inner.cover p.lead').html('Looking for another human...');
             Obj.object_set = [];
@@ -508,7 +509,7 @@ var GAME = (function($){
             App.autoSelecting = false;
 
             // true if currently playing with a computer
-            App.playWithComputer = true;
+            App.playWithComputer = false;
         },
 
         /**
