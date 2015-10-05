@@ -898,7 +898,6 @@ var GAME = (function($){
                     App.mouse.x = ( e.clientX / target.width() ) * 2 - 1;
                     App.mouse.y = -( e.clientY / target.height() ) * 2 + 1;
                     App.select();
-
                 }
             }
         },
@@ -1531,6 +1530,9 @@ var GAME = (function($){
                     App.current_score = App.game_score - penalty;
                     App.$roundscore.html(Math.round(App.current_score));
                 }
+
+                // check if model is focused, if not, focus to it.
+                if (!App.$model.is(':focus')){App.$model.focus();}
             };
 
             this.paint_faces = function () {
