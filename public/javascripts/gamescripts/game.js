@@ -1532,7 +1532,7 @@ var GAME = (function($){
                 }
 
                 // check if model is focused, if not, focus to it.
-                if (!App.$model.is(':focus')){App.$model.focus();}
+                if (!App.$model.is(':focus') && App.myRole=='Host'){App.$model.focus();}
             };
 
             this.paint_faces = function () {
