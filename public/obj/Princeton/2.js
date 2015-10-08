@@ -1,6 +1,6 @@
-var scale = 750;
+var scale = 1200;
 var zheight = 0;
-var answer = ['ant'];
+var answer = ['man'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -9,20 +9,33 @@ var loadobject = function(obj_string,scene,count,callback){
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
 
-			objects.rotation.x = -3.14 * 1.8
-			objects.rotation.y = 3.14 * 1.8
-			objects.rotation.z = 3.14 * 0
 
-			objects.position.x = -0
-			objects.position.y = 100
-			objects.position.z = 500
+			objects.rotation.x = 0
+			objects.rotation.y = 3.14 * 0.5
+			objects.rotation.z = 0
+
+			objects.position.x = 0
+			objects.position.y = 0
+			objects.position.z = 0
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];
             scene.add(objects);
 			scene.FaceArray.push(objects.geometry.faces.length);
 			count++;
+
+			/*
+			var box = new THREE.Box3().setFromObject( mesh );
+			box.center( mesh.position ); //
+			var pivot = new THREE.Group();
+			scene.add( pivot );
+			pivot.add( mesh );
+*/
+
 			loadobject(obj_string,scene,count,callback);
+
+
+
 		});
 	}
 	else{
@@ -39,8 +52,18 @@ THREE.SceneLoad = function (ajax) {
 	loadobject(objstrings,THREEScene,0,function(){
 		if (typeof ajax != 'undefined') ajax();
 	});
+
+	/* This code block is used to fix the rotation center */
+	//var box = new THREE.Box3().setFromObject(o.object);
+	//box.center(o.object.position );
+	//o.object.translation = THREE.GeometryUtils.center( o.object );
+	//
+	//o.object.children[0].center();
+
 	THREEScene.position.y = zheight;
 	return THREEScene;
+
+
 
 	//$.getJSON("obj/TeaPot/data(1).json", function( object) {
 	//	parsedFile = object;
@@ -141,7 +164,9 @@ function JSONMeshParser(object) {
 //	////mesh.parsed = new THREE.SortMeshObject(geometry);
 //    //
 	mesh.sorted = SortMeshObjects(geometry);
+//	mesh.translation = THREE.GeometryUtils.center(geometry); // added to re-center
 	geometry.center();
+
 
 	return mesh;
 }
