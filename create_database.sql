@@ -42,7 +42,7 @@ CREATE TABLE impressionist_result_table
     round integer,
     all_selected_id integer[],
     duration interval,
-    score double precision,
+    score integer,
     guess text,
     object_name text,
     correct boolean,
@@ -60,7 +60,9 @@ CREATE TABLE impressionist_game_table
     id serial NOT NULL,
 --    player_id VARCHAR(50) UNIQUE NOT NULL,
 --    host_id VARCHAR(50) UNIQUE NOT NULL,
-    time TIMESTAMP WITH TIME ZONE,
+    start_time TIMESTAMP WITH TIME ZONE,
+    end_time TIMESTAMP WITH TIME ZONE,
+    score integer,
     PRIMARY KEY(id)
 );
 
