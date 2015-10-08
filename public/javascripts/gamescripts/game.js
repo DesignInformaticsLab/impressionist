@@ -38,7 +38,7 @@ var GAME = (function($){
             IO.socket.on('newObjData', IO.onNewObjData);
             IO.socket.on('answerCorrect', IO.onAnswerCorrect);
             IO.socket.on('answerWrong', IO.onAnswerWrong);
-            IO.socket.on('gameOver', IO.gameOver);
+            IO.socket.on('gameOver', App.gameOver);
             IO.socket.on('error', IO.error );
             IO.socket.on('selection', IO.onSelection); // when faces are selected
             IO.socket.on('playerReady', IO.onPlayerReady); // when faces are selected
@@ -46,6 +46,7 @@ var GAME = (function($){
             IO.socket.on('getSocketStats', IO.getSocketStats);
             IO.socket.on('updateSocketStats', IO.updateSocketStats);
             IO.socket.on('objectGrabbed', IO.onObjectGrabbed);
+            IO.socket.on('updateScore', IO.onUpdateScore);
         },
 
         /**
@@ -86,8 +87,6 @@ var GAME = (function($){
 
             // refresh a bunch of stuff
             App.currentRound = 0;
-            // score of the entire game
-            App.game_score = App.current_score;
 
             App.$guessinput.html(''); // clean input area
             App.$gamescore.html(App.game_score); // update score
@@ -99,7 +98,6 @@ var GAME = (function($){
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
             App.$game.show();
-            App.totalTime = 5; // total game time is 5 min
 
             // host saves the game
             if(App.myRole=='Host'){
@@ -137,7 +135,7 @@ var GAME = (function($){
             App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
 
-            IO.gameOver();
+            App.gameOver();
         },
 
         // on player selection: combined the two codes together, not sure why we had two...
@@ -181,7 +179,6 @@ var GAME = (function($){
         // on correct guess
         onAnswerCorrect : function() {
             App.$guessinput.css('background-color', '#ffffff');
-
             App.$guessinput.css('background-color', '#f5f5ff');
             App.$guessinput.html(''); // clean input area
             //if(typeof(App.game_score)=='undefined'){App.game_score = 0;}
@@ -194,6 +191,7 @@ var GAME = (function($){
 
             IO.getSocketStats();
 
+            App.game_score += 500;
 
             // stop loops
             window.cancelAnimationFrame(App.rendering);
@@ -220,16 +218,14 @@ var GAME = (function($){
                 //App.$continue.show();
                 $('#wait.inner.cover p.lead').html('Waiting for the other player...');
                 App.$wait.show();
-
                 IO.socket.emit('playerReady');
-
-                App.game_score = App.current_score; // update game score
             }
         },
 
         // on wrong guess
         onAnswerWrong : function(data) {
             App.guess_made += 1;
+            App.game_score -= 500;
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
             }
@@ -283,6 +279,7 @@ var GAME = (function($){
                         console.log( "New object loaded." );
                         // reset game
                         App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
+                        App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
                         o.correct_answer = answer[0]; // get correct answers
                         o.height = zheight;
                         o.scale = scale;
@@ -304,11 +301,6 @@ var GAME = (function($){
                             App.$select.show();
                             App.$bar.show();
                         }
-                        App.$model.focus(); // focus on $model so that key events can work
-
-                        App.start_obj_time = Date.now();
-                        App.currentTime = Date.now();
-
                         //o.object.rotation.y = Math.PI*2;
                         o.object.rotation.y = Math.random()*Math.PI*2;
 
@@ -318,6 +310,10 @@ var GAME = (function($){
                 }
                 App.$model.html('');
                 var o = Obj.init(target, callback);
+                App.start_obj_time = Date.now();
+                App.currentTime = Date.now();
+                App.$model.focus(); // focus on $model so that key events can work
+
                 o.animate();
             });
         },
@@ -374,9 +370,6 @@ var GAME = (function($){
                         App.$instruction.fadeIn();
                     }
 
-                    App.$model.focus(); // focus on $model so that key events can work
-                    App.start_obj_time = Date.now();
-                    App.currentTime = Date.now();
                     o.object.rotation.y = Math.random()*Math.PI*2;
 
                     // let computer select faces
@@ -385,25 +378,9 @@ var GAME = (function($){
             };
             App.$game.show();
             IO.onNewObjData(App.$model, callback);
-        },
-
-        /**
-         * Let everyone know the game has ended.
-         * @param data
-         */
-        gameOver : function() {
-            App.refresh();
-            $.each(Obj.object_set, function(i,o){
-                o.desposeMesh();
-            });
-            App.$home.show();
-            App.$wait.hide();
-            App.$stat.hide();
-            App.$game.hide();
-            App.$home_btn.addClass('active');
-            App.$game_btn.removeClass('active');
-            App.$stat_btn.removeClass('active');
-            IO.getSocketStats();
+            App.$model.focus(); // focus on $model so that key events can work
+            App.start_obj_time = Date.now();
+            App.currentTime = Date.now();
         },
 
         /**
@@ -423,6 +400,14 @@ var GAME = (function($){
         updateSocketStats: function (data) {
             var numPlayer = data.numPlayer;
             $('#numPlayer').html(numPlayer + ' player(s) online');
+        },
+
+        // synchronize the scores on both sides
+        getSynchronizedScore: function(){
+            IO.socket.emit('synchronizeScore', App.game_score);
+        },
+        onUpdateScore: function(data){
+            App.game_score = data.score;
         }
     };
 
@@ -485,6 +470,11 @@ var GAME = (function($){
              * Identifies the current round.
              */
             App.currentRound = 0;
+
+
+            App.currentTime = Date.now(); // current time
+
+            App.numSelectedFaces = 0; // this should be max faces at the beginning of the game
 
             /**
              * mouse location
@@ -556,7 +546,7 @@ var GAME = (function($){
             App.tutorial_shown = false;
 
             // score of this round
-            App.current_score = 9999;
+            App.game_score = 9999;
 
             // number of guesses made
             App.guess_made = 0;
@@ -601,6 +591,13 @@ var GAME = (function($){
             // instruction
             App.$instruction = $('#instruction');
 
+            // scoreboard
+            App.$myscore = $('#myscore');
+            App.$myrank = $('#myrank');
+            App.$scoreboard= $('#scoreboard');
+            App.$scoreboard.on('hidden.bs.modal', function () {
+                App.gameOver();
+            });
             // interface
             //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
             //var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
@@ -972,6 +969,7 @@ var GAME = (function($){
         onGuessinputKeyPress: function (e) {
             if(e.which == 13) {// submit guess
                 if (App.$guessinput[0].value!='your guess' && App.$guessinput[0].value!=''){
+                    IO.getSynchronizedScore(); // synchronize scores
                     App.onSubmitAnswer();
                 }
                 else{
@@ -1091,6 +1089,40 @@ var GAME = (function($){
                 },2000);
             }
         },
+
+        /**
+         * Let everyone know the game has ended.
+         * @param data
+         */
+        gameOver : function() {
+            App.refresh();
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            });
+            App.$home.show();
+            App.$wait.hide();
+            App.$stat.hide();
+            App.$game.hide();
+            App.$home_btn.addClass('active');
+            App.$game_btn.removeClass('active');
+            App.$stat_btn.removeClass('active');
+            IO.getSocketStats();
+        },
+
+        // show score board and submit game score
+        showScoreBoard: function(){
+            $.post('/getTotalNumber', {}, function(response){
+                var totalplays = response[0].count;
+                $.post('/getRanking',{'score':App.currentRound},function(response){
+                    var worse = response[0].count;
+                    App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
+                    App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
+                    App.$scoreboard.modal();
+                });
+            });
+        },
+
+
 
         /**
          * Click handler for the 'JOIN' button
@@ -1519,16 +1551,25 @@ var GAME = (function($){
                 //// countdown when object is shown
                 //App.$timebar.css('opacity',1-(Date.now()-App.currentTime)/App.totalTime/60000);
                 //if (1-(Date.now()-App.currentTime)/App.totalTime/60000<=0){
-                //    IO.gameOver();
+                //    App.gameOver();
                 //}
 
                 // update score based on selection, time and guesses
-                if (App.selection_capacity > 0){
+                if (App.game_score > 0 && App.numSelectedFaces > 0){
                     var penalty = (Date.now()-App.currentTime)*0.1;
-                    penalty += (Obj.object_set[0].object.FaceArray[0] - App.selection_capacity);
-                    penalty += App.guess_made*1000;
-                    App.current_score = App.game_score - penalty;
-                    App.$roundscore.html(Math.round(App.current_score));
+                    penalty += App.numSelectedFaces - App.selection_capacity;
+                    App.game_score -= penalty;
+                    App.currentTime = Date.now();
+                    App.numSelectedFaces = App.selection_capacity;
+                    if (App.game_score<0){
+                        App.game_score = 0; // only store once
+                        if(App.myRole='Host'){ // only one of the players needs to submit the score
+                            $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId},
+                                function(){});
+                        }
+                        App.showScoreBoard();
+                    }
+                    App.$roundscore.html(Math.round(App.game_score));
                 }
 
                 // check if model is focused, if not, focus to it.

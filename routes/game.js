@@ -3,7 +3,8 @@
  */
 var io;
 var gameSocket;
-var playerReady = [];
+var playerReady = []; // room key
+var score = 0; // real-time score to be shared between the two players
 
 var objectstring_set = [
     "obj/Princeton/0.js","obj/Princeton/2.js","obj/Princeton/5.js","obj/Princeton/10.js",
@@ -56,6 +57,7 @@ exports.initGame = function(sio, socket){
     gameSocket.on('playerQuit', playerQuit);
     gameSocket.on('getSocketStats', getSocketStats);
     gameSocket.on('grabBestObject', grabBestObject);
+    gameSocket.on('synchronizeScore', synchronizeScore);
 };
 
 /* *******************************
@@ -268,4 +270,18 @@ function getSocketStats(){
     }
     this.emit('updateSocketStats', {'numPlayer':count});
     //io.sockets.emit('updateSocketStats', {'numPlayer':count});
+}
+
+function synchronizeScore(data){
+    var s = data;
+    var roomid = this.gameId;
+    io.sockets.in(roomid).emit('updateScore', {'score':s});
+    //if (score==0){
+    //    score = s;
+    //}
+    //else {
+    //    score = Math.max(score, s);
+    //    io.sockets.in(roomid).emit('updateScore', {'score':score});
+    //    score = 0;
+    //}
 }

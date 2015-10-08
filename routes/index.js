@@ -66,14 +66,15 @@ router.post('/newGame', function(req, res, next) {
         if(err) res.send("Could not connect to DB: " + err);
         //var player_id = req.body.player_id;
         //var host_id = req.body.host_id;
-        client.query('INSERT INTO impressionist_game_table (time) ' +
-            'VALUES (clock_timestamp()) RETURNING id', function(err, result){
-            if (err) handle_error.bind(this, err);
+        client.query('INSERT INTO impressionist_game_table (start_time, score) ' +
+            'VALUES (clock_timestamp(), 0) RETURNING id', function(err, result){
+            if (err) {
+                handle_error.bind(this, err);
+            }
             else {
                 res.send( result.rows );
                 done();
             }
-
         });
     });
 });
@@ -158,5 +159,56 @@ router.get('/getRawObjectList', function(req,res){
     res.send({'objectstring_set':objectstring_set});
 });
 
+// store player score
+router.post('/storeScore', function(req,res){
+    pg.connect(connection, function(err, client, done) {
+        if(err) res.send("Could not connect to DB: " + err);
+        var gameId = req.body.gameId;
+        var score = req.body.score;
+        var edit_query = 'UPDATE impressionist_game_table SET score = $1, end_time = clock_timestamp() WHERE id = $2';
+        client.query(edit_query, [score, gameId], function(err) {
+            if(err) {
+                console.error(err); res.send("Error " + err);
+            }
+            else{
+                res.status(202).send("Accepted data");
+            }
+            done();
+        });
+    });
+});
+
+router.post('/getTotalNumber', function(req, res) {
+    pg.connect(connection, function(err, client, done) {
+        if(err) res.status(500).send("Could not connect to DB: " + err);
+        var query = 'SELECT COUNT(*) FROM impressionist_game_table WHERE score > 0';
+        client.query(query, function(err, result) {
+            if(err) {
+                console.error(err); res.send("Error " + err);
+            }
+            else{
+                res.send( result.rows );
+            }
+            done();
+        });
+    });
+});
+
+router.post('/getRanking', function(req, res) {
+    pg.connect(connection, function(err, client, done) {
+        if(err) res.status(500).send("Could not connect to DB: " + err);
+        var current_score = req.body.score;
+        var query = 'SELECT COUNT(*) FROM impressionist_game_table WHERE score < ' + current_score + ' AND score > 0';
+        client.query(query, function(err, result) {
+            if(err) {
+                console.error(err); res.send("Error " + err);
+            }
+            else{
+                res.send( result.rows );
+            }
+            done();
+        });
+    });
+});
 
 module.exports = router;

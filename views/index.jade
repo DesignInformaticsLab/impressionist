@@ -43,6 +43,7 @@ block content
                       //      | Enable Mouse Look
                       //    .button.full-screen
                       //      | Start VR Mode
+
                       #menu
                           #bar
                           //#timebar
@@ -62,6 +63,20 @@ block content
                       #objlist
                       #comp_model1(tabindex='0')
                       #comp_model2(tabindex='0')
+                  #scoreboard(class='modal fade',role='dialog')
+                      .modal-dialog
+                          .modal-content
+                              .modal-header
+                                  button(type='button',class='close',data-dismiss="modal",aria-hidden="true")
+                                      |&times;
+                                  h4.modal-title
+                                      |Thanks for playing!
+                              .modal-body
+                                  #myscore
+                                  #myrank
+                              .modal-footer
+                                  button(type="button", class="btn btn-default", data-dismiss="modal")
+                                      |Close
                   .mastfoot
                       .inner
                           #numPlayer
