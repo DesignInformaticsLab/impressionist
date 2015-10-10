@@ -1,6 +1,6 @@
-var scale = 1500;
+var scale = 1800;
 var zheight = -120;
-var answer = ['diver'];
+var answer = ['diver','woman'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = 0
 			objects.position.y = 0
-			objects.position.z = 200
+			objects.position.z = 1
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];

@@ -21,15 +21,15 @@ var GAME = (function($){
          * to the Socket.IO server
          */
         init: function() {
-            IO.socket = io.connect();
+            IO.socket = io.connect(); // initialize the socket
             IO.bindEvents();
-            IO.getSocketStats();
+            IO.getSocketStats(); // get number of total players
         },
         /**
          * While connected, Socket.IO will listen to the following events emitted
          * by the Socket.IO server, then run the appropriate function.
          */
-        bindEvents : function() {
+        bindEvents : function() { // how to respond to different sever message sent through socket
             IO.socket.on('connected', IO.onConnected );
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
@@ -280,7 +280,8 @@ var GAME = (function($){
                         // reset game
                         App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                         App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
-                        o.correct_answer = answer[0]; // get correct answers
+                        //o.correct_answer = answer[0]; // get correct answers
+                        o.correct_answer = answer; // get correct answers
                         o.height = zheight;
                         o.scale = scale;
 
@@ -354,7 +355,8 @@ var GAME = (function($){
                     App.sortWithIndeces(o.faceSaliency); // sort saliency from low to high
 
                     // prepare the interface and misc. data
-                    o.correct_answer = answer[0]; // get correct answers
+                    //o.correct_answer = answer[0]; // get correct answers
+                    o.correct_answer = answer; // get correct answers
                     o.height = zheight;
                     o.scale = scale;
                     App.selection_capacity = o.object.FaceArray[0];
@@ -772,7 +774,8 @@ var GAME = (function($){
                 console.log( "New object loaded." );
                 // reset game
                 App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
-                Obj.object_set[0].correct_answer = answer[0]; // get correct answers
+                //Obj.object_set[0].correct_answer = answer[0]; // get correct answers
+                Obj.object_set[0].correct_answer = answer; // get correct answers
                 Obj.object_set[0].height = zheight;
                 Obj.object_set[0].scale = scale;
 
@@ -1151,7 +1154,8 @@ var GAME = (function($){
             var data = {
                 game_id: App.gameId,
                 answer: answer,
-                correct: $.inArray(answer.toLowerCase(), [Obj.object_set[0].correct_answer])>=0,
+
+                correct: $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0,
                 round: App.currentRound,
                 duration: Date.now()-App.start_obj_time, // time from start of the object
                 score: App.score,
@@ -1239,7 +1243,7 @@ var GAME = (function($){
                 toSort[j] = toSort[j][0];
             }
             return toSort;
-        },
+        }
     };
 
     // Anything associated with the scene and objects in it can be accessed under GAME.Obj
@@ -1256,7 +1260,8 @@ var GAME = (function($){
             this.object = [];
             this.emptyobject = []; // for the hidden obj on the player's side
             this.renderer = [];
-            this.correct_answer = '';
+            //this.correct_answer = '';
+            this.correct_answer = [];
             this.theta = 0; // camera angle x
             this.beta = 0; // camera angle y
             this.radius = 1500;

@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1300;
 var zheight = -120;
 var answer = ['cow'];
 
@@ -8,11 +8,11 @@ var loadobject = function(obj_string,scene,count,callback){
 		$.getJSON(string, function( object) {
 			var objects = JSONMeshParser(object);
 			objects.scale.set(scale, scale, scale);
-            objects.rotation.x = 3.14
-			objects.rotation.y = -0.8
-			objects.rotation.z = 3.141592653589793
-			objects.position.y = -100
-			objects.position.z = 200
+            //objects.rotation.x = 3.14
+			//objects.rotation.y = -0.8
+			//objects.rotation.z = 3.141592653589793
+			//objects.position.y = -100
+			//objects.position.z = 200
 			objects.name = ""+count;
 			objects.allSelectedID = [];
             scene.add(objects);

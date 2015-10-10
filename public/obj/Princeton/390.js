@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1000;
 var zheight = -120;
 var answer = ['giraffe'];
 

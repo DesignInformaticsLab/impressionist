@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1500;
 var zheight = 0;
 var answer = ['ant'];
 

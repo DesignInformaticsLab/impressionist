@@ -1,4 +1,4 @@
-var scale = 750;
+var scale = 1200;
 var zheight = -120;
 var answer = ['bottle'];
 
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = -0
 			objects.position.y = 100
-			objects.position.z = 400
+			objects.position.z = 1
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];

@@ -1,4 +1,4 @@
-var scale = 1000;
+var scale = 1200;
 var zheight = -120;
 var answer = ['dagger'];
 
@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = -100
 			objects.position.y = -300
-			objects.position.z = 100
+			objects.position.z = 1
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];

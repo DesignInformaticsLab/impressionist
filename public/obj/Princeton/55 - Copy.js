@@ -15,7 +15,7 @@ var loadobject = function(obj_string,scene,count,callback){
 
 			objects.position.x = 0
 			objects.position.y = 100
-			objects.position.z = 300
+			objects.position.z = 1
 
 			objects.name = ""+count;
 			objects.allSelectedID = [];

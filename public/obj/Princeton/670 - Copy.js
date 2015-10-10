@@ -1,4 +1,4 @@
-var scale = 1000;
+var scale = 1500;
 var zheight = -120;
 var answer = ['gun'];
 

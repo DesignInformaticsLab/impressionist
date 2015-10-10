@@ -1,6 +1,6 @@
 var scale = 1400;
 var zheight = 0;
-var answer = ['plane'];
+var answer = ['plane','fighter','plane','airplane','aircraft'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

@@ -1,6 +1,7 @@
 var scale = 1200;
 var zheight = 0;
-var answer = ['woman'];
+//var answer = new Array('woman','human','mankind');
+var answer = ["woman"];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

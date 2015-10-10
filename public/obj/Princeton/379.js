@@ -1,6 +1,6 @@
 var scale = 1400;
 var zheight = 0;
-var answer = ['vase'];
+var answer = ['vase','tea pot','teapot'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
@@ -10,9 +10,9 @@ var loadobject = function(obj_string,scene,count,callback){
 			objects.scale.set(scale, scale, scale);
 
 
-			objects.rotation.x = 3.14 * 1
-			objects.rotation.y = 3.14 * 0.3
-			objects.rotation.z = 3.14 * 1
+			objects.rotation.x = -3.14 * 0.3
+			objects.rotation.y = 3.14 * 0
+			objects.rotation.z = 3.14 * 0
 
 			objects.position.x = 0
 			objects.position.y = 0
