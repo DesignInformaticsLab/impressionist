@@ -1067,6 +1067,10 @@ var GAME = (function($){
          */
         quit: function(){
             IO.socket.emit('playerQuit');
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            })
+            Obj.object_set = [];
             App.refresh();
         },
 
