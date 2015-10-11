@@ -203,25 +203,28 @@ var GAME = (function($){
                 o.desposeMesh();
             });
 
-            // if playing with a computer now
-            if (App.playWithComputer){
-                // look for a human player, if none, keep playing with the computer
-                $('#wait.inner.cover p.lead').html('Looking for another human...');
-                App.$wait.show();
+            // do some celebration before moving on...
+            App.celebrate(function(){
+                // if playing with a computer now
+                if (App.playWithComputer){
+                    // look for a human player, if none, keep playing with the computer
+                    $('#wait.inner.cover p.lead').html('Looking for another human...');
+                    App.$wait.show();
 
-                IO.onNewGameCreated(App);
-            }
-            // if during the tutorial
-            else if (!App.tutorial_shown && App.myRole=='Player'){
-                $('#instruction p').html('Now hold down "S" on your keyboard and use your left mouse button to select parts of the object for the other player to guess.');
-                App.tutorialChoose();
-            }
-            else{
-                //App.$continue.show();
-                $('#wait.inner.cover p.lead').html('Waiting for the other player...');
-                App.$wait.show();
-                IO.socket.emit('playerReady');
-            }
+                    IO.onNewGameCreated(App);
+                }
+                // if during the tutorial
+                else if (!App.tutorial_shown && App.myRole=='Player'){
+                    $('#instruction p').html('Now hold down "S" on your keyboard and use your left mouse button to select parts of the object for the other player to guess.');
+                    App.tutorialChoose();
+                }
+                else{
+                    //App.$continue.show();
+                    $('#wait.inner.cover p.lead').html('Waiting for the other player...');
+                    App.$wait.show();
+                    IO.socket.emit('playerReady');
+                }
+            });
         },
 
         // on wrong guess
@@ -1189,7 +1192,16 @@ var GAME = (function($){
                     IO.onAnswerWrong();
                 }
             }
+        },
 
+        /**
+         * celebrate correct answers
+         * @param callback
+         */
+        celebrate: function(callback){
+            $('#wait.inner.cover p.lead').html('Bingo!');
+            App.$wait.show();
+            setTimeout(callback,1000);
         },
 
         /**
