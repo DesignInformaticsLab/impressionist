@@ -194,7 +194,9 @@ var GAME = (function($){
             App.game_score += 500;
 
             // stop loops
-            window.cancelAnimationFrame(App.rendering);
+            $.each(App.rendering, function(i,rendering) {
+                window.cancelAnimationFrame(rendering);
+            });
             if(App.autoSelecting){clearInterval(App.autoSelecting);}
             // clean memory
             $.each(Obj.object_set, function(i,o){
@@ -433,7 +435,9 @@ var GAME = (function($){
          * refreshes the game after going back to the home page
          */
         refresh: function () {
-            window.cancelAnimationFrame(App.rendering);
+            $.each(App.rendering, function(i,rendering) {
+                window.cancelAnimationFrame(rendering);
+            });
             if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
 
             App.setInitParameter();
@@ -536,7 +540,7 @@ var GAME = (function($){
             /**
              * object rendering on or off
              */
-            App.rendering = false;
+            App.rendering = [false, false];
 
             // keep selecting meshes in setinterval
             App.autoSelecting = false;
@@ -774,8 +778,8 @@ var GAME = (function($){
                 console.log( "New object loaded." );
                 // reset game
                 App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
-                //Obj.object_set[0].correct_answer = answer[0]; // get correct answers
-                Obj.object_set[0].correct_answer = answer; // get correct answers
+                Obj.object_set[0].correct_answer = answer[0]; // get correct answers
+                //Obj.object_set[0].correct_answer = answer; // get correct answers
                 Obj.object_set[0].height = zheight;
                 Obj.object_set[0].scale = scale;
 
@@ -1496,7 +1500,12 @@ var GAME = (function($){
 
 
             this.animate = function() {
-                App.rendering = requestAnimationFrame(d.animate);
+                if (d.renderer.domElement.parentElement.id != 'comp_model2'){
+                    App.rendering[0] = requestAnimationFrame(d.animate);
+                }
+                else{
+                    App.rendering[1] = requestAnimationFrame(d.animate);
+                }
                 d.render();
             };
 
@@ -1516,7 +1525,9 @@ var GAME = (function($){
                         $.each(Obj.object_set, function(i,o){
                             o.desposeMesh();
                         });
-                        window.cancelAnimationFrame(App.rendering);
+                        $.each(App.rendering, function(i,rendering) {
+                            window.cancelAnimationFrame(rendering);
+                        });
                         if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
                         App.setInitParameter();
                         App.tutorial_shown = true;

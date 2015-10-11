@@ -6,6 +6,8 @@ var gameSocket;
 var playerReady = []; // room key
 var score = 0; // real-time score to be shared between the two players
 
+
+// 54 obj w/ saliency
 var objectstring_set = [
     //"obj/Princeton/test.js" ,
     "obj/Princeton/1.js" ,  "obj/Princeton/2.js",  "obj/Princeton/3.js",  "obj/Princeton/17.js",  "obj/Princeton/26.js",
@@ -188,8 +190,8 @@ function onPlayerReady(data){
 function grabBestObject(){
     // TODO: read from database
     //var numOfObjects = objectstring_set.length;
-    //var objID = Math.floor(Math.random() * numOfObjects);
-    var objID = 40; //the 383 th model
+    var objID = Math.floor(Math.random() * 54);
+    //var objID = 40;
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
 
