@@ -373,7 +373,12 @@ var GAME = (function($){
                     App.$guessinput[0].value='';
 
                     if(!App.tutorial_shown){
-                        $('#instruction p').html('An object will be gradually revealed. Guess what it is!<br> Do it quick and correct to get high score!');
+                        $('#instruction p').html('Welcome to the tutorial!<br>' +
+                            'This is a game between two players.<br>' +
+                            'One player reveals an object and the other guesses what it is.<br><br>' +
+                            'Now, an object is being gradually revealed.<br>' +
+                            'Go ahead and guess what it is!<br>' +
+                            'Do it fast to achieve higher scores!');
                         App.$instruction.fadeIn();
                     }
 
@@ -559,6 +564,7 @@ var GAME = (function($){
 
             // number of guesses made
             App.guess_made = 0;
+
         },
 
         /**
@@ -706,14 +712,15 @@ var GAME = (function($){
             });
 
             App.$game_btn.click(function(){
-                App.onJoinClick();
+                IO.getSocketStats();
+                App.tutorial_shown = true; // skip tutorial
                 App.$home.hide();
                 App.$wait.show();
                 App.$stat.hide();
                 App.$home_btn.removeClass('active');
                 App.$game_btn.addClass('active');
                 App.$stat_btn.removeClass('active');
-                IO.getSocketStats();
+                App.onJoinClick();
             });
 
             App.$stat_btn.click(function(){
@@ -781,8 +788,8 @@ var GAME = (function($){
                 console.log( "New object loaded." );
                 // reset game
                 App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
-                Obj.object_set[0].correct_answer = answer[0]; // get correct answers
-                //Obj.object_set[0].correct_answer = answer; // get correct answers
+                //Obj.object_set[0].correct_answer = answer[0]; // get correct answers
+                Obj.object_set[0].correct_answer = answer; // get correct answers
                 Obj.object_set[0].height = zheight;
                 Obj.object_set[0].scale = scale;
 
@@ -857,8 +864,13 @@ var GAME = (function($){
             e.preventDefault();
             var tempx = App.mouse.x;
             var tempy = App.mouse.y;
-            App.mouse.x = ( e.clientX / target.width()) * 2 - 1;
-            App.mouse.y = - ( e.clientY / target.height() ) * 2 + 1;
+
+            // $model margins
+            App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2));
+            App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2));
+
+            App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width()) * 2 - 1;
+            App.mouse.y = - ( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
             if (App.PRESSED == true){
                 if (App.SELECT == true && (App.myRole == 'Host'||!App.tutorial_shown)) {
                     App.select();
@@ -881,10 +893,15 @@ var GAME = (function($){
         onMouseDown: function (e, target) {
             e.preventDefault();
             if (!App.isJqmGhostClick(event)) {
+
+                // $model margins
+                App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2));
+                App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2));
+
                 App.PRESSED = true;
                 if (App.PRESSED == true && App.SELECT == true) {
-                    App.mouse.x = ( e.clientX / target.width() ) * 2 - 1;
-                    App.mouse.y = -( e.clientY / target.height() ) * 2 + 1;
+                    App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width() ) * 2 - 1;
+                    App.mouse.y = -( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
                     App.select();
                 }
             }
@@ -1166,7 +1183,7 @@ var GAME = (function($){
             }
             // if during tutorial
             else{
-                var correct = $.inArray(answer.toLowerCase(), [Obj.object_set[0].correct_answer])>=0;
+                var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
                 if (correct){
                     IO.onAnswerCorrect();
                 }
