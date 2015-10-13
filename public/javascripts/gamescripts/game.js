@@ -64,8 +64,8 @@ var GAME = (function($){
         onNewGameCreated : function(data) {
             App.$instruction.hide();
             App.myRole = 'Host';
-            App.$select.show();
-            App.$bar.show();
+            //App.$select.show();
+            //App.$bar.show();
             App.gameId = data.gameId; // this is the room id
             console.log('my id:'+data.mySocketId); // this is the user id
             App.playWithComputer = true;
@@ -89,7 +89,7 @@ var GAME = (function($){
             App.currentRound = 0;
 
             App.$guessinput.html(''); // clean input area
-            App.$gamescore.html(App.game_score); // update score
+            //App.$score.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
 
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
@@ -101,8 +101,8 @@ var GAME = (function($){
 
             // host saves the game
             if(App.myRole=='Host'){
-                App.$select.show();
-                App.$bar.show();
+                //App.$select.show();
+                //App.$bar.show();
                 $.post('/newGame',{},function(data){
                     // broadcast game id
                     IO.socket.emit('broadcastGameID', data[0].id);
@@ -112,8 +112,8 @@ var GAME = (function($){
                 });
             }
             else{
-                App.$select.hide();
-                App.$bar.hide();
+                //App.$select.hide();
+                //App.$bar.hide();
                 Obj.object_set = [];
                 IO.onNewObjData(App.$model);
             }
@@ -165,7 +165,7 @@ var GAME = (function($){
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
                     //App.$bar.css('opacity', App.selection_capacity / Obj.object_set[0].object.FaceArray[0] * App.progressbar_size);
-                    App.$bar.css('background-color', '#333333');
+                    //App.$bar.css('background-color', '#333333');
                 }
                 else if (App.myRole == 'Host') {
                     $.each(selections, function(id,i){
@@ -250,13 +250,13 @@ var GAME = (function($){
             // switch role
             if(App.myRole == 'Host'){
                 App.myRole = 'Player';
-                App.$select.hide();
-                App.$bar.hide();
+                //App.$select.hide();
+                //App.$bar.hide();
             }
             else{
                 App.myRole = 'Host';
-                App.$select.show();
-                App.$bar.show();
+                //App.$select.show();
+                //App.$bar.show();
             }
 
             App.$wait.hide();
@@ -295,8 +295,8 @@ var GAME = (function($){
                             App.$guessoutput.hide();
                             App.$guessinput.show();
                             App.$guessinput[0].value='';
-                            App.$select.hide();
-                            App.$bar.hide();
+                            //App.$select.hide();
+                            //App.$bar.hide();
                             App.SELECT = false;
                         }
                         else if(App.myRole == 'Host'){
@@ -304,8 +304,8 @@ var GAME = (function($){
                             App.$guessoutput.show();
                             App.$guessoutput[0].value='';
                             App.$guessinput.hide();
-                            App.$select.show();
-                            App.$bar.show();
+                            //App.$select.show();
+                            //App.$bar.show();
                         }
                         //o.object.rotation.y = Math.PI*2;
                         o.object.rotation.y = Math.random()*Math.PI*2;
@@ -572,13 +572,12 @@ var GAME = (function($){
             // div for game
             App.$game = $('#game');
             App.$model = $('#model');
-            App.$gamescore = $('#gamescore');
-            App.$roundscore= $('#score');
+            App.$score= $('#score');
             App.$guessoutput = $('#guessoutput');
             App.$guessinput = $('#guessinput');
             App.$menu = $('#menu');
-            App.$bar = $('#bar');
-            App.$select = $('#select');
+            //App.$bar = $('#bar');
+            //App.$select = $('#select');
             App.$time = $('#time');
             App.$timebar = $('#timebar');
             App.$entry = $('#entry');
@@ -611,28 +610,29 @@ var GAME = (function($){
             //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
             //var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
             //    -App.$time.width()-App.$score.width()-30)*.5;
-            var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
-                -App.$roundscore.width()-30)*.5;
+            var margin_left = (App.$game.width()-App.$guessinput.width())*.5;
             var menu_bottom = $('.mastfoot').height();
-            App.$menu.css('bottom',menu_bottom);
-            App.$objlist.css('bottom',menu_bottom);
+            App.$menu.css('bottom',menu_bottom+'px');
+            App.$objlist.css('bottom',menu_bottom+'px');
             //App.$game.height(game_height);
             //App.$time.css('marginLeft',margin_left+'px');
             //App.$timebar.css('marginLeft',margin_left+'px');
             //App.$score.css('marginLeft',margin_left+10+App.$time.width()+'px');
-            App.$roundscore.css('marginLeft',margin_left+'px');
+            //App.$score.css('bottom',menu_bottom+10+'px');
             //App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
-            App.$select.css('marginLeft',margin_left+10+App.$roundscore.width()+'px');
+            //App.$select.css('marginLeft',margin_left+10+App.$roundscore.width()+'px');
             //App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
-            App.$bar.css('marginLeft',margin_left+10+App.$roundscore.width()+'px');
+            //App.$bar.css('marginLeft',margin_left+10+App.$roundscore.width()+'px');
             //App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
             //+App.$time.width()+App.$score.width()+'px');
             //App.$guessinput.css('left',margin_left+30+App.$select.width()
             //+App.$time.width()+App.$score.width()+'px');
-            App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
-                +App.$roundscore.width()+'px');
-            App.$guessinput.css('left',margin_left+30+App.$select.width()
-                +App.$roundscore.width()+'px');
+            //App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
+            //    +App.$roundscore.width()+'px');
+            //App.$guessinput.css('left',margin_left+30+App.$select.width()
+            //    +App.$roundscore.width()+'px');
+            App.$guessoutput.css('marginLeft',margin_left+'px');
+            App.$guessinput.css('left',margin_left+'px');
             //App.progressbar_size = App.$select.css('opacity')/1;
         },
 
@@ -829,32 +829,13 @@ var GAME = (function($){
 
         onWindowResize: function() {
             // interface
-            //var game_height = $(window).height() - $('.mastfoot').height() - $('.masthead').height();
-            //var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
-            //    -App.$time.width()-App.$score.width()-30)*.5;
-            var margin_left = (App.$game.width()-App.$select.width()-App.$guessinput.width()
-                -App.$roundscore.width()-30)*.5;
+            var margin_left = (App.$game.width()-App.$guessinput.width())*.5;
             var menu_bottom = $('.mastfoot').height();
             App.$menu.css('bottom',menu_bottom);
             App.$objlist.css('bottom',menu_bottom);
-            //App.$game.height(game_height);
-            //App.$time.css('marginLeft',margin_left+'px');
-            //App.$timebar.css('marginLeft',margin_left+'px');
-            //App.$score.css('marginLeft',margin_left+10+App.$time.width()+'px');
-            App.$roundscore.css('marginLeft',margin_left+'px');
-            //App.$select.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
-            App.$select.css('marginLeft',margin_left+10+App.$roundscore.width()+'px');
-            //App.$bar.css('marginLeft',margin_left+20+App.$time.width()+App.$score.width()+'px');
-            App.$bar.css('marginLeft',margin_left+10+App.$roundscore.width()+'px');
-            //App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
-            //+App.$time.width()+App.$score.width()+'px');
-            //App.$guessinput.css('left',margin_left+30+App.$select.width()
-            //+App.$time.width()+App.$score.width()+'px');
-            App.$guessoutput.css('marginLeft',margin_left+30+App.$select.width()
-                +App.$roundscore.width()+'px');
-            App.$guessinput.css('left',margin_left+30+App.$select.width()
-                +App.$roundscore.width()+'px');
-            //App.progressbar_size = App.$select.css('opacity')/1;
+            //App.$score.css('marginLeft',margin_left+'px');
+            App.$guessoutput.css('marginLeft',margin_left+'px');
+            App.$guessinput.css('left',margin_left+'px');
 
             $.each(Obj.object_set, function(i,o){
                 o.camera.aspect = App.$model.width() / App.$model.height();
@@ -930,7 +911,8 @@ var GAME = (function($){
             e.preventDefault();
             if (e.keyCode == 83){ //s: selection
                 App.SELECT = true;
-                App.$bar.addClass('active');
+                //App.$bar.addClass('active');
+                App.$game.addClass('active');
             }
         },
 
@@ -955,7 +937,7 @@ var GAME = (function($){
             e.preventDefault();
             if (e.keyCode == 83){
                 App.SELECT = false;
-                App.$bar.removeClass('active');
+                App.$game.removeClass('active');
             }
         },
 
@@ -1212,8 +1194,8 @@ var GAME = (function($){
             $('#wait.inner.cover p.lead').html('A computer is joining the game...');
             App.playWithComputer = true;
             App.myRole = 'Player';
-            App.$select.hide();
-            App.$bar.hide();
+            //App.$select.hide();
+            //App.$bar.hide();
             IO.socket.emit('grabBestObject');
         },
 
@@ -1546,7 +1528,7 @@ var GAME = (function($){
                         Obj.object_set = [];
 
                         // disable selection if the user is still selecting
-                        App.$bar.removeClass('active');
+                        App.$game.removeClass('active');
 
                         App.onJoinClick();
                     }
@@ -1601,7 +1583,8 @@ var GAME = (function($){
                         }
                         App.showScoreBoard();
                     }
-                    App.$roundscore.html(Math.round(App.game_score));
+                    //App.$score.html(Math.round(App.game_score));
+                    App.$score.css('width',Math.round(App.game_score)/9999.0*100+'%');
                 }
 
                 // check if model is focused, if not, focus to it.
@@ -1780,22 +1763,29 @@ var GAME = (function($){
                         else if (method == 1) { // use saliency distribution data from Chen 2012
                             // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
                             var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
-                            $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
-                                response = response.split('\n');
-                                if (response[response.length-1]==''){response = response.splice(0,response.length-1);}
-                                $.each(response, function (i, r) {
-                                    response[i] = parseFloat(r);
-                                });
-                                var max_weight = Math.max.apply(Math, response);
-                                $.each(response, function (i, r) {
-                                    o.object.children[0].geometry.vertices[i].salColor = r/max_weight;
-                                });
+                            try {
+                                $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
+                                    response = response.split('\n');
+                                    if (response[response.length - 1] == '') {
+                                        response = response.splice(0, response.length - 1);
+                                    }
+                                    $.each(response, function (i, r) {
+                                        response[i] = parseFloat(r);
+                                    });
+                                    var max_weight = Math.max.apply(Math, response);
+                                    $.each(response, function (i, r) {
+                                        o.object.children[0].geometry.vertices[i].salColor = r / max_weight;
+                                    });
 
-                                o.paint_faces();
-                                if (typeof(callback) != 'undefined'){
-                                    callback();
-                                }
-                            });
+                                    o.paint_faces();
+                                    if (typeof(callback) != 'undefined') {
+                                        callback();
+                                    }
+                                });
+                            }
+                            catch(err){
+                                App.$comp_model2.html('no benchmark data available.');
+                            }
                         }
                     };
                     var o = Obj.init(target,inner_callback);

@@ -31,7 +31,12 @@
     /*background-color: white;*/
     display: none;
     z-index: 0;
+    transition: all 0.5s;
  }
+
+#game.active {
+    box-shadow: inset 0 0 50px #333333;
+}
 
 #wait {
     position: relative;
@@ -70,15 +75,23 @@
 
 #select {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: transparent;
-    color: #cccccc;
-    border-radius: 5px;
-    font-size: 40px;
-    line-height: 50px;
-    text-align: center;
-    z-index: 5;
+    /*width: 50px;*/
+    /*height: 50px;*/
+    /*background-color: transparent;*/
+    /*color: #cccccc;*/
+    /*border-radius: 5px;*/
+    /*font-size: 40px;*/
+    /*line-height: 50px;*/
+    /*text-align: center;*/
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    transition: all 0.5s;
+}
+
+#select.active {
+    box-shadow: inset 0 0 50px #333333;
 }
 
 #time {
@@ -108,14 +121,19 @@
 
 #score {
     position: absolute;
-    width: 200px;
-    height: 50px;
-    background-color: transparent;
-    color: #cccccc;
-    border-radius: 5px;
-    font-size: 40px;
-    line-height: 50px;
-    text-align: center;
+    /*width: 200px;*/
+    /*height: 50px;*/
+    /*background-color: transparent;*/
+    /*color: #cccccc;*/
+    /*border-radius: 5px;*/
+    /*font-size: 40px;*/
+    /*line-height: 50px;*/
+    /*text-align: center;*/
+    width: 100%;
+    height: 10px;
+    top: 0px;
+    left: 0px;
+    background-color: #333333;
     z-index: 5;
 }
 
@@ -165,11 +183,11 @@
 
 
 #model {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    left: 0px;
-    top: 0px;
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    width: 90%;
+    height: 90%;
+    margin: auto;
     z-index: 1;
     outline: none !important;
 }
