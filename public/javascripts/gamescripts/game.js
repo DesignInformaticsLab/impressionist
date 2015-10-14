@@ -82,6 +82,9 @@ var GAME = (function($){
          * @param data {{playerName: string, gameId: int, mySocketId: int}}
          */
         playerJoinedRoom : function(data) {
+            if (App.playWithComputer){// if still playing with computer, be the host
+                App.myRole = 'Host';
+            }
             // if player joined, do not play with computer
             App.playWithComputer = false;
 
@@ -97,26 +100,32 @@ var GAME = (function($){
             App.objectString = App.objectstring_set[data.objectID];
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
-            App.$game.show();
+            App.$wait.show();
 
-            // host saves the game
-            if(App.myRole=='Host'){
-                //App.$select.show();
-                //App.$bar.show();
-                $.post('/newGame',{},function(data){
-                    // broadcast game id
-                    IO.socket.emit('broadcastGameID', data[0].id);
-                    // create a new object and start the game
+
+            setTimeout(function(){
+                App.$wait.hide();
+                App.$game.show();
+
+                // host saves the game
+                if(App.myRole=='Host'){
+                    //App.$select.show();
+                    //App.$bar.show();
+                    $.post('/newGame',{},function(data){
+                        // broadcast game id
+                        IO.socket.emit('broadcastGameID', data[0].id);
+                        // create a new object and start the game
+                        Obj.object_set = [];
+                        IO.onNewObjData(App.$model);
+                    });
+                }
+                else{
+                    //App.$select.hide();
+                    //App.$bar.hide();
                     Obj.object_set = [];
                     IO.onNewObjData(App.$model);
-                });
-            }
-            else{
-                //App.$select.hide();
-                //App.$bar.hide();
-                Obj.object_set = [];
-                IO.onNewObjData(App.$model);
-            }
+                }
+            }, 1000);
         },
 
         /**
@@ -658,6 +667,19 @@ var GAME = (function($){
             App.$comp_model2.mousemove(function(e){App.onMouseMove(e, App.$comp_model2)});
             App.$comp_model2.mousedown(function(e){App.onMouseDown(e, App.$comp_model2)});
             App.$comp_model2.mouseup(function(e){App.onMouseUp(e, App.$comp_model2)});
+            App.$model.bind('mousewheel DOMMouseScroll', function(event){
+                if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0) {
+                    // scroll up
+                    Obj.object_set[0].global_scale += 0.1;
+                    Obj.object_set[0].global_scale = Math.min(1.5,Obj.object_set[0].global_scale);
+                }
+                else {
+                    // scroll down
+                    Obj.object_set[0].global_scale -= 0.1;
+                    Obj.object_set[0].global_scale = Math.max(0.8,Obj.object_set[0].global_scale);
+                }
+            });
+
 
             window.addEventListener( 'resize', App.onWindowResize, false );
 
@@ -866,8 +888,8 @@ var GAME = (function($){
             var tempy = App.mouse.y;
 
             // $model margins
-            App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2));
-            App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2));
+            App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+            App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
 
             App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width()) * 2 - 1;
             App.mouse.y = - ( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
@@ -895,8 +917,8 @@ var GAME = (function($){
             if (!App.isJqmGhostClick(event)) {
 
                 // $model margins
-                App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2));
-                App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2));
+                App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
 
                 App.PRESSED = true;
                 if (App.PRESSED == true && App.SELECT == true) {
@@ -1286,6 +1308,7 @@ var GAME = (function($){
             this.radius = 1500;
             this.height = [];
             this.scale = [];
+            this.global_scale = 1;
             var d = this;
 
             //for background pics
@@ -1555,12 +1578,22 @@ var GAME = (function($){
                     if(typeof(d.object)!='undefined'){
                         d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
                             d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        if (d.scale>1){
+                            var scale = d.global_scale* d.scale || 1;
+                            d.object.children[0].scale.set(scale, scale, scale);
+                        }
+
                     }
                 }
                 else{
                     if(typeof(d.emptyobject)!='undefined'){
                         d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
                             d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                        //if (d.scale>1){
+                        //    var scale = d.global_scale* d.scale || 1;
+                        //    d.emptyobject.scale.set(scale, scale, scale);
+                        //}
+
                     }
                 }
 

@@ -190,8 +190,8 @@ function onPlayerReady(data){
 function grabBestObject(){
     // TODO: read from database
     //var numOfObjects = objectstring_set.length;
-    var objID = Math.floor(Math.random() * 44);
-    //var objID = 53;
+    //var objID = Math.floor(Math.random() * 44);
+    var objID = 22;
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
 
