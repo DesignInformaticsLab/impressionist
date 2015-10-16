@@ -37,8 +37,8 @@ var objectstring_set = [
 
 var pg = require('pg');
 var connection = process.env.DATABASE_URL
-    || "postgres://postgres:54093960@localhost:5432/postgres";
-    //|| "postgres://postgres:GWC464doi@localhost:5432/postgres";
+        //|| "postgres://postgres:54093960@localhost:5432/postgres";
+    || "postgres://postgres:GWC464doi@localhost:5432/postgres";
 //for local postgres server, and Heroku server
 
 /**
@@ -121,8 +121,8 @@ function joinGame() {
         //update this number as the number of models increases
         var numOfObjects = objectstring_set.length;
         var data = {};
-        var objID = Math.floor(Math.random() * numOfObjects);
-        //var objID = 0;
+        //var objID = Math.floor(Math.random() * numOfObjects);
+        var objID = 0;
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;
@@ -190,8 +190,8 @@ function onPlayerReady(data){
 function grabBestObject(){
     // TODO: read from database
     //var numOfObjects = objectstring_set.length;
-    var objID = Math.floor(Math.random() * 44);
-    //var objID = 22;
+    //var objID = Math.floor(Math.random() * 44);
+    var objID = 0;
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
 

@@ -2,10 +2,10 @@
 
 
 /* to delete table */
-DROP TABLE impressionist_game_table;
-DROP TABLE impressionist_object_table;
+--DROP TABLE impressionist_game_table;
+--DROP TABLE impressionist_object_table;
 DROP TABLE impressionist_result_table;
-DROP TABLE impressionist_user_table;
+--DROP TABLE impressionist_user_table;
 
 
 
@@ -47,6 +47,7 @@ CREATE TABLE impressionist_result_table
     object_name text,
     correct boolean,
     penalty real[],
+    computer_player boolean,
     PRIMARY KEY(id)
 );
 

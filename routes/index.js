@@ -3,8 +3,8 @@ var router = express.Router();
 var pg = require('pg');
 
 var connection = process.env.DATABASE_URL
-    ||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
-    //|| "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
+        //||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
+    || "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
 
 //for local postgres server, and Heroku server
 var objectstring_set = [
@@ -93,9 +93,10 @@ router.post('/store_selection', function(req,res){
         var correct = req.body.correct;
         var round = req.body.round;
         var penalty = [];
+        var computer_player = req.body.computer_player;
         var insert_query = client.query('INSERT INTO impressionist_result_table (game_id, round, all_selected_id, duration,' +
-            ' score, guess, object_name, correct, penalty) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-            [game_id, round, all_selected_id, duration, score, guess, object_name, correct, penalty]);
+            ' score, guess, object_name, correct, penalty, computer_player) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+            [game_id, round, all_selected_id, duration, score, guess, object_name, correct, penalty, computer_player]);
         insert_query.on('err', handle_error.bind(this, err));
         insert_query.on('end', function(result){res.status(202).send("Accepted data");});
         done();
@@ -106,7 +107,7 @@ router.post('/store_selection', function(req,res){
 router.post('/read_selection', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
-        var query = 'SELECT all_selected_id FROM impressionist_result_table WHERE object_name=$1 AND correct=TRUE';
+        var query = 'SELECT all_selected_id FROM impressionist_result_table WHERE object_name=$1 AND correct=TRUE AND computer_player=FALSE';
         client.query(query, [req.body.object_name], function(err, result) {
             if(err) {
                 console.error(err); res.send("Error " + err);
@@ -121,19 +122,26 @@ router.post('/read_selection', function(req,res){
 
 
 
-
+// 'initial_obj' just like a URL, which could be accessed from game.js
+// req means request data sending from the client
+// res means respond data send to the client
 router.post('/initial_obj', function(req,res){
+    // pg.connect tries to connect to data base
     pg.connect(connection, function(err, client, done) {
         if(err) res.send("Could not connect to DB: " + err);
+        //req.body is a reserved key word, means all json data block sent to sever
         var object_name = req.body.object_name;
+        // JSON.parse is a embedded function, parse string data
         var face_per_mesh = JSON.parse(req.body.face_per_mesh);
         var num_selections = [];
+        // insert value to database
         var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, face_per_mesh, num_selections) VALUES ($1, $2, $3)',
             [object_name, face_per_mesh, num_selections]);
         //var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, three_scene, face_per_mesh, num_selections) VALUES ($1, $2, $3, $4)',
         //    [object_name, three_scene, face_per_mesh, num_selections]);
         insert_query.on('err', handle_error.bind(this, err));
         insert_query.on('end', function(result){res.status(202).send("Accepted data");});
+        // finish server operation and return
         done();
     });
 });
@@ -142,7 +150,9 @@ router.post('/initial_obj', function(req,res){
 router.post('/getObjectList', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
+        // psql command
         var query = 'SELECT id, object_name FROM impressionist_object_table';
+        // send psql command t psql and return the result to client
         client.query(query, function(err, result) {
             if(err) {
                 console.error(err); res.send("Error " + err);

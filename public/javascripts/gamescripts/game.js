@@ -1192,10 +1192,11 @@ var GAME = (function($){
                 duration: Date.now()-App.start_obj_time, // time from start of the object
                 score: App.score,
                 object_name: Obj.object_set[0].object.name,
-                all_selected_id: JSON.stringify(App.allSelectedIDMaster)
+                all_selected_id: JSON.stringify(App.allSelectedIDMaster),
+                computer_player: 0
                 //weight: JSON.stringify(weight)
             };
-            if (App.playWithComputer){data.game_id = -1;}
+            if (App.playWithComputer){data.game_id = -1; data.computer_player=1;}
 
             // if during a real game
             if (App.tutorial_shown){
