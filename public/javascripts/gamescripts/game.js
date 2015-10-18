@@ -1535,6 +1535,7 @@ var GAME = (function($){
 
 
             this.animate = function() {
+                if(d.renderer.domElement.parentElement!=null) //modified by Hope
                 if (d.renderer.domElement.parentElement.id != 'comp_model2'){
                     App.rendering[0] = requestAnimationFrame(d.animate);
                 }
