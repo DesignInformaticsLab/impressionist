@@ -1799,9 +1799,13 @@ var GAME = (function($){
                                                 if (face_id >= o.object.children[mesh_id].geometry.faces.length) {
                                                     var stop = 1;
                                                 }
-                                                o.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w / max_max_weight, 0.7);
-                                                o.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w / max_max_weight / 5.0, 0.2);
-                                                o.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w / max_max_weight / 5.0, 0.2);
+                                                //o.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w / max_max_weight, 0.7);
+                                                //o.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w / max_max_weight / 5.0, 0.2);
+                                                //o.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w / max_max_weight / 5.0, 0.2);
+                                                var col = Obj.getRGB(w/max_max_weight);
+                                                o.object.children[mesh_id].geometry.faces[face_id].color.r = col[0]/255;
+                                                o.object.children[mesh_id].geometry.faces[face_id].color.g = col[1]/255;
+                                                o.object.children[mesh_id].geometry.faces[face_id].color.b = col[2]/255;
                                             }
                                         });
                                         o.object.children[mesh_id].geometry.colorsNeedUpdate = true;

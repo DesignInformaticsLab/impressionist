@@ -48,7 +48,7 @@ function handle_error(res, err) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Impressionist | Home' });
+  res.render('index', { title: 'Impressionist' });
 });
 
 /* GET game page. */
