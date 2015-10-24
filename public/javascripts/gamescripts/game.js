@@ -99,7 +99,7 @@ var GAME = (function($){
             App.objectstring_set = data.objectstring_set;
             App.objectString = App.objectstring_set[data.objectID];
 
-            $('#wait.inner.cover p.lead').html('A human joined the game...');
+            $('#wait.inner.cover p.lead').html('joining game...');
             App.$wait.show();
 
 
@@ -217,14 +217,18 @@ var GAME = (function($){
                 // if playing with a computer now
                 if (App.playWithComputer){
                     // look for a human player, if none, keep playing with the computer
-                    $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+                    $('#wait.inner.cover p.lead').html('Looking for another human...');
                     App.$wait.show();
 
                     IO.onNewGameCreated(App);
                 }
                 // if during the tutorial
                 else if (!App.tutorial_shown && App.myRole=='Player'){
-                    $('#instruction p').html('Now hold down "S" on your keyboard and use your left mouse button to select parts of the object for the other player to guess.');
+                    $('#instruction p').html(
+                    'Hold down "S" and you can select its surfaces with your left mouse button.<br>'+
+                    'Go ahead and select surfaces for the other player to guess!<br>'+
+                        'The less you select the higher you\'ll score!'
+                    );
                     App.tutorialChoose();
                 }
                 else{
@@ -382,12 +386,18 @@ var GAME = (function($){
                     App.$guessinput[0].value='';
 
                     if(!App.tutorial_shown){
-                        $('#instruction p').html('Welcome to the tutorial!<br>' +
+                        $('#instruction p').html(
+/*                            'Welcome to the tutorial!<br>' +
                             'This is a game between two players.<br>' +
                             'One player reveals an object and the other guesses what it is.<br><br>' +
                             'Now, an object is being gradually revealed.<br>' +
                             'Go ahead and guess what it is!<br>' +
-                            'Do it fast to achieve higher scores!');
+                            'Do it fast to achieve higher scores!'
+                            */
+                            'Something is being gradually revealed.<br>' +
+                            'Go ahead and guess what it is!<br>' +
+                            'The faster you guess the higher scores you\'ll achieve!'
+                            );
                         App.$instruction.fadeIn();
                     }
 
@@ -458,7 +468,7 @@ var GAME = (function($){
             if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
 
             App.setInitParameter();
-            $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+            $('#wait.inner.cover p.lead').html('Waiting for a second player...');
             Obj.object_set = [];
         },
 
@@ -609,9 +619,7 @@ var GAME = (function($){
             App.$continue_btn = $('#continue_btn');
             App.$home_btn = $($('li')[0]);
             App.$game_btn = $($('li')[1]);
-            //App.$stat_btn = $($('li')[2]);
-            App.$stat_btn = $($('a')[3]);
-            App.$stat_btn.css('cursor','pointer');
+            App.$stat_btn = $($('li')[2]);
 
             // instruction
             App.$instruction = $('#instruction');
@@ -787,7 +795,7 @@ var GAME = (function($){
             App.$home_btn.removeClass('active');
             App.$game_btn.addClass('active');
             App.$home.hide();
-            $('#wait.inner.cover p.lead').html("Let's start with some tutorial...");
+            $('#wait.inner.cover p.lead').html("Let's start with a tutorial...");
             App.$wait.show();
 
             // start a game with the computer
@@ -1116,7 +1124,7 @@ var GAME = (function($){
                 App.$stat.hide();
                 App.$game.hide();
                 setTimeout(function () {
-                    $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+                    $('#wait.inner.cover p.lead').html('Looking for another human...');
                     App.$wait.hide();
                     App.$home.show();
                     App.$home_btn.addClass('active');
