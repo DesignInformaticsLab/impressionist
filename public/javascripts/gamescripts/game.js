@@ -766,7 +766,7 @@ var GAME = (function($){
                 // clean memory
                 $.each(Obj.object_set, function(i,o){
                     o.desposeMesh();
-                })
+                });
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
