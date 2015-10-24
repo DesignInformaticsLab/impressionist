@@ -2,6 +2,22 @@
    Created by Max Yi Ren on 3/7/2015.
 extends layout
 block content
+
+      div#fb-root
+      script.
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+
+
       .site-wrapper
           .site-wrapper-inner
               .cover-container
@@ -81,6 +97,7 @@ block content
                                       |Close
                   .mastfoot
                       .inner
+                          div.fb-share-button(data-href="http://impressionist.herokuapp.com/" data-layout="button_count" )
                           #numPlayer
                           p.
                               Developed by Max Yi Ren, Hope Yao and Fabian Gadau, Design Informatics Lab, Arizona State University, 2015<br>
