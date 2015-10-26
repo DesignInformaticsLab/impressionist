@@ -610,7 +610,7 @@ var GAME = (function($){
             App.$home_btn = $($('li')[0]);
             App.$game_btn = $($('li')[1]);
             //App.$stat_btn = $($('li')[2]);
-            App.$stat_btn = $($('a')[3]);
+            App.$stat_btn = $($('a')[4]);
             App.$stat_btn.css('cursor','pointer');
 
             // instruction
