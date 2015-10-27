@@ -245,8 +245,10 @@ var GAME = (function($){
             }
             else if (App.myRole == 'Player'){
                 App.$guessinput.css('background-color', '#000000');
+                //App.$menu.css('background-color', '#000000');
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
+                    //App.$menu.css('background-color', '#f5f5ff');
                 },800);
             }
         },
@@ -1637,7 +1639,7 @@ var GAME = (function($){
 
                 // update score based on selection, time and guesses
                 if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.02;
+                    var penalty = (Date.now()-App.currentTime)*0.05;
                     penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 30000;
                     App.game_score -= penalty;
                     App.currentTime = Date.now();
