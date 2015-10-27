@@ -3,6 +3,17 @@
 extends layout
 block content
 
+      #fb-root
+      script.
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+
       div#fb-root
       script.
         (function (d, s, id) {
@@ -15,8 +26,6 @@ block content
             js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
-
-
 
       .site-wrapper
           .site-wrapper-inner
@@ -97,12 +106,15 @@ block content
                                       |Close
                   .mastfoot
                       .inner
-                          div.fb-share-button(data-href="http://impressionist.herokuapp.com/" data-layout="button_count" )
+                          //div.fb-share-button(data-href="http://impressionist.herokuapp.com/" data-layout="button_count" )
+                          p
                           #numPlayer
-                          p.
-                              Developed by Max Yi Ren, Hope Yao and Fabian Gadau, Design Informatics Lab, Arizona State University, 2015<br>
-                              <a href="mailto:yiren@asu.edu&cc=Houpu.Yao@asu.edu&subject=Feedback on Impressionist">Please let us know how we can improve:)</a><br>
-                              Disclaimer: No personal information is collected. <a>Game interaction records</a> will be used in current research at
-                              <a href="http://www.public.asu.edu/~yren32">DILab</a>.
+                          //.fblike
+                          .fb-like(data-href='impressionist.herokuapp.com', data-layout='standard', data-action='like', data-show-faces='true', data-share='true')
+                          <a href="mailto:yiren@asu.edu&cc=Houpu.Yao@asu.edu&subject=Feedback on Impressionist">Or let us know how we can improve:)</a><br>
+
+                          Developed by Max Yi Ren, Hope Yao and Fabian Gadau, Design Informatics Lab, Arizona State University, 2015<br>
+                          Disclaimer: No personal information is collected. <a>Game interaction records</a> will be used in current research at
+                          <a href="http://www.public.asu.edu/~yren32">DILab</a>.
       script(src="stylesheets/bootstrap/js/bootstrap.min.js")
       script(src="javascripts/gamescripts/game.js")

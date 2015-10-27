@@ -38,9 +38,9 @@
     box-shadow: inset 0 0 50px #333333;
 }
 
-/*#fb-share-button.fb_iframe_widget{*/
-    /*z-index: 11*/
-/*}*/
+.fb-like{
+    width: 330px;
+}
 
 #wait {
     position: relative;
