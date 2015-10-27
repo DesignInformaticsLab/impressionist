@@ -200,7 +200,7 @@ var GAME = (function($){
 
             IO.getSocketStats();
 
-            App.game_score += 500;
+            App.game_score += 2000;
 
             // stop loops
             $.each(App.rendering, function(i,rendering) {
@@ -239,7 +239,7 @@ var GAME = (function($){
         // on wrong guess
         onAnswerWrong : function(data) {
             App.guess_made += 1;
-            App.game_score -= 500;
+            App.game_score -= 200;
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
             }
@@ -1251,7 +1251,7 @@ var GAME = (function($){
             App.autoSelecting = setInterval(function(){
                 var selection = o.faceSaliency.sortIndices.pop();
                 o.createMesh([selection],"0");
-            }, 100);
+            }, 10);
         },
 
         diff: function(a, b) {
@@ -1624,8 +1624,8 @@ var GAME = (function($){
 
                 // update score based on selection, time and guesses
                 if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.1;
-                    penalty += App.numSelectedFaces - App.selection_capacity;
+                    var penalty = (Date.now()-App.currentTime)*0.02;
+                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 30000;
                     App.game_score -= penalty;
                     App.currentTime = Date.now();
                     App.numSelectedFaces = App.selection_capacity;
