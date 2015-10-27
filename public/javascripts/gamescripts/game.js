@@ -869,13 +869,26 @@ var GAME = (function($){
             App.$guessinput.css('left',margin_left+'px');
 
             $.each(Obj.object_set, function(i,o){
-                o.camera.aspect = App.$model.width() / App.$model.height();
-                o.camera.updateProjectionMatrix();
+                if (Obj.object_set.length == 1){
+                    o.camera.aspect = App.$model.width() / App.$model.height();
+                    o.camera.updateProjectionMatrix();
+                    o.renderer.setSize(App.$model.width(), App.$model.height());
+                }
+                else if (Obj.object_set.length == 2){
+                    o.camera.aspect = App.$comp_model1.width() / App.$comp_model1.height();
+                    o.camera.updateProjectionMatrix();
+                    o.renderer.setSize(App.$comp_model1.width(), App.$comp_model1.height());
+
+                    o.camera.aspect = App.$comp_model2.width() / App.$comp_model2.height();
+                    o.camera.updateProjectionMatrix();
+                    o.renderer.setSize(App.$comp_model2.width(), App.$comp_model2.height());
+                }
+
                 /* if (VRMODE) {
                  Obj.vrEffect.setSize(window.innerWidth, window.innerHeight);
                  }
                  else {*/
-                o.renderer.setSize(App.$model.width(), App.$model.height());
+                //o.renderer.setSize(App.$model.width(), App.$model.height());
                 //}
             });
         },
