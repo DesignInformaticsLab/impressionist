@@ -2,10 +2,10 @@
 
 
 /* to delete table */
---DROP TABLE impressionist_game_table;
---DROP TABLE impressionist_object_table;
+DROP TABLE impressionist_game_table;
+DROP TABLE impressionist_object_table;
 DROP TABLE impressionist_result_table;
---DROP TABLE impressionist_user_table;
+DROP TABLE impressionist_user_table;
 
 
 
