@@ -14,18 +14,30 @@ block content
         }(document, 'script', 'facebook-jssdk'));
 
 
-      div#fb-root
+      //div#fb-root
+      //script.
+      //  (function (d, s, id) {
+      //      var js, fjs = d.getElementsByTagName(s)[0];
+      //      if (d.getElementById(id)) {
+      //          return;
+      //      }
+      //      js = d.createElement(s);
+      //      js.id = id;
+      //      js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+      //      fjs.parentNode.insertBefore(js, fjs);
+      //  }(document, 'script', 'facebook-jssdk'));
+
+      #fb-root
       script.
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {
-                return;
-            }
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+       (function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+          fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+
+
 
       .site-wrapper
           .site-wrapper-inner
@@ -111,8 +123,9 @@ block content
                           //.fblike
                           br
                           br
-                          .fb-like(data-href='impressionist.herokuapp.com', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
+                          //.fb-like(data-href='impressionist.herokuapp.com', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
                           //.fb-like(data-href='impressionist.herokuapp.com', data-layout='standard', data-action='like', data-show-faces='true', data-share='true')
+                          .fb-like(data-href='http://impressionist.herokuapp.com/', data-layout='standard', data-action='like', data-show-faces='true', data-share='true')
                           p.
                               <a href="mailto:yiren@asu.edu&cc=Houpu.Yao@asu.edu&subject=Feedback on Impressionist">Let us know how we can improve:)</a><br>
                               Developed by Max Yi Ren, Hope Yao and Fabian Gadau, Design Informatics Lab, Arizona State University, 2015<br>
