@@ -3,35 +3,26 @@ var router = express.Router();
 var pg = require('pg');
 
 var connection = process.env.DATABASE_URL
-        ||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
-    //|| "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
+        //||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
+    || "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
 
 //for local postgres server, and Heroku server
 var objectstring_set = [
     //"obj/Princeton/test.js" ,
-    "obj/Princeton/1.js" ,  "obj/Princeton/2.js",  "obj/Princeton/3.js",  "obj/Princeton/17.js",  "obj/Princeton/26.js",
-    "obj/Princeton/35.js",  "obj/Princeton/51.js",  "obj/Princeton/57.js",  "obj/Princeton/68.js",  "obj/Princeton/75.js",
-    "obj/Princeton/88.js",  "obj/Princeton/93.js",  "obj/Princeton/104.js",  "obj/Princeton/111.js", "obj/Princeton/150.js",
-    "obj/Princeton/162.js",  "obj/Princeton/170.js",  "obj/Princeton/182.js",  "obj/Princeton/183.js",  "obj/Princeton/198.js",
-    "obj/Princeton/221.js",  "obj/Princeton/258.js",  "obj/Princeton/260.js",  "obj/Princeton/378.js",  "obj/Princeton/379.js",
+    "obj/Princeton/17.js",  "obj/Princeton/26.js", "obj/Princeton/35.js",  "obj/Princeton/57.js",  "obj/Princeton/68.js",
+    "obj/Princeton/75.js","obj/Princeton/111.js",  "obj/Princeton/170.js",  "obj/Princeton/183.js",  "obj/Princeton/198.js",
+    "obj/Princeton/221.js", "obj/Princeton/258.js",  "obj/Princeton/260.js",  "obj/Princeton/378.js",  "obj/Princeton/379.js",
+    "obj/Princeton/381.js", "obj/Princeton/382.js",   "obj/Princeton/383.js",  "obj/Princeton/384.js",   "obj/Princeton/385.js",
+    "obj/Princeton/386.js", "obj/Princeton/390.js",  "obj/Princeton/391.js",  "obj/Princeton/392.js",  "obj/Princeton/393.js",
+    "obj/Princeton/395.js",   "obj/Princeton/398.js","obj/Princeton/400.js",
 
-    "obj/Princeton/381.js","obj/Princeton/382.js","obj/Princeton/383.js","obj/Princeton/384.js","obj/Princeton/385.js",
-    "obj/Princeton/386.js","obj/Princeton/387.js","obj/Princeton/388.js","obj/Princeton/389.js","obj/Princeton/390.js",
-    "obj/Princeton/391.js","obj/Princeton/392.js","obj/Princeton/393.js","obj/Princeton/394.js","obj/Princeton/395.js",
-    "obj/Princeton/396.js","obj/Princeton/397.js","obj/Princeton/398.js","obj/Princeton/400.js",
-
-    "obj/Princeton/0 - Copy.js","obj/Princeton/2 - Copy.js","obj/Princeton/5 - Copy.js","obj/Princeton/10 - Copy.js","obj/Princeton/15 - Copy.js",
-    "obj/Princeton/20 - Copy.js","obj/Princeton/25 - Copy.js","obj/Princeton/40 - Copy.js","obj/Princeton/45 - Copy.js","obj/Princeton/55 - Copy.js",
-    "obj/Princeton/60 - Copy.js","obj/Princeton/65 - Copy.js","obj/Princeton/70 - Copy.js","obj/Princeton/80 - Copy.js","obj/Princeton/85 - Copy.js",
-    "obj/Princeton/90 - Copy.js","obj/Princeton/96 - Copy.js","obj/Princeton/108 - Copy.js","obj/Princeton/111 - Copy.js","obj/Princeton/115 - Copy.js",
-    "obj/Princeton/201 - Copy.js","obj/Princeton/206 - Copy.js","obj/Princeton/269 - Copy.js","obj/Princeton/281 - Copy.js","obj/Princeton/285 - Copy.js",
-    "obj/Princeton/430 - Copy.js","obj/Princeton/485 - Copy.js","obj/Princeton/490 - Copy.js","obj/Princeton/495 - Copy.js",
-    "obj/Princeton/560 - Copy.js","obj/Princeton/575 - Copy.js","obj/Princeton/585 - Copy.js","obj/Princeton/590 - Copy.js","obj/Princeton/595 - Copy.js",
-    "obj/Princeton/600 - Copy.js","obj/Princeton/605 - Copy.js","obj/Princeton/615 - Copy.js","obj/Princeton/630 - Copy.js","obj/Princeton/645 - Copy.js",
-    "obj/Princeton/650 - Copy.js","obj/Princeton/670 - Copy.js","obj/Princeton/705 - Copy.js","obj/Princeton/720 - Copy.js","obj/Princeton/725 - Copy.js",
-    "obj/Princeton/735 - Copy.js","obj/Princeton/775 - Copy.js","obj/Princeton/785 - Copy.js","obj/Princeton/795 - Copy.js","obj/Princeton/872 - Copy.js",
-    "obj/Princeton/945 - Copy.js","obj/Princeton/980 - Copy.js","obj/Princeton/995 - Copy.js","obj/Princeton/1085 - Copy.js",
-    "obj/Princeton/1095 - Copy.js","obj/Princeton/1105 - Copy.js","obj/Princeton/1125 - Copy.js"
+    "obj/Princeton/2 - Copy.js","obj/Princeton/5 - Copy.js",  "obj/Princeton/20 - Copy.js", "obj/Princeton/40 - Copy.js",
+    "obj/Princeton/55 - Copy.js",  "obj/Princeton/60 - Copy.js","obj/Princeton/65 - Copy.js", "obj/Princeton/80 - Copy.js","obj/Princeton/85 - Copy.js",
+    "obj/Princeton/90 - Copy.js","obj/Princeton/96 - Copy.js","obj/Princeton/108 - Copy.js",  "obj/Princeton/111 - Copy.js","obj/Princeton/115 - Copy.js",
+    "obj/Princeton/206 - Copy.js","obj/Princeton/269 - Copy.js",  "obj/Princeton/281 - Copy.js","obj/Princeton/285 - Copy.js", "obj/Princeton/430 - Copy.js",
+    "obj/Princeton/490 - Copy.js","obj/Princeton/495 - Copy.js",  "obj/Princeton/560 - Copy.js","obj/Princeton/585 - Copy.js","obj/Princeton/590 - Copy.js",
+    "obj/Princeton/595 - Copy.js", "obj/Princeton/600 - Copy.js", "obj/Princeton/615 - Copy.js","obj/Princeton/630 - Copy.js", "obj/Princeton/650 - Copy.js",
+    "obj/Princeton/735 - Copy.js","obj/Princeton/795 - Copy.js",  "obj/Princeton/980 - Copy.js","obj/Princeton/1105 - Copy.js"
 ];
 //var objectstring_set = ["obj/Princeton/381.js","obj/Princeton/382.js","obj/Princeton/383.js","obj/Princeton/384.js",
 //    "obj/Princeton/385.js","obj/Princeton/386.js","obj/Princeton/387.js","obj/Princeton/388.js","obj/Princeton/389.js",
