@@ -691,9 +691,9 @@ var GAME = (function($){
             App.$guessinput.on('keypress', App.onGuessinputKeyPress);
 
             App.$entry.click(function(){
-                IO.getSocketStats();
                 App.tutorial_shown = true; // skip tutorial
                 App.$home.hide();
+                $('.mastfoot').hide();
                 App.$wait.show();
                 App.$home_btn.removeClass('active');
                 App.$game_btn.addClass('active');
@@ -728,6 +728,7 @@ var GAME = (function($){
             App.$home_btn.click(function(){
                 App.quit(); // quit game
                 App.$home.show();
+                $('.mastfoot').show();
                 App.$wait.hide();
                 App.$stat.hide();
                 App.$game.hide();
@@ -738,21 +739,25 @@ var GAME = (function($){
             });
 
             App.$game_btn.click(function(){
-                IO.getSocketStats();
-                App.tutorial_shown = true; // skip tutorial
-                App.$home.hide();
-                App.$wait.show();
-                App.$stat.hide();
-                App.$home_btn.removeClass('active');
-                App.$game_btn.addClass('active');
-                App.$stat_btn.removeClass('active');
-                App.onJoinClick();
+                if(!App.$game_btn.hasClass('active')){
+                    IO.getSocketStats();
+                    App.tutorial_shown = true; // skip tutorial
+                    App.$home.hide();
+                    $('.mastfoot').hide();
+                    App.$wait.show();
+                    App.$stat.hide();
+                    App.$home_btn.removeClass('active');
+                    App.$game_btn.addClass('active');
+                    App.$stat_btn.removeClass('active');
+                    App.onJoinClick();
+                }
             });
 
             App.$stat_btn.click(function(){
                 App.quit(); // quit game
                 App.myRole = 'None';
                 App.$home.hide();
+                $('.mastfoot').hide();
                 App.$wait.hide();
                 App.$game.hide();
                 App.$stat.show();
@@ -789,6 +794,7 @@ var GAME = (function($){
             App.$home_btn.removeClass('active');
             App.$game_btn.addClass('active');
             App.$home.hide();
+            $('.mastfoot').hide();
             $('#wait.inner.cover p.lead').html("Let's start with some tutorial...");
             App.$wait.show();
 
@@ -1134,6 +1140,7 @@ var GAME = (function($){
                     $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
                     App.$wait.hide();
                     App.$home.show();
+                    $('.mastfoot').show();
                     App.$home_btn.addClass('active');
                     App.$game_btn.removeClass('active');
                     App.$stat_btn.removeClass('active');
@@ -1152,6 +1159,7 @@ var GAME = (function($){
                 o.desposeMesh();
             });
             App.$home.show();
+            $('.mastfoot').show();
             App.$wait.hide();
             App.$stat.hide();
             App.$game.hide();
