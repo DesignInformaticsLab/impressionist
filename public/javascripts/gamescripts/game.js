@@ -369,6 +369,7 @@ var GAME = (function($){
                     });
 
                     App.sortWithIndeces(o.faceSaliency); // sort saliency from low to high
+                    //App.mergeSort(o.faceSaliency);
 
                     // prepare the interface and misc. data
                     //o.correct_answer = answer[0]; // get correct answers
@@ -1274,7 +1275,7 @@ var GAME = (function($){
             App.autoSelecting = setInterval(function(){
                 var selection = o.faceSaliency.sortIndices.pop();
                 o.createMesh([selection],"0");
-            }, 10);
+            }, 50);
         },
 
         diff: function(a, b) {
@@ -1297,12 +1298,56 @@ var GAME = (function($){
             }
         },
 
+        //merge: function(left, right){
+        //    var result = [],
+        //        lLen = left.length,
+        //        rLen = right.length,
+        //        l = 0,
+        //        r = 0;
+        //    while(l < lLen && r < rLen){
+        //        if(left[l] < right[r]){
+        //            result.push(left[l++]);
+        //        }else if (left[l] == right[r]){
+        //            var idx = Math.floor(Math.random() * 2);
+        //            if (idx > 1) {
+        //                return left[l++];
+        //            }else {
+        //                return right[r++];
+        //            }
+        //        }else{
+        //            result.push(right[r++]);
+        //        }
+        //    }
+        //    //remaining part needs to be addred to the result
+        //    return result.concat(left).concat(right);
+        //},
+        //mergeSort: function(arr){
+        //    var len = arr.length;
+        //    if(len <2)
+        //        return arr;
+        //    var mid = Math.floor(len/2),
+        //        left = arr.slice(0,mid),
+        //        right =arr.slice(mid);
+        //    //send left and right to the mergeSort to broke it down into pieces
+        //    //then merge those
+        //    return App.merge(App.mergeSort(left),App.mergeSort(right));
+        //},
+
         sortWithIndeces: function(toSort) {
             for (var i = 0; i < toSort.length; i++) {
                 toSort[i] = [toSort[i], i];
             }
             toSort.sort(function(left, right) {
-                return left[0] < right[0] ? -1 : 1;
+                if (left[0] == right[0]){
+                    var idx = Math.floor(Math.random() * 2);
+                    if (idx > 0) {
+                        return -1;
+                    }else {
+                        return 1;
+                    }
+                }else{
+                    return left[0] < right[0] ? -1 : 1;
+                }
             });
             toSort.sortIndices = [];
             for (var j = 0; j < toSort.length; j++) {
