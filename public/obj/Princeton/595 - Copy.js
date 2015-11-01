@@ -1,6 +1,6 @@
 var scale = 750;
 var zheight = -120;
-var answer = ['hourglass'];
+var answer = ['hourglass','timer'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

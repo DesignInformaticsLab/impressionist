@@ -1,6 +1,6 @@
 var scale = 1400;
 var zheight = 0;
-var answer = ['vase','tea pot','teapot'];
+var answer = ['vase','tea pot','teapot','kettle'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

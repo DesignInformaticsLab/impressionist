@@ -1,6 +1,6 @@
 var scale = 1300;
 var zheight = -120;
-var answer = ['cow','ox'];
+var answer = ['ox','cattle','bull','cow'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

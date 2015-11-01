@@ -1,6 +1,6 @@
 var scale = 2000;
 var zheight = -120;
-var answer = ['dinosaur','tyrannosaur'];
+var answer = ['dinosaur','tyrannosaur','trex','t-rex'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
