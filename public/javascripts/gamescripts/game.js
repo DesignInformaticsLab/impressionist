@@ -200,7 +200,9 @@ var GAME = (function($){
 
             IO.getSocketStats();
 
-            App.game_score += 2000;
+            if (!App.playWithComputer){ // give reward if playing with human
+                App.game_score += 2000;
+            }
 
             // stop loops
             $.each(App.rendering, function(i,rendering) {
@@ -384,6 +386,9 @@ var GAME = (function($){
                     App.$guessinput.fadeIn();
                     App.$guessinput[0].value='';
 
+                    App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
+                    App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
+
                     if(!App.tutorial_shown){
                         $('#instruction p').html('Welcome to the tutorial!<br>' +
                             'This is a game between two players.<br>' +
@@ -463,6 +468,7 @@ var GAME = (function($){
             App.setInitParameter();
             $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
             Obj.object_set = [];
+            App.$score.css('width','100%');
         },
 
         /**
@@ -1692,8 +1698,9 @@ var GAME = (function($){
 
                 // update score based on selection, time and guesses
                 if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.05;
-                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 30000;
+                    var penalty = (Date.now()-App.currentTime)*0.10;
+                    // MAX: penalty on selection is too high on geometries with few faces
+                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 20000;
                     App.game_score -= penalty;
                     App.currentTime = Date.now();
                     App.numSelectedFaces = App.selection_capacity;
@@ -1706,7 +1713,7 @@ var GAME = (function($){
                         App.showScoreBoard();
                     }
                     //App.$score.html(Math.round(App.game_score));
-                    App.$score.css('width',Math.round(App.game_score)/9999.0*100+'%');
+                    App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
                 }
 
                 // check if model is focused, if not, focus to it.

@@ -1,6 +1,6 @@
 var scale = 1000;
 var zheight = -120;
-var answer = ['pistol'];
+var answer = ['pistol','gun'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

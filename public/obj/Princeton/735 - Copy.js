@@ -1,6 +1,6 @@
 var scale = 1000;
 var zheight = -120;
-var answer = ['wheel'];
+var answer = ['wheel','steering wheel','hub','wheel spider'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();
