@@ -748,6 +748,7 @@ var GAME = (function($){
             App.$game_btn.click(function(){
                 if(!App.$game_btn.hasClass('active')){
                     IO.getSocketStats();
+                    App.refresh();
                     App.tutorial_shown = true; // skip tutorial
                     App.$home.hide();
                     $('.mastfoot').hide();
