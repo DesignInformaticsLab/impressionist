@@ -226,7 +226,10 @@ var GAME = (function($){
                 }
                 // if during the tutorial
                 else if (!App.tutorial_shown && App.myRole=='Player'){
-                    $('#instruction p').html('Now hold down "S" on your keyboard and use your left mouse button to select parts of the object for the other player to guess.');
+                    $('#instruction p').html('Now you are in charge of revealing the object.<br>' +
+                        'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
+                        'button</b> to select parts of the object for the other player to guess.<br>'+
+                        'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>');
                     App.tutorialChoose();
                 }
                 else{
@@ -394,7 +397,8 @@ var GAME = (function($){
                             'This is a game between two players.<br>' +
                             'One player reveals an object and the other guesses what it is.<br><br>' +
                             'Now, an object is being gradually revealed.<br>' +
-                            'Go ahead and guess what it is!<br>' +
+                            'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
+                            'Go ahead and guess what this object is!<br>' +
                             'Do it fast to achieve higher scores!');
                         App.$instruction.fadeIn();
                     }
