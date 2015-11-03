@@ -1162,10 +1162,11 @@ var GAME = (function($){
          * @param data
          */
         gameOver : function() {
-            App.refresh();
-            $.each(Obj.object_set, function(i,o){
-                o.desposeMesh();
-            });
+            //App.refresh();
+            //$.each(Obj.object_set, function(i,o){
+            //    o.desposeMesh();
+            //});
+            App.quit();
             App.$home.show();
             $('.mastfoot').show();
             App.$wait.hide();
