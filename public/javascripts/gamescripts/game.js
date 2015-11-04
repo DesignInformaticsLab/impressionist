@@ -213,6 +213,9 @@ var GAME = (function($){
             $.each(Obj.object_set, function(i,o){
                 o.desposeMesh();
             });
+            App.allSelectedIDMaster = [];
+            App.allSelectedID = [];
+            App.selectedStrings = [];
 
             // do some celebration before moving on...
             App.celebrate(function(){
@@ -1081,6 +1084,11 @@ var GAME = (function($){
 
 
                         $.each(App.selectedStrings, function (i, SS) {
+                            ////temporary for debugging only
+                            //if (SS>=Obj.object_set[0].object.FaceArray[0]){
+                            //    var holdon = 1;
+                            //}
+
                             Obj.object_set[0].object.getObjectByName(intersection.object.name).allSelectedID.push(SS);
                         });
 
