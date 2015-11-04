@@ -1642,6 +1642,8 @@ var GAME = (function($){
                     // finish tutorial once the player selected a few
                     if (App.selection_capacity <= Obj.object_set[0].object.FaceArray[0]*0.98){
                         $('#wait.inner.cover p.lead').html('Nice:) You are done with tutorials. Now moving on to a real game...');
+                        $('#instruction p').html('');
+
                         App.$wait.fadeIn();
 
                         App.$game.hide();
