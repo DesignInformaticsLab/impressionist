@@ -100,8 +100,16 @@ var GAME = (function($){
             App.objectString = App.objectstring_set[data.objectID];
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
+            if (App.myRole=='Player'){
+                $('#wait.inner.cover p.lead').html('<b>Prepare to find out what it is...');
+                App.$wait.show();
+            }
+            else{
+                //App.$continue.show();
+                $('#wait.inner.cover p.lead').html('<b>Prepare to select faces using left mouse while pressing S button...');
+                App.$wait.show();
+            }
             App.$wait.show();
-
 
             setTimeout(function(){
                 App.$wait.hide();
@@ -187,6 +195,14 @@ var GAME = (function($){
 
         // on correct guess
         onAnswerCorrect : function() {
+            //$('#wait.inner.cover p.lead').html('<b>Answer correct! Time bonus!');
+            //App.$wait.show();
+            //setTimeout(function () {
+            //    App.$wait.hide();
+            //    //App.$menu.css('background-color', '#f5f5ff');
+            //},15000);
+
+
             App.$guessinput.css('background-color', '#ffffff');
             App.$guessinput.css('background-color', '#f5f5ff');
             App.$guessinput.html(''); // clean input area
@@ -232,12 +248,13 @@ var GAME = (function($){
                     $('#instruction p').html('Now you are in charge of revealing the object.<br>' +
                         'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
                         'button</b> to select parts of the object for the other player to guess.<br>'+
-                        'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>');
+                        'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
+                        'Selecting more faces will resulting in time penalty!<br>');
                     App.tutorialChoose();
                 }
                 else{
                     //App.$continue.show();
-                    $('#wait.inner.cover p.lead').html('Waiting for the other player...');
+                    $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
                     App.$wait.show();
                     IO.socket.emit('playerReady');
                 }
@@ -248,11 +265,19 @@ var GAME = (function($){
         onAnswerWrong : function(data) {
             App.guess_made += 1;
             App.game_score -= 200;
+            //$('#home.inner.cover p').html('Now you are in charge of revealing the object.<br>' );
+            $('#wait.inner.cover p.lead').html('<b>Wrong answer! Time decreasing!');
+            App.$wait.show();
+            setTimeout(function () {
+                App.$wait.hide();
+                //App.$menu.css('background-color', '#f5f5ff');
+            },1500);
+
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
             }
             else if (App.myRole == 'Player'){
-                App.$guessinput.css('background-color', '#000000');
+              App.$guessinput.css('background-color', '#000000');
                 //App.$menu.css('background-color', '#000000');
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
@@ -984,12 +1009,44 @@ var GAME = (function($){
          * when key down: s: make selection, z: show heatmap (obsolete soon), u: upload heatmap (obsolete soon)
          * @param e: mouse event
          */
+        //onKeyDown: function (e) {
+        //    e.preventDefault();
+        //    if (e.keyCode == 83){ //s: selection
+        //        App.SELECT = true;
+        //        //App.$bar.addClass('active');
+        //        App.$game.addClass('active');
+        //
+        //        $('#wait.inner.cover p.lead').html('<b>Be ware, select more face will reduce your time!');
+        //        App.$wait.show();
+        //        setTimeout(function () {
+        //        },800);
+        //    }else{
+        //        $('#wait.inner.cover p.lead').html('<b>Press S key to select');
+        //        App.$wait.show();
+        //        setTimeout(function () {
+        //        },800);
+        //
+        //    }
+        //
+        //},
+
         onKeyDown: function (e) {
             e.preventDefault();
-            if (e.keyCode == 83){ //s: selection
+            if (e.keyCode == 83) { //s: selection
                 App.SELECT = true;
                 //App.$bar.addClass('active');
                 App.$game.addClass('active');
+                if (App.myRole == 'Host') {
+                    $('#wait.inner.cover p.lead').html('<b>Be aware, select more face will reduce your time!');
+                    App.$wait.show();
+                    setTimeout(function () { App.$wait.hide()}, 1500);
+                }
+            }else{
+                if (App.myRole == 'Host') {
+                    $('#wait.inner.cover p.lead').html('<b>Press S key to select');
+                    App.$wait.show();
+                    setTimeout(function () { App.$wait.hide()}, 800);
+                }
             }
         },
 
@@ -1267,9 +1324,10 @@ var GAME = (function($){
          * @param callback
          */
         celebrate: function(callback){
-            $('#wait.inner.cover p.lead').html('Bingo!');
+
+            $('#wait.inner.cover p.lead').html('<b>Bingo! Answer correct! Time bonus!');
             App.$wait.show();
-            setTimeout(callback,1000);
+            setTimeout(callback,1500);
         },
 
         /**
@@ -1712,7 +1770,7 @@ var GAME = (function($){
 
                 // update score based on selection, time and guesses
                 if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.10;
+                    var penalty = (Date.now()-App.currentTime)*0.03;
                     // MAX: penalty on selection is too high on geometries with few faces
                     penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 20000;
                     App.game_score -= penalty;
