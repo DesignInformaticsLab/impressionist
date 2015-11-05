@@ -62,7 +62,8 @@ var GAME = (function($){
          * @param data {{ gameId: int, mySocketId: * }}
          */
         onNewGameCreated : function(data) {
-            App.$instruction.hide();
+            //App.$instruction.hide();
+            $('#instruction p').html('');
             App.myRole = 'Host';
             //App.$select.show();
             //App.$bar.show();
@@ -101,15 +102,14 @@ var GAME = (function($){
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
             if (App.myRole=='Player'){
-                $('#wait.inner.cover p.lead').html('<b>Prepare to find out what it is...');
-                App.$wait.show();
+                $('#instruction p').html('<b>Prepare to find out what it is...');
             }
             else{
-                //App.$continue.show();
-                $('#wait.inner.cover p.lead').html('<b>Prepare to select faces using left mouse while pressing S button...');
-                App.$wait.show();
+
+                    $('#instruction p').html('You can rotate or zoom the object using left mouse button or mid mouse button<br>' +
+                '<b>Prepare to select faces using left mouse while pressing S button' );
             }
-            App.$wait.show();
+
 
             setTimeout(function(){
                 App.$wait.hide();
@@ -238,7 +238,7 @@ var GAME = (function($){
                 // if playing with a computer now
                 if (App.playWithComputer){
                     // look for a human player, if none, keep playing with the computer
-                    $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+                    $('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
                     App.$wait.show();
 
                     IO.onNewGameCreated(App);
@@ -265,9 +265,7 @@ var GAME = (function($){
         onAnswerWrong : function(data) {
             App.guess_made += 1;
             App.game_score -= 200;
-            //$('#home.inner.cover p').html('Now you are in charge of revealing the object.<br>' );
-            $('#wait.inner.cover p.lead').html('<b>Wrong answer! Time decreasing!');
-            App.$wait.show();
+            $('#instruction p').html('<b>Wrong answer! Time decreasing!');
             setTimeout(function () {
                 App.$wait.hide();
                 //App.$menu.css('background-color', '#f5f5ff');
@@ -537,6 +535,9 @@ var GAME = (function($){
 
 
             App.currentTime = Date.now(); // current time
+
+
+            App.startingTime = Date.now(); // starting time of a game, don't change
 
             App.numSelectedFaces = 0; // this should be max faces at the beginning of the game
 
@@ -1037,15 +1038,14 @@ var GAME = (function($){
                 //App.$bar.addClass('active');
                 App.$game.addClass('active');
                 if (App.myRole == 'Host') {
-                    $('#wait.inner.cover p.lead').html('<b>Be aware, select more face will reduce your time!');
-                    App.$wait.show();
-                    setTimeout(function () { App.$wait.hide()}, 1500);
+                    //$('#wait.inner.cover p.lead').html('<b>Be aware, select more face will reduce your time!');
+                    //App.$wait.show();
+                    $('#instruction p').html('<b>Be aware, select more face will reduce your time!</b>');
+                    //setTimeout(function () { App.$wait.hide()}, 1500);
                 }
             }else{
                 if (App.myRole == 'Host') {
-                    $('#wait.inner.cover p.lead').html('<b>Press S key to select');
-                    App.$wait.show();
-                    setTimeout(function () { App.$wait.hide()}, 800);
+                    $('#instruction p').html('<b>Press S key to select');
                 }
             }
         },
@@ -1073,6 +1073,7 @@ var GAME = (function($){
                 App.SELECT = false;
                 App.$game.removeClass('active');
             }
+            $('#instruction p').html('');
         },
 
         /**
@@ -1253,8 +1254,9 @@ var GAME = (function($){
                 var totalplays = response[0].count;
                 $.post('/getRanking',{'score':App.currentRound},function(response){
                     var worse = response[0].count;
-                    App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
+                    $('h4.modal-title').html('Congratulations! You survived ' + Math.round((Date.now() - App.startingTime)/1000*10)/10 + ' seconds in the game!');
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
+                    //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     App.$scoreboard.modal();
                 });
             });
@@ -1325,8 +1327,7 @@ var GAME = (function($){
          */
         celebrate: function(callback){
 
-            $('#wait.inner.cover p.lead').html('<b>Bingo! Answer correct! Time bonus!');
-            App.$wait.show();
+            $('#instruction p').html('<b>Bingo! Answer correct! Time bonus!');
             setTimeout(callback,1500);
         },
 
@@ -1788,6 +1789,14 @@ var GAME = (function($){
                     }
                     //App.$score.html(Math.round(App.game_score));
                     App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
+                }
+                else if (App.game_score < 0 && App.numSelectedFaces > 0){
+                    App.game_score = 0; // only store once
+                    if(App.myRole='Host'){ // only one of the players needs to submit the score
+                        $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId},
+                            function(){});
+                    }
+                    App.showScoreBoard();
                 }
 
                 // check if model is focused, if not, focus to it.
