@@ -102,12 +102,12 @@ var GAME = (function($){
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!');
+                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
             else{
 
                 $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
-                    '<b>To reveal the object, use left mouse while pressing S button down' );
+                    '<b>To reveal the object, use left mouse while pressing S button down</b>' );
             }
 
             setTimeout(function(){
@@ -433,6 +433,9 @@ var GAME = (function($){
                             'Go ahead and guess what this object is!<br>' +
                             'Do it fast to achieve higher scores!');
                         App.$instruction.fadeIn();
+                    }
+                    else{
+                        $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
                     }
 
                     o.object.rotation.y = Math.random()*Math.PI*2;

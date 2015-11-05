@@ -116,8 +116,8 @@ function joinGame() {
         //update this number as the number of models increases
         var numOfObjects = objectstring_set.length;
         var data = {};
-        //var objID = Math.floor(Math.random() * numOfObjects);
-        var objID = 26;
+        var objID = Math.floor(Math.random() * numOfObjects);
+        //var objID = 26;
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;
