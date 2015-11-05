@@ -102,14 +102,13 @@ var GAME = (function($){
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>Prepare to find out what it is...');
+                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!');
             }
             else{
 
-                    $('#instruction p').html('You can rotate or zoom the object using left mouse button or mid mouse button<br>' +
-                '<b>Prepare to select faces using left mouse while pressing S button' );
+                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                    '<b>To reveal the object, use left mouse while pressing S button down' );
             }
-
 
             setTimeout(function(){
                 App.$wait.hide();
@@ -217,7 +216,8 @@ var GAME = (function($){
             IO.getSocketStats();
 
             if (!App.playWithComputer){ // give reward if playing with human
-                App.game_score += 2000;
+                App.game_score += 1000;
+                App.game_score = Math.min(App.game_score, 9999);
             }
 
             // stop loops
@@ -249,7 +249,7 @@ var GAME = (function($){
                         'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
                         'button</b> to select parts of the object for the other player to guess.<br>'+
                         'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
-                        'Selecting more faces will resulting in time penalty!<br>');
+                        'Selecting more faces will result in time penalty!<br>');
                     App.tutorialChoose();
                 }
                 else{
@@ -265,17 +265,17 @@ var GAME = (function($){
         onAnswerWrong : function(data) {
             App.guess_made += 1;
             App.game_score -= 200;
-            $('#instruction p').html('<b>Wrong answer! Time decreasing!');
-            setTimeout(function () {
-                App.$wait.hide();
-                //App.$menu.css('background-color', '#f5f5ff');
-            },1500);
 
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
             }
             else if (App.myRole == 'Player'){
-              App.$guessinput.css('background-color', '#000000');
+                $('#instruction p').html('<b>Nope...please try again');
+                setTimeout(function () {
+                    App.$wait.hide();
+                    //App.$menu.css('background-color', '#f5f5ff');
+                },1500);
+                App.$guessinput.css('background-color', '#000000');
                 //App.$menu.css('background-color', '#000000');
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
@@ -301,12 +301,18 @@ var GAME = (function($){
                 //App.$bar.show();
             }
 
+            if (App.myRole=='Player'){
+                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!');
+            }
+            else{
+
+                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                    '<b>To reveal the object, use left mouse while pressing S button down' );
+            }
+
             App.$wait.hide();
             App.$game.show();
             App.objectString = "";
-
-            //var possibleObjects = ["obj/Princeton/1.js","obj/Dino/Dino.js","obj/fedora/fedora.js","obj/iPhone/iPhone.js","obj/BMW 328/BMW328MP.js","obj/Helmet/Helmet.js","Obj/Lampost/LampPost.js"]; //if this becomes longer also update the length at /routes/games.js LN:44;
-            //App.objectString = possibleObjects[objectID.objectID];
 
             App.objectString = App.objectstring_set[objectId.objectID];
 
@@ -1033,19 +1039,27 @@ var GAME = (function($){
 
         onKeyDown: function (e) {
             e.preventDefault();
-            if (e.keyCode == 83) { //s: selection
-                App.SELECT = true;
-                //App.$bar.addClass('active');
-                App.$game.addClass('active');
-                if (App.myRole == 'Host') {
-                    //$('#wait.inner.cover p.lead').html('<b>Be aware, select more face will reduce your time!');
-                    //App.$wait.show();
-                    $('#instruction p').html('<b>Be aware, select more face will reduce your time!</b>');
-                    //setTimeout(function () { App.$wait.hide()}, 1500);
+            if (App.tutorial_shown==false){
+                if (App.myRole == 'Host' && e.keyCode == 83) { //s: selection
+                    App.SELECT = true;
+                    App.$game.addClass('active');
                 }
-            }else{
-                if (App.myRole == 'Host') {
-                    $('#instruction p').html('<b>Press S key to select');
+            }
+            else{
+                if (App.myRole == 'Host' && e.keyCode == 83) { //s: selection
+                    App.SELECT = true;
+                    //App.$bar.addClass('active');
+                    App.$game.addClass('active');
+                    if (App.myRole == 'Host') {
+                        //$('#wait.inner.cover p.lead').html('<b>Be aware, select more face will reduce your time!');
+                        //App.$wait.show();
+                        $('#instruction p').html('<b>Be aware, select more faces will reduce your time!</b>');
+                        //setTimeout(function () { App.$wait.hide()}, 1500);
+                    }
+                }else{
+                    if (App.myRole == 'Host') {
+                        $('#instruction p').html('<b>Press S key to select');
+                    }
                 }
             }
         },
@@ -1069,11 +1083,13 @@ var GAME = (function($){
             //
             //}
             e.preventDefault();
-            if (e.keyCode == 83){
-                App.SELECT = false;
-                App.$game.removeClass('active');
+            if (App.myRole == 'Host'){
+                if (e.keyCode == 83){
+                    App.SELECT = false;
+                    App.$game.removeClass('active');
+                }
+                $('#instruction p').html('');
             }
-            $('#instruction p').html('');
         },
 
         /**
@@ -1326,9 +1342,9 @@ var GAME = (function($){
          * @param callback
          */
         celebrate: function(callback){
-
-            $('#instruction p').html('<b>Bingo! Answer correct! Time bonus!');
-            setTimeout(callback,1500);
+            $('#wait.inner.cover p.lead').html('Bingo! You get extra time!');
+            App.$wait.show();
+            setTimeout(callback,1000);
         },
 
         /**
@@ -1722,6 +1738,7 @@ var GAME = (function($){
 
                         // disable selection if the user is still selecting
                         App.$game.removeClass('active');
+                        App.SELECT = false;
 
                         App.onJoinClick();
                     }
@@ -1773,9 +1790,9 @@ var GAME = (function($){
 
                 // update score based on selection, time and guesses
                 if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.03;
+                    var penalty = (Date.now()-App.currentTime)*0.05;
                     // MAX: penalty on selection is too high on geometries with few faces
-                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 20000;
+                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 30000;
                     App.game_score -= penalty;
                     App.currentTime = Date.now();
                     App.numSelectedFaces = App.selection_capacity;
@@ -2054,7 +2071,7 @@ var GAME = (function($){
                 col[0] = 0;
                 col[1]= 255/(half - min) * (val - min);
                 col[2] =  255 - 255/(half - min)  * (val - min);
-            } else if (half < val) {
+            } else if (half <= val) {
                 col[0] = 255/(max - half) * (val - half);
                 col[1] = 255 + -255/(max - half)  * (val - half);
                 col[2] = 0;

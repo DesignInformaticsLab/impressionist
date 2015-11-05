@@ -7,7 +7,7 @@ var playerReady = []; // room key
 var score = 0; // real-time score to be shared between the two players
 
 
-// 28 obj w/ saliency
+// 27 obj w/ saliency
 var objectstring_set = [
     //"obj/Princeton/test.js" ,
     "obj/Princeton/17.js",  "obj/Princeton/26.js", "obj/Princeton/35.js",  "obj/Princeton/57.js",  "obj/Princeton/68.js",
@@ -15,7 +15,9 @@ var objectstring_set = [
     "obj/Princeton/221.js", "obj/Princeton/258.js",  "obj/Princeton/260.js",  "obj/Princeton/378.js",  "obj/Princeton/379.js",
     "obj/Princeton/381.js", "obj/Princeton/382.js",   "obj/Princeton/383.js",  "obj/Princeton/384.js",   "obj/Princeton/385.js",
     "obj/Princeton/386.js", "obj/Princeton/390.js",  "obj/Princeton/391.js",   "obj/Princeton/393.js","obj/Princeton/400.js",
-    "obj/Princeton/392.js","obj/Princeton/395.js",   "obj/Princeton/398.js",
+    "obj/Princeton/392.js",
+    //"obj/Princeton/395.js",
+    "obj/Princeton/398.js",
 
     "obj/Princeton/2 - Copy.js","obj/Princeton/55 - Copy.js",
     "obj/Princeton/5 - Copy.js",  "obj/Princeton/20 - Copy.js", "obj/Princeton/40 - Copy.js",
@@ -114,8 +116,8 @@ function joinGame() {
         //update this number as the number of models increases
         var numOfObjects = objectstring_set.length;
         var data = {};
-        var objID = Math.floor(Math.random() * numOfObjects);
-        //var objID = 7;
+        //var objID = Math.floor(Math.random() * numOfObjects);
+        var objID = 26;
 
         data.objectstring_set = objectstring_set;
         data.objectID = objID;
@@ -184,9 +186,9 @@ function grabBestObject(){
     // TODO: read from database
     //var randID = Math.floor(Math.random() * 28);
     //var objID = pool[Math.floor(Math.random() * 2)];
-    var objID1 = Math.floor(Math.random() * 25);//28-3 models, compare with ground truth
-    var objID2 = Math.floor(Math.random() * 25);//28-3 models, compare with ground truth
-    var objID3 = Math.floor(Math.random() * 5) + 25;//3+2 models, test new idea
+    var objID1 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
+    var objID2 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
+    var objID3 = Math.floor(Math.random() * 5) + 24;//3+2 models, test new idea
     var pool = [objID1, objID2, objID3]
     var objID = pool[Math.floor(Math.random() * 3)];
     //var objID = 28;
