@@ -52,6 +52,14 @@ block content
                   #continue.inner.cover
                       #continue_btn.btn.btn-lg.btn-default
                           | Continue
+                  //#gyrotest
+                  #gyroViewer
+                        #js
+                            script(src="javascripts/jquery-2.1.3.min.js")
+                            script(src="javascripts/three.min.js")
+                            script(src="javascripts/modernizr.min.js")
+                            script(src="javascripts/fulltilt.js")
+                            script(src="javascripts/common.js")
                   #game
                       //#menu
                       //    .button.mouse-look
@@ -79,17 +87,6 @@ block content
                       #objlist
                       #comp_model1(tabindex='0')
                       #comp_model2(tabindex='0')
-
-                  //#gyrotest
-                  //    #gyroViewer
-                  //        #js
-                  //            script(src="javascripts/jquery-2.1.3.min.js")
-                  //            script(src="javascripts/three.min.js")
-                  //            script(src="javascripts/modernizr.min.js")
-                  //            script(src="javascripts/fulltilt.js")
-                  //            script(src="javascripts/common.js")
-
-
                   #scoreboard(class='modal fade',role='dialog')
                       .modal-dialog
                           .modal-content
