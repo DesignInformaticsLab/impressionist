@@ -647,6 +647,7 @@ var GAME = (function($){
             App.$time = $('#time');
             App.$timebar = $('#timebar');
             App.$entry = $('#entry');
+            //App.$gyrotest = $('#gyrotest');
             App.$tutorial = $('#tutorial');
             App.$continue = $('#continue');
 
@@ -750,6 +751,13 @@ var GAME = (function($){
                 IO.getSocketStats();
                 App.onJoinClick();
             });
+
+            //added by Hope, to test gyroscope function
+            //App.$gyrotest.click(function(){
+            //    App.$home.hide();
+            //    $('.mastfoot').hide();
+            //});
+
 
             App.$tutorial.click(function(){
                 App.gameId = -1; // -1 is for tutorials
