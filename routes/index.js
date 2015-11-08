@@ -43,7 +43,12 @@ function handle_error(res, err) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Impressionist' });
+    res.render('index', { title: 'Impressionist' });
+});
+
+/* test gyro effect */
+router.get('/gyrotest', function(req, res, next) {
+    res.render('gyrotest', { title: 'gyrotest' });
 });
 
 /* GET game page. */
