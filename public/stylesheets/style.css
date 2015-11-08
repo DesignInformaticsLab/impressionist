@@ -420,16 +420,6 @@ body {
     }
 }
 
-
-@media (min-width: 768px) {
-    .masthead-brand {
-        float: left;
-    }
-    .masthead-nav {
-        float: right;
-    }
-}
-
 @media (min-width: 992px) {
     .masthead,
     .mastfoot,
@@ -438,36 +428,38 @@ body {
     }
 }
 
-@media (min-width: 1080px) {
-    .masthead,
-    .mastfoot,
-    .cover-container {
-        width: 364px;
-    }
+@media (min-width: 768px) {
+.masthead-brand {
+float: left;
+}
+.masthead-nav {
+float: right;
+}
 }
 
-@media (min-width: 360px) {
-    .masthead,
-    .mastfoot,
-    .cover-container {
-        width: 350px;
-    }
-    .lead{
-        font-size: 11px;
-    }
-    .cover .btn-lg{
-        padding: 5px 30px;
-    }
-    .masthead, .mastfoot, .cover-container{
-        font-size: 11px;
-    }
-    .h1{
-       font-size: 25px;
-    }
-    p{
-        margin: 7px;
-    }
-}
+
+/*@media (min-width: 350px) {*/
+/*.masthead,*/
+/*.mastfoot,*/
+/*.cover-container {*/
+/*width: 350px;*/
+/*}*/
+/*.lead{*/
+/*font-size: 11px;*/
+/*}*/
+/*.cover .btn-lg{*/
+/*padding: 5px 30px;*/
+/*}*/
+/*.masthead, .mastfoot, .cover-container{*/
+/*font-size: 11px;*/
+/*}*/
+/*.h1{*/
+/*font-size: 25px;*/
+/*}*/
+/*p{*/
+/*margin: 7px;*/
+/*}*/
+/*}*/
 
 /* From bootstrap cover template */
 
