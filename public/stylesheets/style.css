@@ -223,7 +223,7 @@
     z-index: 5;
 }
 .object_div a{
-    font-size: 10;
+    font-size: 10px;
     background: #eee;
     color: #222;
 }
@@ -449,7 +449,9 @@ body {
 
 /***************************************/
 
-@media (min-width: 400px) {
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px) {
     .masthead {
         position: fixed;
         top: 0;
@@ -466,7 +468,7 @@ body {
     }
     /* Handle the widths */
     .cover-container {
-        /*width: 100%; /!* Must be percentage or pixels for horizontal alignment *!/*/
+        /*width: 100%; /!* Must be percentage or pixels for horizontal alignment */
         width: 350px;
     }
     .masthead-brand {
@@ -475,9 +477,12 @@ body {
     .masthead-nav {
         float: right;
     }
-    .cover .btn-lg{
-        padding: 0px 0px;
+    .cover{
+        width: 350px;
     }
+    /*.btn-lg{*/
+        /*padding: 0px 0px;*/
+    /*}*/
 }
 
 /*/!* Smartphones (portrait and landscape) ----------- *!/*/
