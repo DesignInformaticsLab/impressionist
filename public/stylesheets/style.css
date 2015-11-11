@@ -480,9 +480,18 @@ and (max-device-width : 480px) {
     .cover{
         width: 350px;
     }
-    /*.btn-lg{*/
-        /*padding: 0px 0px;*/
-    /*}*/
+    .cover .btn-lg{
+        padding: 6px 15px;
+    }
+    .mastfoot{
+        font-size: 50%;
+    }
+    .cover-heading{
+        font-size: 25px;
+    }
+    .lead{
+        font-size: 0px;
+    }
 }
 
 /*/!* Smartphones (portrait and landscape) ----------- *!/*/
