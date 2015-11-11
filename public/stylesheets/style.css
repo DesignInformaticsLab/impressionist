@@ -398,68 +398,34 @@ body {
  * Affix and center
  */
 
-@media (min-width: 768px) {
     /* Pull out the header and footer */
-    .masthead {
-        position: fixed;
-        top: 0;
-    }
-    .mastfoot {
-        position: fixed;
-        bottom: 0;
-    }
-    /* Start the vertical centering */
-    .site-wrapper-inner {
-        vertical-align: middle;
-    }
-    /* Handle the widths */
-    .masthead,
-    .mastfoot,
-    .cover-container {
-        width: 100%; /* Must be percentage or pixels for horizontal alignment */
-    }
+.masthead {
+    position: fixed;
+    top: 0;
+    width: 900px;
 }
-
-@media (min-width: 992px) {
-    .masthead,
-    .mastfoot,
-    .cover-container {
-        width: 900px;
-    }
+.mastfoot {
+    position: fixed;
+    bottom: 0;
+    width: 900px;
 }
-
-@media (min-width: 768px) {
+/* Start the vertical centering */
+.site-wrapper-inner {
+    vertical-align: middle;
+}
+/* Handle the widths */
+.cover-container {
+    /*width: 100%; /!* Must be percentage or pixels for horizontal alignment *!/*/
+    width: 900px;
+}
 .masthead-brand {
-float: left;
+    float: left;
 }
 .masthead-nav {
-float: right;
-}
+    float: right;
 }
 
 
-/*@media (min-width: 350px) {*/
-/*.masthead,*/
-/*.mastfoot,*/
-/*.cover-container {*/
-/*width: 350px;*/
-/*}*/
-/*.lead{*/
-/*font-size: 11px;*/
-/*}*/
-/*.cover .btn-lg{*/
-/*padding: 5px 30px;*/
-/*}*/
-/*.masthead, .mastfoot, .cover-container{*/
-/*font-size: 11px;*/
-/*}*/
-/*.h1{*/
-/*font-size: 25px;*/
-/*}*/
-/*p{*/
-/*margin: 7px;*/
-/*}*/
-/*}*/
 
 /* From bootstrap cover template */
 
@@ -481,25 +447,116 @@ float: right;
 
 
 
-/*body,html {*/
-    /*width:100%;*/
-    /*height:100%;*/
-    /*font-size:13px;*/
-/*}*/
+/***************************************/
 
-/*body {*/
-    /*background:#000;*/
-/*}*/
-
-* {
-    padding:0px;
-    margin:0px;
-    box-sizing:border-box;
+@media (min-width: 400px) {
+    .masthead {
+        position: fixed;
+        top: 0;
+        width: 350px;
+    }
+    .mastfoot {
+        position: fixed;
+        bottom: 0;
+        width: 350px;
+    }
+    /* Start the vertical centering */
+    .site-wrapper-inner {
+        vertical-align: middle;
+    }
+    /* Handle the widths */
+    .cover-container {
+        /*width: 100%; /!* Must be percentage or pixels for horizontal alignment *!/*/
+        width: 350px;
+    }
+    .masthead-brand {
+        float: left;
+    }
+    .masthead-nav {
+        float: right;
+    }
+    .cover .btn-lg{
+        padding: 0px 0px;
+    }
 }
 
-#gyroViewer {
-    background:#eee;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-}
+/*/!* Smartphones (portrait and landscape) ----------- *!/*/
+/*@media only screen*/
+/*and (min-device-width : 320px)*/
+/*and (max-device-width : 480px) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*@media screen and (min-width: 1024px) {*/
+    /*body {*/
+        /*font-size: 100%;*/
+    /*}*/
+/*}*/
+
+/*@media screen and (min-device-width: 480px) and (orientation: landscape) {*/
+    /*body {*/
+        /*font-size: 100%;*/
+    /*}*/
+/*}*/
+
+/*@media*/
+/*only screen and (-webkit-min-device-pixel-ratio : 1.5),*/
+/*only screen and (min-device-pixel-ratio : 1.5) {*/
+    /*body {*/
+        /*font-size: 90%;*/
+    /*}*/
+/*}*/
+
+/*/!* Smartphones (landscape) ----------- *!/*/
+/*@media only screen*/
+/*and (min-width : 321px) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* Smartphones (portrait) ----------- *!/*/
+/*@media only screen*/
+/*and (max-width : 320px) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* iPads (portrait and landscape) ----------- *!/*/
+/*@media only screen*/
+/*and (min-device-width : 768px)*/
+/*and (max-device-width : 1024px) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* iPads (landscape) ----------- *!/*/
+/*@media only screen*/
+/*and (min-device-width : 768px)*/
+/*and (max-device-width : 1024px)*/
+/*and (orientation : landscape) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* iPads (portrait) ----------- *!/*/
+/*@media only screen*/
+/*and (min-device-width : 768px)*/
+/*and (max-device-width : 1024px)*/
+/*and (orientation : portrait) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* Desktops and laptops ----------- *!/*/
+/*@media only screen*/
+/*and (min-width : 1224px) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* Large screens ----------- *!/*/
+/*@media only screen*/
+/*and (min-width : 1824px) {*/
+    /*/!* Styles *!/*/
+/*}*/
+
+/*/!* iPhone 4 ----------- *!/*/
+/*@media*/
+/*only screen and (-webkit-min-device-pixel-ratio : 1.5),*/
+/*only screen and (min-device-pixel-ratio : 1.5) {*/
+    /*/!* Styles *!/*/
+/*}*/
