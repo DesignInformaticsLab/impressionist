@@ -47,6 +47,11 @@ router.get('/', function(req, res, next) {
 });
 
 /* test gyro effect */
+router.get('/touchtest', function(req, res, next) {
+    res.render('touchtest', { title: 'touchtest' });
+});
+
+/* test gyro effect */
 router.get('/gyrotest', function(req, res, next) {
     res.render('gyrotest', { title: 'gyrotest' });
 });
