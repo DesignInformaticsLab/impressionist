@@ -9,7 +9,7 @@
 //});
 
 if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined"){
-    $('#home p').html('Yes it is!');
+    $('#pageone h2').html('This is a mobile device!');
 } else {
-    $('#home p').html('No it isnt!');
+    $('#pageone h2').html('This is not a mobile device!');
 }

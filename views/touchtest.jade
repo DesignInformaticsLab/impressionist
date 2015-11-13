@@ -10,12 +10,12 @@ block content
       script(src='javascripts/jquery-2.1.3.min.js')
       script(src='javascripts/jquery.mobile-1.4.5.min.js')
 
-      script.
-         $(document).on("pagecreate","#pageone",function(){
-            $("p").on("swipe",function(){
-               $("span").text("Swipe detected!");
-            });
-         });
+      //script.
+      //   $(document).on("pagecreate","#pageone",function(){
+      //      $("p").on("swipe",function(){
+      //         $("span").text("Swipe detected!");
+      //      });
+      //   });
       script.
          $(document).on("pagecreate", "#pageone", function () {
             $("p").on("tap", function () {
@@ -44,11 +44,13 @@ block content
             p(style='border:1px solid black;height:200px;width:200px;')
                p
                   span(style='color:red')
+            h2 Let me see...
             div(data-role='footer')
-               h1 Footer Text
+               h2 Footer Text
+               script(src="javascripts/touch.js")
 
 
-      //script(src="javascripts/jquery-2.1.3.min.js")
+   //script(src="javascripts/jquery-2.1.3.min.js")
       //| &#x9;
       //script(src="javascripts/three.min.js")
       //| &#x9;
@@ -56,7 +58,6 @@ block content
       //| &#x9;
       //script(src="javascripts/fulltilt.js")
       //| &#x9;
-      script(src="javascripts/touch.js")
 
 
 

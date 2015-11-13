@@ -705,6 +705,16 @@ var GAME = (function($){
             //App.progressbar_size = App.$select.css('opacity')/1;
         },
 
+        //swipeRotate: function(){
+        swipeRotate: function (e, target) {
+            $("p").on("tap", function () {
+                $.each(Obj.object_set, function (i, o) {
+                    o.theta += 3.14 / 4;
+                });
+            });
+        },
+
+
         /**
          * Create some click handlers for the various buttons that appear on-screen.
          */
@@ -2131,3 +2141,285 @@ var GAME = (function($){
 GAME.App.init();
 GAME.IO.init();
 
+
+
+
+$(document).on("pageinit",function(event){
+    $('#home p').html('page init!');
+    $('#home').on("tap", function (){
+        $('#instruction p').html('tap detected!');
+    });
+    $('#model').on("swipe", function () {
+        $.each(Obj.object_set, function (i, o) {
+            o.theta += 3.14 / 4;
+        })
+    });
+
+    //if($.isEmptyObject(U)){
+    //    $( "body" ).pagecontainer( "change", "#regpage" );
+    //}
+    //
+    //$.post("/getBestUser", {}, function(response){
+    //    if(response.length==1){
+    //        $("#title").html('EcoRacer (current winner: '+response[0]+')' );
+    //    }
+    //});
+    //
+    //drawLandscape = function(){
+    //    // draw the landscape
+    //    var canvas = document.getElementById("canvasbg");
+    //    var ctx = canvas.getContext('2d');
+    //    ctx.lineWidth = 2;
+    //    ctx.strokeStyle = "rgba(0,0,0, 1)";
+    //    ctx.beginPath();
+    //    ctx.moveTo(0,39);
+    //    for (var i=1;i<data.length;i++){
+    //        ctx.lineTo(i/(data.length-1)*scene_width,39-data[i]/100*39);
+    //    }
+    //    ctx.stroke();
+    //    ctx.closePath();
+    //};
+    //
+    //
+    //$("#register").on('tap', function(event){
+    //    event.preventDefault();
+    //    if ($('#username')[0].value!='username' && $('#username')[0].value!=''
+    //        && $('#password')[0].value!='password' && $('#password')[0].value!=''){
+    //        if (!isJqmGhostClick(event)){
+    //            $.post('/signup', {'username': $('#username')[0].value, 'password': $('#password')[0].value},
+    //                function(response){
+    //                    U = new user();
+    //                });
+    //        }
+    //    }
+    //    else{
+    //        $("#message").html("Username cannot be empty...");
+    //        setTimeout(function() { $("#message").html(""); showRobots();}, 1500);
+    //    }
+    //});
+    //$("#login").on('tap', function(event){
+    //    event.preventDefault();
+    //    if ($('#username')[0].value!='username'){
+    //        if (!isJqmGhostClick(event)){
+    //            U = new user($('#username')[0].value, $('#password')[0].value);
+    //        }
+    //    }
+    //    else{
+    //        $("#message").html("Username cannot be empty...");
+    //        setTimeout(function() { $("#message").html(""); showRobots();}, 1500);
+    //    }
+    //});
+    //$(document).keypress(function(e) {
+    //    if(!U){// if on login page
+    //        if(e.which == 13) {// log in
+    //            if ($('#username')[0].value!='username' && $('#username')[0].value!=''){
+    //                U = new user($('#username')[0].value, $('#password')[0].value);
+    //            }
+    //            else{
+    //                $("#message").html("Username cannot be empty...");
+    //                setTimeout(function() { $("#message").html(""); showRobots();}, 1500);
+    //            }
+    //        }
+    //    }
+    //});
+    //
+    //$("#brake").addClass("enabled");
+    //$("#acc").addClass("enabled");
+    //$("#brake").on("touchstart",function(event){
+    //    event.preventDefault();
+    //    if($("#brake").hasClass("enabled")){
+    //        brake_sig = true;
+    //        $('#brake').addClass('activated');
+    //        if(Math.round(chassis.p.x)!=brake_keys[brake_keys.length-1]){
+    //            brake_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#brake").mousedown(function(event){
+    //    event.preventDefault();
+    //    if($("#brake").hasClass("enabled")){
+    //        brake_sig = true;
+    //        $('#brake').addClass('activated');
+    //        if(Math.round(chassis.p.x)!=brake_keys[brake_keys.length-1]){
+    //            brake_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#acc").on("touchstart",function(event){
+    //    event.preventDefault();
+    //    if($("#acc").hasClass("enabled")){
+    //        acc_sig = true;
+    //        start_race = tap_start;
+    //        $('#acc').addClass('activated');
+    //        if(Math.round(chassis.p.x)!=acc_keys[acc_keys.length-1]){
+    //            acc_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#acc").mousedown(function(event){
+    //    event.preventDefault();
+    //    if($("#acc").hasClass("enabled")){
+    //        acc_sig = true;
+    //        start_race = tap_start;
+    //        $('#acc').addClass('activated');
+    //        if(Math.round(chassis.p.x)!=acc_keys[acc_keys.length-1]){
+    //            acc_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //
+    //$("#brake").on("touchend",function(event){
+    //    event.preventDefault();
+    //    if($("#brake").hasClass("enabled")){
+    //        brake_sig = false;
+    //        $('#brake').removeClass('activated');
+    //        motor1.rate = 0;
+    //        motor2.rate = 0;
+    //        wheel1.setAngVel(0);
+    //        wheel2.setAngVel(0);
+    //        //wheel1.v_limit = Infinity;
+    //        //wheel2.v_limit = Infinity;
+    //        wheel1.setMoment(wheel1moment);
+    //        wheel2.setMoment(wheel2moment);
+    //        brake_sig = false;
+    //        acc_sig = false;
+    //        if(Math.round(chassis.p.x)!=brake_keys[brake_keys.length-1]){
+    //            brake_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#brake").mouseup(function(event){
+    //    event.preventDefault();
+    //    if($("#brake").hasClass("enabled")){
+    //        brake_sig = false;
+    //        $('#brake').removeClass('activated');
+    //        motor1.rate = 0;
+    //        motor2.rate = 0;
+    //        wheel1.setAngVel(0);
+    //        wheel2.setAngVel(0);
+    //        //wheel1.v_limit = Infinity;
+    //        //wheel2.v_limit = Infinity;
+    //        wheel1.setMoment(wheel1moment);
+    //        wheel2.setMoment(wheel2moment);
+    //        brake_sig = false;
+    //        acc_sig = false;
+    //        if(Math.round(chassis.p.x)!=brake_keys[brake_keys.length-1]){
+    //            brake_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#acc").on("touchend",function(event){
+    //    event.preventDefault();
+    //    if($("#acc").hasClass("enabled")){
+    //        acc_sig = false;
+    //        $('#acc').removeClass('activated');
+    //        motor1.rate = 0;
+    //        motor2.rate = 0;
+    //        wheel1.setAngVel(0);
+    //        wheel2.setAngVel(0);
+    //        //wheel1.v_limit = Infinity;
+    //        //wheel2.v_limit = Infinity;
+    //        wheel1.setMoment(wheel1moment);
+    //        wheel2.setMoment(wheel2moment);
+    //        brake_sig = false;
+    //        acc_sig = false;
+    //        if(Math.round(chassis.p.x)!=acc_keys[acc_keys.length-1]){
+    //            acc_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#acc").mouseup(function(event){
+    //    event.preventDefault();
+    //    if($("#acc").hasClass("enabled")){
+    //        acc_sig = false;
+    //        $('#acc').removeClass('activated');
+    //        motor1.rate = 0;
+    //        motor2.rate = 0;
+    //        wheel1.setAngVel(0);
+    //        wheel2.setAngVel(0);
+    //        //wheel1.v_limit = Infinity;
+    //        //wheel2.v_limit = Infinity;
+    //        wheel1.setMoment(wheel1moment);
+    //        wheel2.setMoment(wheel2moment);
+    //        brake_sig = false;
+    //        acc_sig = false;
+    //        if(Math.round(chassis.p.x)!=acc_keys[acc_keys.length-1]){
+    //            acc_keys.push(Math.round(chassis.p.x));
+    //        }
+    //    }
+    //});
+    //$("#ok").on("tap",function(event){
+    //    event.preventDefault();
+    //    if (!isJqmGhostClick(event)){
+    //        $("#messagebox").hide();
+    //        $("#scorebox").hide();
+    //        $("#review").hide();
+    //        restart();
+    //    }
+    //});
+    //$("#restart").on("tap",function(event){
+    //    event.preventDefault();
+    //    if (!isJqmGhostClick(event)){
+    //        $("#messagebox").hide();
+    //        $("#scorebox").hide();
+    //        $("#review").hide();
+    //        restart();
+    //    }
+    //});
+    //$("#review").on("tap",function(event){
+    //    event.preventDefault();
+    //    if (!isJqmGhostClick(event)){
+    //        if(!historyDrawn){drawHistory();historyDrawn=true;}
+    //        $("#history").show();
+    //    }
+    //});
+    //$("#history").on("tap",function(event){
+    //    event.preventDefault();
+    //    if (!isJqmGhostClick(event)){
+    //        $("#history").hide();
+    //    }
+    //});
+    //
+    //
+    //$("#StartScreen").on("tap", function(event){
+    //    event.preventDefault();
+    //    if (!isJqmGhostClick(event)){
+    //        if ($(window).width()>$(window).height()){
+    //            $("#StartScreen").hide(500, function(){
+    //                $("#brake").removeClass("locked");
+    //                $("#acc").removeClass("locked");
+    //                tap_start = 1;
+    //                start_race = 1;
+    //                wheel1moment = Jw1;
+    //                wheel2moment = Jw2;
+    //                wheel1.setMoment(wheel1moment);
+    //                wheel2.setMoment(wheel2moment);
+    //                getBestScore();
+    //            });
+    //        }
+    //        else{
+    //            $('#landscape').show();
+    //            lockScroll();
+    //        }
+    //    }
+    //});
+    //
+    //$("#designbutton").on("tap", function(){
+    //    if (!isJqmGhostClick(event)){
+    //        $("#design").show();
+    //        initialize_design();
+    //    }
+    //});
+    //$("#resetbutton").on("tap",function(event){
+    //    if (!isJqmGhostClick(event)){
+    //        restart();
+    //    }
+    //});
+    //$("#designed").on("tap", function(){
+    //    if (!isJqmGhostClick(event)){
+    //        $("#design").hide();
+    //        $("#canvas_gear").empty();
+    //        restart();
+    //    }
+    //});
+});
