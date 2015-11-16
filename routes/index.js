@@ -46,9 +46,17 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Impressionist' });
 });
 
-/* test gyro effect */
+/* test touch effect */
 router.get('/touchtest', function(req, res, next) {
     res.render('touchtest', { title: 'touchtest' });
+});
+
+/* test multi touch effect */
+router.get('/multitouch', function(req, res, next) {
+    res.render('multitouch', { title: 'multitouch' });
+});
+router.get('/basic', function(req, res, next) {
+    res.render('basic', { title: 'basic' });
 });
 
 /* test gyro effect */

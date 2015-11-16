@@ -13,3 +13,24 @@ if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined"
 } else {
     $('#pageone h2').html('This is not a mobile device!');
 }
+
+$(document).on("pagecreate", "#pageone", function () {
+    $("p").on("tap", function () {
+        $(this).hide();
+    });
+});
+
+$(document).on("pagecreate","#pageone",function(){
+    $("p").on("swipe",function(){
+        $("span").text("Swipe detected!");
+    });
+});
+
+$(document).on("pagecreate", "#pageone", function (event) {
+    if (event.length > 1) {
+        $("span").text("two finger swipe detected!");
+    }
+});
+
+
+
