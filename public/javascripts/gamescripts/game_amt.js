@@ -90,7 +90,8 @@ var GAME = (function($){
 
             // refresh a bunch of stuff
             App.currentRound = 0;
-
+            App.game_score = 9999;
+            
             App.$guessinput.html(''); // clean input area
             //App.$score.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
