@@ -1,0 +1,106 @@
+//
+   Created by Max Yi Ren on 3/7/2015.
+extends layout
+block content
+    #fb-root
+    script.
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    .site-wrapper
+        .site-wrapper-inner
+            .cover-container
+                .masthead.clearfix
+                    .inner
+                        h3.masthead-brand
+                            | Impressionist
+                        nav
+                            ul.nav.masthead-nav
+                                li.active
+                                    a
+                                        | Home
+                                li
+                                    a
+                                        | Game
+                                //li
+                                //    a
+                                //        | Stats
+                #home.inner.cover
+                    h1.cover-heading
+                        | Welcome to Impressionist
+                    p.lead.
+                        Your goal is to collaborate with another player to identify as many objects as possible!<br>
+                        This game is inspired by Dr. Luis Von Ahn's <a href="https://www.cs.cmu.edu/~biglou/Peekaboom.pdf">Peekaboo game</a>.
+                    #tutorial.btn.btn-lg.btn-default
+                        | Teach me how to play!
+                    | &nbsp;
+                    #entry.btn.btn-lg.btn-default
+                        | Let's just try it out!
+                #wait.inner.cover
+                    p.lead
+                        | Looking for another human...Please wait
+                    span.glyphicon.glyphicon-refresh.spinning
+                #continue.inner.cover
+                    #continue_btn.btn.btn-lg.btn-default
+                        | Continue
+                #game
+                    //#menu
+                    //    .button.mouse-look
+                    //      | Enable Mouse Look
+                    //    .button.full-screen
+                    //      | Start VR Mode
+                    #score
+                    //#select
+                    #menu
+                        //#bar
+                        //#timebar
+                        //#time
+                        //    | T
+                        //#score
+                            | 0
+                        //#select
+                            //| S
+                        input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
+                        #guessoutput
+                    //#gamescore
+                    #model(tabindex='0')
+                    #instruction
+                        p
+                #stat
+                    #objlist
+                    #comp_model1(tabindex='0')
+                    #comp_model2(tabindex='0')
+                #scoreboard(class='modal fade',role='dialog')
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button(type='button',class='close',data-dismiss="modal",aria-hidden="true")
+                                    | &times;
+                                h4.modal-title
+                            .modal-body
+                                #myscore
+                                #myrank
+                                #amt
+                            .modal-footer
+                                button(type="button", class="btn btn-default", data-dismiss="modal")
+                                    | Close
+                .mastfoot
+                    .inner
+                        //div.fb-share-button(data-href="http://impressionist.herokuapp.com/" data-layout="button_count" )
+                        #numPlayer
+                        //.fblike
+                        br
+                        br
+                        .fb-like(data-href='http://impressionist.herokuapp.com/', data-layout='standard', data-action='like', data-show-faces='false', data-share='true')
+                        p.
+                            <a href="mailto:yiren@asu.edu&cc=Houpu.Yao@asu.edu&subject=Feedback on Impressionist">Let us know how we can improve:)</a><br>
+                            Developed by Max Yi Ren, Hope Yao and Fabian Gadau, Design Informatics Lab, Arizona State University, 2015<br>
+                            Disclaimer: No personal information is collected. <a>Game data</a> will be used in current research at
+                            <a href="http://www.public.asu.edu/~yren32">DILab</a>.
+    script(src="stylesheets/bootstrap/js/bootstrap.min.js")
+    script(src="javascripts/gamescripts/game_amt.js")

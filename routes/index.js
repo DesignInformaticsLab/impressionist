@@ -47,31 +47,46 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET game page. */
-router.get('/game', function(req, res, next) {
-    res.render('game', { title: 'Impressionist | Game'});
+router.get('/amt', function(req, res, next) {
+    res.render('index_amt', { title: 'Impressionist | MTURK'});
 });
 
 
-/* try sketchy output */
-router.get('/game_sketch', function(req, res, next) {
-    res.render('sketch', { title: 'Model Selection Test'});
-});
+///* try sketchy output */
+//router.get('/game_sketch', function(req, res, next) {
+//    res.render('sketch', { title: 'Model Selection Test'});
+//});
 
 router.post('/newGame', function(req, res, next) {
     pg.connect(connection, function(err, client, done) {
         if(err) res.send("Could not connect to DB: " + err);
         //var player_id = req.body.player_id;
         //var host_id = req.body.host_id;
-        client.query('INSERT INTO impressionist_game_table (start_time, score) ' +
-            'VALUES (clock_timestamp(), 0) RETURNING id', function(err, result){
-            if (err) {
-                handle_error.bind(this, err);
-            }
-            else {
-                res.send( result.rows );
-                done();
-            }
-        });
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            client.query('INSERT INTO impressionist_game_table_amt (start_time, score) ' +
+                'VALUES (clock_timestamp(), 0) RETURNING id', function(err, result){
+                if (err) {
+                    handle_error.bind(this, err);
+                }
+                else {
+                    res.send( result.rows );
+                    done();
+                }
+            });
+        }
+        else{
+            client.query('INSERT INTO impressionist_game_table (start_time, score) ' +
+                'VALUES (clock_timestamp(), 0) RETURNING id', function(err, result){
+                if (err) {
+                    handle_error.bind(this, err);
+                }
+                else {
+                    res.send( result.rows );
+                    done();
+                }
+            });
+        }
     });
 });
 
@@ -89,9 +104,18 @@ router.post('/store_selection', function(req,res){
         var round = req.body.round;
         var penalty = [];
         var computer_player = req.body.computer_player;
-        var insert_query = client.query('INSERT INTO impressionist_result_table (game_id, round, all_selected_id, duration,' +
-            ' score, guess, object_name, correct, penalty, computer_player) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-            [game_id, round, all_selected_id, duration, score, guess, object_name, correct, penalty, computer_player]);
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            var insert_query = client.query('INSERT INTO impressionist_result_table_amt (game_id, round, all_selected_id, duration,' +
+                ' score, guess, object_name, correct, penalty, computer_player) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+                [game_id, round, all_selected_id, duration, score, guess, object_name, correct, penalty, computer_player]);
+        }
+        else{
+            var insert_query = client.query('INSERT INTO impressionist_result_table (game_id, round, all_selected_id, duration,' +
+                ' score, guess, object_name, correct, penalty, computer_player) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+                [game_id, round, all_selected_id, duration, score, guess, object_name, correct, penalty, computer_player]);
+        }
+
         insert_query.on('err', handle_error.bind(this, err));
         insert_query.on('end', function(result){res.status(202).send("Accepted data");});
         done();
@@ -102,7 +126,13 @@ router.post('/store_selection', function(req,res){
 router.post('/read_selection', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
-        var query = 'SELECT all_selected_id FROM impressionist_result_table WHERE object_name=$1 AND correct=TRUE AND computer_player=FALSE';
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            var query = 'SELECT all_selected_id FROM impressionist_result_table_amt WHERE object_name=$1 AND correct=TRUE AND computer_player=FALSE';
+        }
+        else{
+            var query = 'SELECT all_selected_id FROM impressionist_result_table WHERE object_name=$1 AND correct=TRUE AND computer_player=FALSE';
+        }
         client.query(query, [req.body.object_name], function(err, result) {
             if(err) {
                 console.error(err); res.send("Error " + err);
@@ -130,8 +160,16 @@ router.post('/initial_obj', function(req,res){
         var face_per_mesh = JSON.parse(req.body.face_per_mesh);
         var num_selections = [];
         // insert value to database
-        var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, face_per_mesh, num_selections) VALUES ($1, $2, $3)',
-            [object_name, face_per_mesh, num_selections]);
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            var insert_query = client.query('INSERT INTO impressionist_object_table_amt (object_name, face_per_mesh, num_selections) VALUES ($1, $2, $3)',
+                [object_name, face_per_mesh, num_selections]);
+        }
+        else{
+            var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, face_per_mesh, num_selections) VALUES ($1, $2, $3)',
+                [object_name, face_per_mesh, num_selections]);
+        }
+
         //var insert_query = client.query('INSERT INTO impressionist_object_table (object_name, three_scene, face_per_mesh, num_selections) VALUES ($1, $2, $3, $4)',
         //    [object_name, three_scene, face_per_mesh, num_selections]);
         insert_query.on('err', handle_error.bind(this, err));
@@ -145,8 +183,13 @@ router.post('/initial_obj', function(req,res){
 router.post('/getObjectList', function(req,res){
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
-        // psql command
-        var query = 'SELECT id, object_name FROM impressionist_object_table';
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            var query = 'SELECT id, object_name FROM impressionist_object_table_amt';
+        }
+        else{
+            var query = 'SELECT id, object_name FROM impressionist_object_table';
+        }
         // send psql command t psql and return the result to client
         client.query(query, function(err, result) {
             if(err) {
@@ -171,7 +214,13 @@ router.post('/storeScore', function(req,res){
         if(err) res.send("Could not connect to DB: " + err);
         var gameId = req.body.gameId;
         var score = req.body.score;
-        var edit_query = 'UPDATE impressionist_game_table SET score = $1, end_time = clock_timestamp() WHERE id = $2';
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            var edit_query = 'UPDATE impressionist_game_table_amt SET score = $1, end_time = clock_timestamp() WHERE id = $2';
+        }
+        else{
+            var edit_query = 'UPDATE impressionist_game_table SET score = $1, end_time = clock_timestamp() WHERE id = $2';
+        }
         client.query(edit_query, [score, gameId], function(err) {
             if(err) {
                 console.error(err); res.send("Error " + err);
@@ -187,7 +236,13 @@ router.post('/storeScore', function(req,res){
 router.post('/getTotalNumber', function(req, res) {
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
-        var query = 'SELECT COUNT(*) FROM impressionist_game_table WHERE score > 0';
+        var amt = JSON.parse(req.body.amt);
+        if (amt){
+            var query = 'SELECT COUNT(*) FROM impressionist_game_table_amt WHERE score > 0';
+        }
+        else{
+            var query = 'SELECT COUNT(*) FROM impressionist_game_table WHERE score > 0';
+        }
         client.query(query, function(err, result) {
             if(err) {
                 console.error(err); res.send("Error " + err);
@@ -204,17 +259,33 @@ router.post('/getRanking', function(req, res) {
     pg.connect(connection, function(err, client, done) {
         if(err) res.status(500).send("Could not connect to DB: " + err);
         var current_score = req.body.score;
-        var query = 'SELECT COUNT(*) FROM impressionist_game_table WHERE score < ' + current_score + ' AND score > 0';
+        var amt = JSON.parse(req.body.amt);
+        var amtcode = '';
+        if (amt){
+            var query = 'SELECT COUNT(*) FROM impressionist_game_table_amt WHERE score < ' + current_score + ' AND score > 0';
+            amtcode = (50-current_score).toString(16)+(100-current_score).toString(16);
+            amtcode = amtcode.slice(0,4).toUpperCase();
+        }
+        else{
+            var query = 'SELECT COUNT(*) FROM impressionist_game_table WHERE score < ' + current_score + ' AND score > 0';
+        }
         client.query(query, function(err, result) {
             if(err) {
                 console.error(err); res.send("Error " + err);
             }
             else{
-                res.send( result.rows );
+                res.send( {'result':result.rows,'amt':amtcode} );
             }
             done();
         });
     });
+});
+
+router.post('/getamtcode', function(req, res) {
+    var current_score = req.body.score;
+    var amtcode = (50-current_score).toString(16)+(100-current_score).toString(16);
+    amtcode = amtcode.slice(0,4).toUpperCase();
+    res.send( amtcode );
 });
 
 module.exports = router;
