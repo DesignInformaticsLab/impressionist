@@ -23,8 +23,8 @@ block content
             });
          });
       script.
-         $(document).on("pagecreate", "#pageone", function (e) {
-            if (e.touches.length > 1) {
+         $(document).on("pagecreate", "#pageone", function (event) {
+            if (event.length > 1) {
                $("span").text("two finger swipe detected!");
             }
          });
