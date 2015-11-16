@@ -8,6 +8,27 @@
 
 
 
+//$(document).on("pagecreate", function () {
+
+	//Touchy.stopWindowBounce();
+	//var touchMe = document.getElementById('touch-me');
+    //
+	//function drawPoint(point) {
+	//	var elem = document.createElement('div');
+	//	elem.className = 'point';
+	//	elem.style.top = point.y + 'px';
+	//	elem.style.left = point.x + 'px';
+	//	touchMe.appendChild(elem);
+	//}
+    //
+	//Touchy(touchMe, true, function (hand, finger) {
+	//	finger.on('start', drawPoint);
+	//	finger.on('move', drawPoint);
+	//	finger.on('end', drawPoint);
+	//});
+
+//});
+
 (function (window, document, Zepto, jQuery) {
 	window = window || {};
 

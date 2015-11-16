@@ -33,4 +33,8 @@ $(document).on("pagecreate", "#pageone", function (event) {
 });
 
 
-
+$(document).ready(function () {
+    $(document).mousemove(function (event) {
+        $("span2").text("X: " + event.pageX + ", Y: " + event.pageY);
+    });
+});
