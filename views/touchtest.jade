@@ -23,16 +23,13 @@ block content
             });
          });
       script.
-         $(document).on('touchstart', function (e) {
+         $(document).on("pagecreate", "#pageone", function (e) {
             if (e.touches.length > 1) {
                $("span").text("two finger swipe detected!");
             }
          });
-      //script.
-      //   $('.rotate').click(function() {
-      //      Obj.object_set.theta += 3.14/4;
-      //      $(this).rotate(rotation);
-      //   });
+
+
 
    body
       #home
@@ -67,3 +64,13 @@ block content
 
 
 
+// calculate rotation angle
+//         $('#element').bind('touchstart', function (event) {
+//            $('#log').append(event.originalEvent.touches.length + '<br/>');
+//         });
+//         $('#element').bind('touchmove', function (event) {
+//            $('#log').append(event.originalEvent.touches.length + '<br/>');
+//         });
+//         $('#element').bind('touchend', function (event) {
+//            $('#log').append(event.originalEvent.touches.length + '<br/>');
+//         });
