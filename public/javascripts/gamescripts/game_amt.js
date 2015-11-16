@@ -91,7 +91,7 @@ var GAME = (function($){
             // refresh a bunch of stuff
             App.currentRound = 0;
             App.game_score = 9999;
-            
+
             App.$guessinput.html(''); // clean input area
             //App.$score.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
@@ -1287,13 +1287,13 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(survived>100){
+                        if(survived>60){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
                         }
                         else{
-                            App.$amt.html('Try to survive 100 seconds to get the MTURK code!');
+                            App.$amt.html('Try to survive 60 seconds to get the MTURK code!');
                         }
                     }
                     App.$scoreboard.modal();
