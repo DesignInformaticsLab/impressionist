@@ -1841,7 +1841,7 @@ var GAME = (function($){
                 // update score based on selection, time and guesses
                 if (App.object_loaded){ // to prevent long loading time
                     if (App.game_score > 0 && App.numSelectedFaces > 0){
-                        var penalty = (Date.now()-App.currentTime)*0.20;
+                        var penalty = (Date.now()-App.currentTime)*0.10;
                         // MAX: penalty on selection is too high on geometries with few faces
                         penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
                         App.game_score -= penalty;

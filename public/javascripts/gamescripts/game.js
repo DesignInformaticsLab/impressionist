@@ -90,6 +90,7 @@ var GAME = (function($){
 
             // refresh a bunch of stuff
             App.currentRound = 0;
+            App.game_score = 9999;
 
             App.$guessinput.html(''); // clean input area
             //App.$score.html(App.game_score); // update score
@@ -99,7 +100,10 @@ var GAME = (function($){
             App.objectstring_set = data.objectstring_set;
             App.objectString = App.objectstring_set[data.objectID];
 
-            $('#wait.inner.cover p.lead').html('A human joined the game...');
+            $('#wait.inner.cover p.lead').html('Another player is joining the game...');
+            App.$wait.show();
+            App.object_loaded = false;
+
             if (App.myRole=='Player'){
                 $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
@@ -131,7 +135,7 @@ var GAME = (function($){
                     Obj.object_set = [];
                     IO.onNewObjData(App.$model);
                 }
-            }, 1000);
+            }, 2000);
         },
 
         /**
@@ -210,14 +214,16 @@ var GAME = (function($){
             //App.$gamescore.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
 
+            App.object_loaded = false; // stop rendering
+
             App.$game.hide();
 
             IO.getSocketStats();
 
-            if (!App.playWithComputer){ // give reward if playing with human
-                App.game_score += 1000;
-                App.game_score = Math.min(App.game_score, 9999);
-            }
+            //if (!App.playWithComputer){ // give reward if playing with human
+            App.game_score += 2000;
+            App.game_score = Math.min(App.game_score, 9999);
+            //}
 
             // stop loops
             $.each(App.rendering, function(i,rendering) {
@@ -359,12 +365,17 @@ var GAME = (function($){
 
                         // show object when everything is ready
                         App.$wait.fadeOut();
+
+                        App.currentTime = Date.now(); // current time
+                        App.start_obj_time = Date.now();
+                        if (App.round==0){
+                            App.startingTime = Date.now(); // starting time of a game, don't change
+                        }
+                        App.object_loaded = true;
                     }
                 }
                 App.$model.html('');
                 var o = Obj.init(target, callback);
-                App.start_obj_time = Date.now();
-                App.currentTime = Date.now();
                 App.$model.focus(); // focus on $model so that key events can work
 
                 o.animate();
@@ -420,6 +431,9 @@ var GAME = (function($){
                     App.$guessinput.fadeIn();
                     App.$guessinput[0].value='';
 
+                    App.start_obj_time = Date.now();
+                    App.currentTime = Date.now();
+
                     App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                     App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
 
@@ -439,6 +453,8 @@ var GAME = (function($){
 
                     o.object.rotation.y = Math.random()*Math.PI*2;
 
+                    App.object_loaded = true;
+
                     // let computer select faces
                     App.autoSelect();
                 });
@@ -446,8 +462,6 @@ var GAME = (function($){
             App.$game.show();
             IO.onNewObjData(App.$model, callback);
             App.$model.focus(); // focus on $model so that key events can work
-            App.start_obj_time = Date.now();
-            App.currentTime = Date.now();
         },
 
         /**
@@ -633,6 +647,8 @@ var GAME = (function($){
             // time last typed
             App.time_last_typed = 0;
 
+            // true if object is loaded and rendering should start
+            App.object_loaded = false;
         },
 
         /**
@@ -729,7 +745,20 @@ var GAME = (function($){
             App.$comp_model2.mousemove(function(e){App.onMouseMove(e, App.$comp_model2)});
             App.$comp_model2.mousedown(function(e){App.onMouseDown(e, App.$comp_model2)});
             App.$comp_model2.mouseup(function(e){App.onMouseUp(e, App.$comp_model2)});
-            App.$model.bind('mousewheel DOMMouseScroll', function(event){
+
+            // virtual mouse
+            App.$model.bind('vmousemove',function(e){App.onMouseMove(e, App.$model)});
+            App.$model.bind('vmousedown',function(e){App.onMouseDown(e, App.$model)});
+            App.$model.bind('vmouseup',function(e){App.onMouseUp(e, App.$model)});
+            App.$model.keyup(function(e){App.onKeyUp(e, App.$model)});
+            App.$model.keydown(function(e){App.onKeyDown(e, App.$model)});
+            App.$comp_model1.bind('vmousemove',function(e){App.onMouseMove(e, App.$comp_model1)});
+            App.$comp_model1.bind('vmousedown',function(e){App.onMouseDown(e, App.$comp_model1)});
+            App.$comp_model1.bind('vmouseup',function(e){App.onMouseUp(e, App.$comp_model1)});
+            App.$comp_model2.bind('vmousemove',function(e){App.onMouseMove(e, App.$comp_model2)});
+            App.$comp_model2.bind('vmousedown',function(e){App.onMouseDown(e, App.$comp_model2)});
+            App.$comp_model2.bind('vmouseup',function(e){App.onMouseUp(e, App.$comp_model2)});
+            App.$model.bind('mousewheel DOMMouseScroll vmousehweel', function(event){
                 if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0) {
                     // scroll up
                     Obj.object_set[0].global_scale += 0.1;
@@ -1112,7 +1141,7 @@ var GAME = (function($){
                 $("#objlist").html("");
                 $.each(data, function(i,d){
                     $("#objlist").append("<div class='object_div btn' id="
-                    + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
+                        + d.id + ">" + "<a>" + d.object_name + "</a></div> ");
                 });
             });
         },
@@ -1125,8 +1154,8 @@ var GAME = (function($){
             if(e.which == 13 && !App.isClickingCrazy()
                 && App.$guessinput[0].value!='your guess'
                 && App.$guessinput[0].value.length > 1) {// submit guess
-                    IO.getSynchronizedScore(); // synchronize scores
-                    App.onSubmitAnswer();
+                IO.getSynchronizedScore(); // synchronize scores
+                App.onSubmitAnswer();
             }
         },
 
@@ -1285,13 +1314,13 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(survived>200){
+                        if(App.currentRound>2){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
                         }
                         else{
-                            App.$amt.html('Try to survive 200 seconds to get the MTURK code!');
+                            App.$amt.html('Try to make three correct guesses to get the MTURK code!');
                         }
                     }
                     App.$scoreboard.modal();
@@ -1332,7 +1361,7 @@ var GAME = (function($){
                 correct: $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0,
                 round: App.currentRound,
                 duration: Date.now()-App.start_obj_time, // time from start of the object
-                score: App.score,
+                score: Math.round(App.game_score),
                 object_name: Obj.object_set[0].object.name,
                 all_selected_id: JSON.stringify(App.allSelectedIDMaster),
                 computer_player: 0,
@@ -1351,6 +1380,7 @@ var GAME = (function($){
             else{
                 var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
                 if (correct){
+                    App.object_loaded = false;
                     IO.onAnswerCorrect();
                 }
                 else{
@@ -1542,56 +1572,56 @@ var GAME = (function($){
              * @param selection: current face ids from meshes
              * @param childnumber: current mesh id
              */
-            this.createMesh = function(selection, childName ) {
-                //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
+                this.createMesh = function(selection, childName ) {
+                    //var material = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.DoubleSide} );
 
-                //update all selected face id, encoded by childname
-                var mesh_id = parseInt(childName);
-                var bias = 0;
-                for(var i=0;i<mesh_id;i++){
-                    bias += d.object.FaceArray[i];
-                }
-                var uniqueValues = [];
-                $.each(selection, function (i,s) {
-                    uniqueValues.push(s+bias);
-                });
-                App.allSelectedIDMaster = App.allSelectedIDMaster.concat(uniqueValues);
+                    //update all selected face id, encoded by childname
+                    var mesh_id = parseInt(childName);
+                    var bias = 0;
+                    for(var i=0;i<mesh_id;i++){
+                        bias += d.object.FaceArray[i];
+                    }
+                    var uniqueValues = [];
+                    $.each(selection, function (i,s) {
+                        uniqueValues.push(s+bias);
+                    });
+                    App.allSelectedIDMaster = App.allSelectedIDMaster.concat(uniqueValues);
 
-                $.each(selection, function (i, s) {
-                    var geom = new THREE.Geometry();
-                    var f = d.object.getObjectByName(childName).geometry.faces[s];
-                    var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
-                    var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
-                    var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
-                    geom.vertices.push(v1, v2, v3);
+                    $.each(selection, function (i, s) {
+                        var geom = new THREE.Geometry();
+                        var f = d.object.getObjectByName(childName).geometry.faces[s];
+                        var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
+                        var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
+                        var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
+                        geom.vertices.push(v1, v2, v3);
 
-                    var nf = new THREE.Face3(0, 1, 2);
-                    nf.vertexNormals = f.vertexNormals;
-                    nf.normal = f.normal;
-                    geom.faces.push(nf);
+                        var nf = new THREE.Face3(0, 1, 2);
+                        nf.vertexNormals = f.vertexNormals;
+                        nf.normal = f.normal;
+                        geom.faces.push(nf);
 
-                    var mesh = new THREE.Mesh(geom, d.object.getObjectByName(childName).material);
+                        var mesh = new THREE.Mesh(geom, d.object.getObjectByName(childName).material);
 
-                    mesh.rotation.x = d.object.getObjectByName(childName).rotation.x;
-                    mesh.rotation.y = d.object.getObjectByName(childName).rotation.y;
-                    mesh.rotation.z = d.object.getObjectByName(childName).rotation.z;
+                        mesh.rotation.x = d.object.getObjectByName(childName).rotation.x;
+                        mesh.rotation.y = d.object.getObjectByName(childName).rotation.y;
+                        mesh.rotation.z = d.object.getObjectByName(childName).rotation.z;
 
-                    mesh.scale.set(d.scale, d.scale, d.scale);
-                    mesh.position.z = d.height;
-                    //mesh.castShadow = true;
+                        mesh.scale.set(d.scale, d.scale, d.scale);
+                        mesh.position.z = d.height;
+                        //mesh.castShadow = true;
 
-                    //if (d.object.CG_emptyObj != undefined) {
-                    //    mesh.position.x =  d.object.CG_emptyObj[0];
-                    //    mesh.position.y =  d.object.CG_emptyObj[1];
-                    //    mesh.position.z =  d.object.CG_emptyObj[2];
-                    //} else {
-                    //    mesh.position.x = 0;
-                    //    mesh.position.y = 0;
-                    //    mesh.position.z = 0;
-                    //}
-                    d.emptyobject.add(mesh);
-                });
-            };
+                        //if (d.object.CG_emptyObj != undefined) {
+                        //    mesh.position.x =  d.object.CG_emptyObj[0];
+                        //    mesh.position.y =  d.object.CG_emptyObj[1];
+                        //    mesh.position.z =  d.object.CG_emptyObj[2];
+                        //} else {
+                        //    mesh.position.x = 0;
+                        //    mesh.position.y = 0;
+                        //    mesh.position.z = 0;
+                        //}
+                        d.emptyobject.add(mesh);
+                    });
+                };
 
             this.desposeMesh = function() {
                 if (typeof(d.object.children)!='undefined'){
@@ -1734,12 +1764,12 @@ var GAME = (function($){
 
             this.animate = function() {
                 if(d.renderer.domElement.parentElement!=null) //modified by Hope
-                if (d.renderer.domElement.parentElement.id != 'comp_model2'){
-                    App.rendering[0] = requestAnimationFrame(d.animate);
-                }
-                else{
-                    App.rendering[1] = requestAnimationFrame(d.animate);
-                }
+                    if (d.renderer.domElement.parentElement.id != 'comp_model2'){
+                        App.rendering[0] = requestAnimationFrame(d.animate);
+                    }
+                    else{
+                        App.rendering[1] = requestAnimationFrame(d.animate);
+                    }
                 d.render();
             };
 
@@ -1822,14 +1852,26 @@ var GAME = (function($){
                 //}
 
                 // update score based on selection, time and guesses
-                if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.2;
-                    // MAX: penalty on selection is too high on geometries with few faces
-                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 5000;
-                    App.game_score -= penalty;
-                    App.currentTime = Date.now();
-                    App.numSelectedFaces = App.selection_capacity;
-                    if (App.game_score<0){
+                if (App.object_loaded){ // to prevent long loading time
+                    if (App.game_score > 0 && App.numSelectedFaces > 0){
+                        var penalty = (Date.now()-App.currentTime)*0.20;
+                        // MAX: penalty on selection is too high on geometries with few faces
+                        penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
+                        App.game_score -= penalty;
+                        App.currentTime = Date.now();
+                        App.numSelectedFaces = App.selection_capacity;
+                        if (App.game_score<0){
+                            App.game_score = 0; // only store once
+                            if(App.myRole='Host'){ // only one of the players needs to submit the score
+                                $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
+                                    function(){});
+                            }
+                            App.showScoreBoard();
+                        }
+                        //App.$score.html(Math.round(App.game_score));
+                        App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
+                    }
+                    else if (App.game_score < 0 && App.numSelectedFaces > 0){
                         App.game_score = 0; // only store once
                         if(App.myRole='Host'){ // only one of the players needs to submit the score
                             $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
@@ -1837,16 +1879,6 @@ var GAME = (function($){
                         }
                         App.showScoreBoard();
                     }
-                    //App.$score.html(Math.round(App.game_score));
-                    App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
-                }
-                else if (App.game_score < 0 && App.numSelectedFaces > 0){
-                    App.game_score = 0; // only store once
-                    if(App.myRole='Host'){ // only one of the players needs to submit the score
-                        $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
-                            function(){});
-                    }
-                    App.showScoreBoard();
                 }
 
                 // check if model is focused, if not, focus to it.
@@ -1863,8 +1895,8 @@ var GAME = (function($){
                     //    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor));
 
                     var col = Obj.getRGB((d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].a].salColor+
-                    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].b].salColor+
-                    d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor)/3.0);
+                        d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].b].salColor+
+                        d.object.children[0].geometry.vertices[d.object.children[0].geometry.faces[i].c].salColor)/3.0);
 
                     //if (w>0){
                     //    d.object.children[0].geometry.faces[i].color.r = Math.min(w+0.5,1.0);
@@ -2141,8 +2173,8 @@ var GAME = (function($){
             CG.z=[boundingBox[2][0],boundingBox[2][boundingBox[2].length-1]];
 
             console.log('[' + 0.5*(CG.x[0] + CG.x[1] ) + ', ' +
-            0.5*(CG.y[0] + CG.y[1] ) + ', ' +
-            0.5*(CG.z[0] + CG.z[1] ) + ']');
+                0.5*(CG.y[0] + CG.y[1] ) + ', ' +
+                0.5*(CG.z[0] + CG.z[1] ) + ']');
         }
     };
 
