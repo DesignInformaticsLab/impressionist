@@ -363,6 +363,7 @@ var GAME = (function($){
                         App.$wait.fadeOut();
 
                         App.currentTime = Date.now(); // current time
+                        App.start_obj_time = Date.now();
                         if (App.round==0){
                             App.startingTime = Date.now(); // starting time of a game, don't change
                         }
@@ -370,8 +371,6 @@ var GAME = (function($){
                 }
                 App.$model.html('');
                 var o = Obj.init(target, callback);
-                App.start_obj_time = Date.now();
-                App.currentTime = Date.now();
                 App.$model.focus(); // focus on $model so that key events can work
 
                 o.animate();
@@ -427,6 +426,9 @@ var GAME = (function($){
                     App.$guessinput.fadeIn();
                     App.$guessinput[0].value='';
 
+                    App.start_obj_time = Date.now();
+                    App.currentTime = Date.now();
+
                     App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                     App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
 
@@ -453,8 +455,6 @@ var GAME = (function($){
             App.$game.show();
             IO.onNewObjData(App.$model, callback);
             App.$model.focus(); // focus on $model so that key events can work
-            App.start_obj_time = Date.now();
-            App.currentTime = Date.now();
         },
 
         /**
@@ -1292,7 +1292,7 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(App.round>2){
+                        if(App.currentRound>2){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
