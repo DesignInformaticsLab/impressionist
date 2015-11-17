@@ -220,10 +220,10 @@ var GAME = (function($){
 
             IO.getSocketStats();
 
-            if (!App.playWithComputer){ // give reward if playing with human
+            //if (!App.playWithComputer){ // give reward if playing with human
                 App.game_score += 2000;
                 App.game_score = Math.min(App.game_score, 9999);
-            }
+            //}
 
             // stop loops
             $.each(App.rendering, function(i,rendering) {
