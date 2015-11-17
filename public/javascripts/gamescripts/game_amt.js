@@ -100,8 +100,10 @@ var GAME = (function($){
             App.objectstring_set = data.objectstring_set;
             App.objectString = App.objectstring_set[data.objectID];
 
-            $('#wait.inner.cover p.lead').html('A human joined the game...');
+            $('#wait.inner.cover p.lead').html('Another player is joining the game...');
             App.$wait.show();
+            App.object_loaded = false;
+
             if (App.myRole=='Player'){
                 $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
