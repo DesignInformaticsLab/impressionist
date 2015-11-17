@@ -109,8 +109,9 @@ var GAME = (function($){
             }
             else{
 
-                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
-                    '<b>To reveal the object, use left mouse while pressing S button down</b>' );
+                $('#instruction p').html('<b>[YOUR TURN!]</b> Now you need to make a move: ' +
+                    '<b>To reveal the object, use left mouse while pressing S button down</b>' +
+                    'You can rotate the object using left mouse button or zoom with mouse wheel<br>');
             }
 
             setTimeout(function(){
@@ -311,8 +312,9 @@ var GAME = (function($){
             }
             else{
 
-                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
-                    '<b>To reveal the object, use left mouse while pressing S button down' );
+                $('#instruction p').html('<b>[YOUR TURN!]</b> Now you need to make a move: ' +
+                    '<b>To reveal the object, use left mouse while pressing S button down</b>' +
+                    'You can rotate the object using left mouse button or zoom with mouse wheel<br>');
             }
 
             App.$wait.hide();
