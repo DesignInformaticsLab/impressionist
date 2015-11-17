@@ -367,6 +367,7 @@ var GAME = (function($){
                         if (App.round==0){
                             App.startingTime = Date.now(); // starting time of a game, don't change
                         }
+                        App.object_loaded = true;
                     }
                 }
                 App.$model.html('');
@@ -447,6 +448,8 @@ var GAME = (function($){
                     }
 
                     o.object.rotation.y = Math.random()*Math.PI*2;
+
+                    App.object_loaded = true;
 
                     // let computer select faces
                     App.autoSelect();
@@ -640,6 +643,8 @@ var GAME = (function($){
             // time last typed
             App.time_last_typed = 0;
 
+            // true if object is loaded and rendering should start
+            App.object_loaded = false;
         },
 
         /**
@@ -1358,6 +1363,7 @@ var GAME = (function($){
             else{
                 var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
                 if (correct){
+                    App.object_loaded = false;
                     IO.onAnswerCorrect();
                 }
                 else{
@@ -1829,14 +1835,26 @@ var GAME = (function($){
                 //}
 
                 // update score based on selection, time and guesses
-                if (App.game_score > 0 && App.numSelectedFaces > 0){
-                    var penalty = (Date.now()-App.currentTime)*0.20;
-                    // MAX: penalty on selection is too high on geometries with few faces
-                    penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
-                    App.game_score -= penalty;
-                    App.currentTime = Date.now();
-                    App.numSelectedFaces = App.selection_capacity;
-                    if (App.game_score<0){
+                if (App.object_loaded){ // to prevent long loading time
+                    if (App.game_score > 0 && App.numSelectedFaces > 0){
+                        var penalty = (Date.now()-App.currentTime)*0.20;
+                        // MAX: penalty on selection is too high on geometries with few faces
+                        penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
+                        App.game_score -= penalty;
+                        App.currentTime = Date.now();
+                        App.numSelectedFaces = App.selection_capacity;
+                        if (App.game_score<0){
+                            App.game_score = 0; // only store once
+                            if(App.myRole='Host'){ // only one of the players needs to submit the score
+                                $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
+                                    function(){});
+                            }
+                            App.showScoreBoard();
+                        }
+                        //App.$score.html(Math.round(App.game_score));
+                        App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
+                    }
+                    else if (App.game_score < 0 && App.numSelectedFaces > 0){
                         App.game_score = 0; // only store once
                         if(App.myRole='Host'){ // only one of the players needs to submit the score
                             $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
@@ -1844,16 +1862,6 @@ var GAME = (function($){
                         }
                         App.showScoreBoard();
                     }
-                    //App.$score.html(Math.round(App.game_score));
-                    App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
-                }
-                else if (App.game_score < 0 && App.numSelectedFaces > 0){
-                    App.game_score = 0; // only store once
-                    if(App.myRole='Host'){ // only one of the players needs to submit the score
-                        $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
-                            function(){});
-                    }
-                    App.showScoreBoard();
                 }
 
                 // check if model is focused, if not, focus to it.
