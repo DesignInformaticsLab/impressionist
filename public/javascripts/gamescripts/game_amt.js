@@ -114,8 +114,7 @@ var GAME = (function($){
             setTimeout(function(){
                 App.$wait.hide();
                 App.$game.show();
-                App.currentTime = Date.now(); // current time
-                App.startingTime = Date.now(); // starting time of a game, don't change
+
                 // host saves the game
                 if(App.myRole=='Host'){
                     //App.$select.show();
@@ -362,6 +361,11 @@ var GAME = (function($){
 
                         // show object when everything is ready
                         App.$wait.fadeOut();
+
+                        App.currentTime = Date.now(); // current time
+                        if (App.round==0){
+                            App.startingTime = Date.now(); // starting time of a game, don't change
+                        }
                     }
                 }
                 App.$model.html('');
@@ -1288,13 +1292,13 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(survived>60){
+                        if(App.round>2){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
                         }
                         else{
-                            App.$amt.html('Try to survive 60 seconds to get the MTURK code!');
+                            App.$amt.html('Try to make three correct guesses to get the MTURK code!');
                         }
                     }
                     App.$scoreboard.modal();
