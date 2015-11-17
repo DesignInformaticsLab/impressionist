@@ -101,6 +101,7 @@ var GAME = (function($){
             App.objectString = App.objectstring_set[data.objectID];
 
             $('#wait.inner.cover p.lead').html('A human joined the game...');
+            App.$wait.show();
             if (App.myRole=='Player'){
                 $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
@@ -133,7 +134,7 @@ var GAME = (function($){
                     Obj.object_set = [];
                     IO.onNewObjData(App.$model);
                 }
-            }, 1000);
+            }, 2000);
         },
 
         /**
