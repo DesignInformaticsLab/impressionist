@@ -1287,7 +1287,7 @@ var GAME = (function($){
                     $('h4.modal-title').html('Congratulations! You survived ' + survived + ' seconds in the game!');
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
-                    if(App.amt && !App.playWithComputer){ // show amt code for amt users
+                    if(App.amt){ // show amt code for amt users
                         if(survived>60){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
