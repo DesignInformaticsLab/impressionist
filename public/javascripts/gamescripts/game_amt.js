@@ -214,6 +214,8 @@ var GAME = (function($){
             //App.$gamescore.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
 
+            App.object_loaded = false; // stop rendering
+
             App.$game.hide();
 
             IO.getSocketStats();
