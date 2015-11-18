@@ -589,7 +589,7 @@ var GAME = (function($){
             /**
              * if in the selection mode
              */
-            App.SELECT = false;
+            App.SELECT = true;
 
             /**
              * A reference to the socket ID of the Host
