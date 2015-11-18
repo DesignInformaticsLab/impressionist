@@ -774,7 +774,7 @@ var GAME = (function($){
                 event.preventDefault();
                 $(' h3').html("window.width" + window.innerHeight );
             });
-            App.$model.mousemove(function (event) {$(" h3").html("X: " + event.pageX + ", Y: " + event.pageY);
+            App.$model.mousemove(function (event) {$(" h3").html("X: " + App.mouse.x + ", Y: " + App.mouse.y );
             });
 
 
@@ -1161,12 +1161,9 @@ var GAME = (function($){
                 //casts a ray from camera through mouse at object
                 Obj.object_set[0].raycaster.setFromCamera(App.mouse, Obj.object_set[0].camera);
 
-                //var mouseVector = new THREE.Vector3();
-                //mouseVector.x = 2 * (event.pageX / window.innerWidth ) - 1;
-                //mouseVector.y = 1 - 2 * ( event.pageY / (window.innerHeight ) );
-                //Obj.object_set[0].raycaster.setFromCamera(mouseVector, Obj.object_set[0].camera);
-                ////var projector = new THREE.Projector();
-                ////Obj.object_set[0].raycaster = projector.pickingRay( mouseVector.clone(), Obj.object_set[0].camera );
+
+                //var projector = new THREE.Projector();
+                //Obj.object_set[0].raycaster = projector.pickingRay( App.mouse, Obj.object_set[0].camera );
 
                 App.selectedStrings = []; //initialized the selectedStrings array as empty
                 var intersections = []; //creates a empty intersection array as multiple selection are possible --
@@ -1432,41 +1429,6 @@ var GAME = (function($){
                 return true;
             }
         },
-
-        //merge: function(left, right){
-        //    var result = [],
-        //        lLen = left.length,
-        //        rLen = right.length,
-        //        l = 0,
-        //        r = 0;
-        //    while(l < lLen && r < rLen){
-        //        if(left[l] < right[r]){
-        //            result.push(left[l++]);
-        //        }else if (left[l] == right[r]){
-        //            var idx = Math.floor(Math.random() * 2);
-        //            if (idx > 1) {
-        //                return left[l++];
-        //            }else {
-        //                return right[r++];
-        //            }
-        //        }else{
-        //            result.push(right[r++]);
-        //        }
-        //    }
-        //    //remaining part needs to be addred to the result
-        //    return result.concat(left).concat(right);
-        //},
-        //mergeSort: function(arr){
-        //    var len = arr.length;
-        //    if(len <2)
-        //        return arr;
-        //    var mid = Math.floor(len/2),
-        //        left = arr.slice(0,mid),
-        //        right =arr.slice(mid);
-        //    //send left and right to the mergeSort to broke it down into pieces
-        //    //then merge those
-        //    return App.merge(App.mergeSort(left),App.mergeSort(right));
-        //},
 
         sortWithIndeces: function(toSort) {
             for (var i = 0; i < toSort.length; i++) {
