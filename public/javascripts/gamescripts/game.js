@@ -992,8 +992,8 @@ var GAME = (function($){
             App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
             App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
 
-            App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width()) * 2 - 1;
-            App.mouse.y = - ( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
+            App.mouse.x = ( (e.pageX-App.modelleftmargin) / target.width()) * 2 - 1;
+            App.mouse.y = - ( (e.pageY-App.modeltopmargin) / target.height() ) * 2 + 1;
             if (App.PRESSED == true){
                 if (App.SELECT == true && (App.myRole == 'Host'||!App.tutorial_shown)) {
                     App.select();
@@ -1023,8 +1023,8 @@ var GAME = (function($){
 
                 App.PRESSED = true;
                 if (App.PRESSED == true && App.SELECT == true) {
-                    App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width() ) * 2 - 1;
-                    App.mouse.y = -( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
+                    App.mouse.x = ( (e.pageX-App.modelleftmargin) / target.width() ) * 2 - 1;
+                    App.mouse.y = -( (e.pageY-App.modeltopmargin) / target.height() ) * 2 + 1;
                     App.select();
                 }
             }
@@ -1159,14 +1159,14 @@ var GAME = (function($){
             if (App.selection_capacity > 0) { // if still can select
 
                 //casts a ray from camera through mouse at object
-                //Obj.object_set[0].raycaster.setFromCamera(App.mouse, Obj.object_set[0].camera);
+                Obj.object_set[0].raycaster.setFromCamera(App.mouse, Obj.object_set[0].camera);
 
-                var mouseVector = new THREE.Vector3();
-                mouseVector.x = 2 * (event.pageX / window.innerHeight ) - 1;
-                mouseVector.y = 1 - 2 * ( event.pageX / (0.9*window.innerHeight ) );
-                Obj.object_set[0].raycaster.setFromCamera(mouseVector, Obj.object_set[0].camera);
-                //var projector = new THREE.Projector();
-                //Obj.object_set[0].raycaster = projector.pickingRay( mouseVector.clone(), Obj.object_set[0].camera );
+                //var mouseVector = new THREE.Vector3();
+                //mouseVector.x = 2 * (event.pageX / window.innerWidth ) - 1;
+                //mouseVector.y = 1 - 2 * ( event.pageY / (window.innerHeight ) );
+                //Obj.object_set[0].raycaster.setFromCamera(mouseVector, Obj.object_set[0].camera);
+                ////var projector = new THREE.Projector();
+                ////Obj.object_set[0].raycaster = projector.pickingRay( mouseVector.clone(), Obj.object_set[0].camera );
 
                 App.selectedStrings = []; //initialized the selectedStrings array as empty
                 var intersections = []; //creates a empty intersection array as multiple selection are possible --
