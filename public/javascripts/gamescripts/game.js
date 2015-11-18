@@ -589,7 +589,7 @@ var GAME = (function($){
             /**
              * if in the selection mode
              */
-            App.SELECT = true;
+            App.SELECT = false;
 
             /**
              * A reference to the socket ID of the Host
@@ -1714,6 +1714,9 @@ var GAME = (function($){
 
 
             this.render = function() {
+                if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined"){
+                    App.SELECT = true;
+                }
                 // if in tutorial
                 if(!App.tutorial_shown && App.myRole=='Host'){
                     // finish tutorial once the player selected a few
