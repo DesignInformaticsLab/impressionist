@@ -445,6 +445,38 @@ body {
     to { -webkit-transform: rotate(360deg); }
 }
 
+#rotate{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    color: #333333;
+    border-radius: 5px;
+    border: 0;
+    padding: 0;
+    font-size: 40px;
+    line-height: 50px;
+    text-align: center;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+    z-index: 10;
+}
+.rt_left{
+    bottom: 100px;
+    left: 50px;
+}
+.rt_right{
+    bottom: 100px;
+    left: 150px;
+}
+.rt_up{
+    bottom: 135px;
+    left: 100px;
+}
+.rt_down{
+    bottom: 65px;
+    left: 100px;
+}
 
 
 /***************************************/
@@ -499,4 +531,22 @@ and (max-device-width : 1024px) {
     .fb-like{
         width: 50%;
     }
+    /*.rt_left{*/
+        /*bottom: 100px;*/
+        /*left: 50px;*/
+    /*}*/
+    /*.rt_right{*/
+        /*bottom: 100px;*/
+        /*left: 150px;*/
+    /*}*/
+    /*.rt_up{*/
+        /*bottom: 135px;*/
+        /*left: 100px;*/
+    /*}*/
+    /*.rt_down{*/
+        /*bottom: 65px;*/
+        /*left: 100px;*/
+    /*}*/
+
+
 }
