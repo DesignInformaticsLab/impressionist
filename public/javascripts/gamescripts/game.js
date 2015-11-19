@@ -506,6 +506,8 @@ var GAME = (function($){
             if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
 
             App.setInitParameter();
+            if(window.OrientationEvent || typeof(window.onorientationchange) != "undefined")
+                App.MOBILE = true;
             $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
             Obj.object_set = [];
             App.$score.css('width','100%');
@@ -626,6 +628,8 @@ var GAME = (function($){
             // number of guesses made
             App.guess_made = 0;
 
+            // playing on mobile device?
+            App.mobile = false;
         },
 
         /**
@@ -1754,7 +1758,7 @@ var GAME = (function($){
 
             this.render = function() {
                 //default select if in mobile side
-                if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined") {
+                if( App.MOBILE == true) {
                     App.SELECT = true;
                 }else{
                     App.$rotation_left.hide();
