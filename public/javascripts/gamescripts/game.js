@@ -669,10 +669,10 @@ var GAME = (function($){
             // instruction
             App.$instruction = $('#instruction');
             //App.$rotate = $('#rotate');
-            //App.$rotation_left = $('#rotate.rt_left');
-            //App.$rotation_right = $('#rotate.rt_right');
-            //App.$rotation_up = $('#rotate.rt_up');
-            //App.$rotation_down = $('#rotate.rt_down');
+            App.$rotation_left = $('#rotate.rt_left');
+            App.$rotation_right = $('#rotate.rt_right');
+            App.$rotation_up = $('#rotate.rt_up');
+            App.$rotation_down = $('#rotate.rt_down');
 
             // scoreboard
             App.$myscore = $('#myscore');
@@ -1754,8 +1754,13 @@ var GAME = (function($){
 
             this.render = function() {
                 //default select if in mobile side
-                if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined"){
+                if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined") {
                     App.SELECT = true;
+                }else{
+                    App.$rotation_left.hide();
+                    App.$rotation_right.hide();
+                    App.$rotation_up.hide();
+                    App.$rotation_down.hide();
                 }
                 // if in tutorial
                 if(!App.tutorial_shown && App.myRole=='Host'){
