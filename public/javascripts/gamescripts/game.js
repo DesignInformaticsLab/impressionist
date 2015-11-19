@@ -105,9 +105,14 @@ var GAME = (function($){
                 $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
             else{
-
-                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                if(App.MOBILE = false){
+                    $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
                     '<b>To reveal the object, use left mouse while pressing S button down</b>' );
+                }
+                else{
+                    $('#instruction p').html('You can rotate using U D L R<br>' +
+                    '<b>Touch object to select faces</b>' );
+                }
             }
 
             setTimeout(function(){
@@ -506,8 +511,7 @@ var GAME = (function($){
             if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
 
             App.setInitParameter();
-            if(window.OrientationEvent || typeof(window.onorientationchange) != "undefined")
-                App.MOBILE = true;
+
             $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
             Obj.object_set = [];
             App.$score.css('width','100%');
@@ -1757,6 +1761,8 @@ var GAME = (function($){
 
 
             this.render = function() {
+                if(window.OrientationEvent || typeof(window.onorientationchange) != "undefined")
+                    App.MOBILE = true;
                 //default select if in mobile side
                 if( App.MOBILE == true) {
                     App.SELECT = true;
