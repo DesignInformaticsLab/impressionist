@@ -792,37 +792,39 @@ var GAME = (function($){
                 App.showTutorial();
             });
 
-            App.$rotation_down.click(function(){
+            //App.$rotation_down.mousedown(function(e){App.onMouseDown(e, App.$rotation_down)});
+            //App.$rotation_down.mouseup(function(e){App.onMouseUp(e, App.$rotation_down)});
+            App.$rotation_down.mousedown(function(){
                 $('#instruction p').html('Moving down!');
-                Obj.object_set[0].beta +=  3.1415 / 4;
-                //Obj.object_set[0].render();
-                //Obj.object_set[0].object.rotation.set(Obj.object_set[0].beta,0,0,'XYZ');
-                //Obj.object_set[0].beta = 0;
-                //Obj.object_set[0].render();
+                Obj.object_set[0].beta -=  3.1415 / 32;
             });
-            App.$rotation_up.click(function(){
+            App.$rotation_down.mouseup(function(){
+                $('#instruction p').html('Moving down then stop!');
+                Obj.object_set[0].beta +=  3.1415 / 32;
+            });
+            App.$rotation_up.mousedown(function(){
                 $('#instruction p').html('Moving up!');
-                Obj.object_set[0].beta -= 3.1415 / 4;
-                //Obj.object_set[0].object.rotation.set(Obj.object_set[0].beta,0,0,'XYZ');
-                //Obj.object_set[0].render();
-                //Obj.object_set[0].beta = 0;
-                //Obj.object_set[0].render();
+                Obj.object_set[0].beta += 3.1415 / 32;
             });
-            App.$rotation_left.click(function(){
+            App.$rotation_up.mouseup(function(){
+                $('#instruction p').html('Moving up then stop!');
+                Obj.object_set[0].beta -= 3.1415 / 32;
+            });
+            App.$rotation_left.mousedown(function(){
                 $('#instruction p').html('Moving left!');
-                Obj.object_set[0].theta += 3.1415 / 4;
-                //Obj.object_set[0].object.rotation.set(0,Obj.object_set[0].theta,0,'XYZ');
-                //Obj.object_set[0].render();
-                //Obj.object_set.theta = 0;
-                //Obj.object_set[0].render();
+                Obj.object_set[0].theta -= 3.1415 / 32;
             });
-            App.$rotation_right.click(function(){
+            App.$rotation_left.mouseup(function(){
+                $('#instruction p').html('Moving left then stop!');
+                Obj.object_set[0].theta += 3.1415 / 32;
+            });
+            App.$rotation_right.mousedown(function(){
                 $('#instruction p').html('Moving right!');
-                Obj.object_set[0].theta -= 3.1415 / 4;
-                //Obj.object_set[0].object.rotation.set(0,Obj.object_set[0].theta,0,'XYZ');
-                //Obj.object_set[0].render();
-                //Obj.object_set.theta = 0;
-                //Obj.object_set[0].render();
+                Obj.object_set[0].theta += 3.1415 / 32;
+            });
+            App.$rotation_right.mouseup(function(){
+                $('#instruction p').html('Moving right then stop!');
+                Obj.object_set[0].theta -= 3.1415 / 32;
             });
 
             App.$continue_btn.click(function(){
