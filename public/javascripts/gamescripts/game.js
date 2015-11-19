@@ -669,10 +669,10 @@ var GAME = (function($){
             // instruction
             App.$instruction = $('#instruction');
             //App.$rotate = $('#rotate');
-            App.$rotation_left = $('#rotate.rt_left');
-            App.$rotation_right = $('#rotate.rt_right');
-            App.$rotation_up = $('#rotate.rt_up');
-            App.$rotation_down = $('#rotate.rt_down');
+            //App.$rotation_left = $('#rotate.rt_left');
+            //App.$rotation_right = $('#rotate.rt_right');
+            //App.$rotation_up = $('#rotate.rt_up');
+            //App.$rotation_down = $('#rotate.rt_down');
 
             // scoreboard
             App.$myscore = $('#myscore');
@@ -775,12 +775,12 @@ var GAME = (function($){
             //});
 
             /*************added by Hope for test*******/
-            $("#entry").bind("click", function(event){
-                event.preventDefault();
-                $(' h3').html("window.width" + window.innerHeight );
-            });
-            App.$model.mousemove(function (event) {$(" h3").html("X: " + App.mouse.x + ", Y: " + App.mouse.y );
-            });
+            //$("#entry").bind("click", function(event){
+            //    event.preventDefault();
+            //    $(' h3').html("window.width" + window.innerHeight );
+            //});
+            //App.$model.mousemove(function (event) {$(" h3").html("X: " + App.mouse.x + ", Y: " + App.mouse.y );
+            //});
 
 
             App.$tutorial.click(function(){
@@ -792,40 +792,39 @@ var GAME = (function($){
                 App.showTutorial();
             });
 
-            //App.$rotation_down.mousedown(function(e){App.onMouseDown(e, App.$rotation_down)});
-            //App.$rotation_down.mouseup(function(e){App.onMouseUp(e, App.$rotation_down)});
-            App.$rotation_down.mousedown(function(){
-                $('#instruction p').html('Moving down!');
+            $('#rotate.rt_down').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving down!');
                 Obj.object_set[0].beta -=  3.1415 / 32;
             });
-            App.$rotation_down.mouseup(function(){
-                $('#instruction p').html('Moving down then stop!');
+            $('#rotate.rt_down').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving down then stop!');
                 Obj.object_set[0].beta +=  3.1415 / 32;
             });
-            App.$rotation_up.mousedown(function(){
-                $('#instruction p').html('Moving up!');
+            $('#rotate.rt_up').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving up!');
                 Obj.object_set[0].beta += 3.1415 / 32;
             });
-            App.$rotation_up.mouseup(function(){
-                $('#instruction p').html('Moving up then stop!');
+            $('#rotate.rt_up').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving up then stop!');
                 Obj.object_set[0].beta -= 3.1415 / 32;
             });
-            App.$rotation_left.mousedown(function(){
-                $('#instruction p').html('Moving left!');
+            $('#rotate.rt_left').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving left!');
                 Obj.object_set[0].theta -= 3.1415 / 32;
             });
-            App.$rotation_left.mouseup(function(){
-                $('#instruction p').html('Moving left then stop!');
+            $('#rotate.rt_left').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving left then stop!');
                 Obj.object_set[0].theta += 3.1415 / 32;
             });
-            App.$rotation_right.mousedown(function(){
-                $('#instruction p').html('Moving right!');
+            $('#rotate.rt_right').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving right!');
                 Obj.object_set[0].theta += 3.1415 / 32;
             });
-            App.$rotation_right.mouseup(function(){
-                $('#instruction p').html('Moving right then stop!');
+            $('#rotate.rt_right').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving right then stop!');
                 Obj.object_set[0].theta -= 3.1415 / 32;
             });
+
 
             App.$continue_btn.click(function(){
                 App.$continue.hide();
