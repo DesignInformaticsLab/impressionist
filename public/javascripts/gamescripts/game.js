@@ -338,7 +338,7 @@ var GAME = (function($){
                         o.correct_answer = answer; // get correct answers
                         o.height = zheight;
                         o.scale = scale;
-                        App.$rotate.show();
+                        //App.$rotate.show();
                         if(App.myRole == 'Player'){
                             App.$menu.show();
                             App.$guessoutput.hide();
@@ -794,6 +794,35 @@ var GAME = (function($){
 
             App.$rotation_down.click(function(){
                 $('#instruction p').html('Moving down!');
+                Obj.object_set[0].beta +=  3.1415 / 4;
+                //Obj.object_set[0].render();
+                //Obj.object_set[0].object.rotation.set(Obj.object_set[0].beta,0,0,'XYZ');
+                //Obj.object_set[0].beta = 0;
+                //Obj.object_set[0].render();
+            });
+            App.$rotation_up.click(function(){
+                $('#instruction p').html('Moving up!');
+                Obj.object_set[0].beta -= 3.1415 / 4;
+                //Obj.object_set[0].object.rotation.set(Obj.object_set[0].beta,0,0,'XYZ');
+                //Obj.object_set[0].render();
+                //Obj.object_set[0].beta = 0;
+                //Obj.object_set[0].render();
+            });
+            App.$rotation_left.click(function(){
+                $('#instruction p').html('Moving left!');
+                Obj.object_set[0].theta += 3.1415 / 4;
+                //Obj.object_set[0].object.rotation.set(0,Obj.object_set[0].theta,0,'XYZ');
+                //Obj.object_set[0].render();
+                //Obj.object_set.theta = 0;
+                //Obj.object_set[0].render();
+            });
+            App.$rotation_right.click(function(){
+                $('#instruction p').html('Moving right!');
+                Obj.object_set[0].theta -= 3.1415 / 4;
+                //Obj.object_set[0].object.rotation.set(0,Obj.object_set[0].theta,0,'XYZ');
+                //Obj.object_set[0].render();
+                //Obj.object_set.theta = 0;
+                //Obj.object_set[0].render();
             });
 
             App.$continue_btn.click(function(){
@@ -1723,6 +1752,7 @@ var GAME = (function($){
 
 
             this.render = function() {
+                //default select if in mobile side
                 if( window.OrientationEvent || typeof(window.onorientationchange) != "undefined"){
                     App.SELECT = true;
                 }
@@ -1760,8 +1790,9 @@ var GAME = (function($){
 
                 if(App.myRole != 'Player'){
                     if(typeof(d.object)!='undefined'){
-                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
-                            d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        //d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                        //    d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        d.object.rotation.set( d.object.rotation.x - d.beta, d.object.rotation.y + d.theta, 0, 'XYZ' );
                         if (d.scale>1){
                             var scale = d.global_scale* d.scale || 1;
                             d.object.children[0].scale.set(scale, scale, scale);
@@ -1771,8 +1802,9 @@ var GAME = (function($){
                 }
                 else{
                     if(typeof(d.emptyobject)!='undefined'){
-                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                        //d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                        //    d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta, d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                         //if (d.scale>1){
                         //    var scale = d.global_scale* d.scale || 1;
                         //    d.emptyobject.scale.set(scale, scale, scale);
