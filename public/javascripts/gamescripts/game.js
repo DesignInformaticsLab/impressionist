@@ -780,7 +780,7 @@ var GAME = (function($){
                 box1.addEventListener('touchstart', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point (ie: first finger)
                     var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
-                    var posy = - ( (touchobj.clientX-modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
                     $(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
@@ -791,7 +791,7 @@ var GAME = (function($){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
                     $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
                     var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
-                    var posy = - ( (touchobj.clientX-modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
                     $(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
@@ -802,7 +802,7 @@ var GAME = (function($){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
                     $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
                     var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
-                    var posy = - ( (touchobj.clientX-modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
                     $(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
