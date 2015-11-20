@@ -633,7 +633,13 @@ var GAME = (function($){
             App.guess_made = 0;
 
             // playing on mobile device?
-            App.mobile = false;
+            //App.mobile = false;
+            function is_touch_device() {
+                return 'ontouchstart' in window // works on most browsers
+                    || 'onmsgesturechange' in window; // works on ie10
+            };
+            App.MOBILE = is_touch_device();
+
         },
 
         /**
@@ -1761,8 +1767,6 @@ var GAME = (function($){
 
 
             this.render = function() {
-                if(window.OrientationEvent || typeof(window.onorientationchange) != "undefined")
-                    App.MOBILE = true;
                 //default select if in mobile side
                 if( App.MOBILE == true) {
                     App.SELECT = true;
