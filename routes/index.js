@@ -59,6 +59,9 @@ router.get('/basic', function(req, res, next) {
     res.render('basic', { title: 'basic' });
 });
 
+router.get('/box', function(req, res, next) {
+    res.render('box', { title: 'box' });
+});
 /* test gyro effect */
 router.get('/gyrotest', function(req, res, next) {
     res.render('gyrotest', { title: 'gyrotest' });
