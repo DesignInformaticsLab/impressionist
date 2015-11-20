@@ -778,22 +778,31 @@ var GAME = (function($){
                 box1.addEventListener('touchstart', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point (ie: first finger)
                     $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
+                    var posx = ( (touchobj.clientX-App.modelleftmargin) / App.$model.width()) * 2 - 1;
+                    var posy = - ( (touchobj.clientX-App.modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    var pos = [posx,posy];
                     e.preventDefault()
-                    App.select();
+                    App.select(pos);
                 }, false)
 
                 box1.addEventListener('touchmove', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
                     $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
+                    var posx = ( (touchobj.clientX-App.modelleftmargin) / App.$model.width()) * 2 - 1;
+                    var posy = - ( (touchobj.clientX-App.modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    var pos = [posx,posy];
                     e.preventDefault()
-                    App.select();
+                    App.select(pos);
                 }, false)
 
                 box1.addEventListener('touchend', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
                     $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
+                    var posx = ( (touchobj.clientX-App.modelleftmargin) / App.$model.width()) * 2 - 1;
+                    var posy = - ( (touchobj.clientX-App.modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    var pos = [posx,posy];
                     e.preventDefault()
-                    App.select();
+                    App.select(pos);
                 }, false)
 
             }, false)
@@ -1070,12 +1079,13 @@ var GAME = (function($){
         onMouseMove: function (e, target) {
             e.preventDefault();
 
-            if(App.is_touch_device()){
-                var posx = e.changedTouches[0].clientX
-                var posy = e.changedTouches[0].clientY
-                //var posx = e.originalEvent.touches[0].pageX;
-                //var posy = e.originalEvent.touches[0].pageY;
-            }else{
+            //if(App.is_touch_device()){
+            //    var posx = e.changedTouches[0].clientX
+            //    var posy = e.changedTouches[0].clientY
+            //    //var posx = e.originalEvent.touches[0].pageX;
+            //    //var posy = e.originalEvent.touches[0].pageY;
+            //}else
+            {
                 var posx = e.pageX
                 var posy = e.pageY
             }
@@ -1262,9 +1272,12 @@ var GAME = (function($){
         },
 
         // method invoked if the user clicks on a geometry while pressing s
-        select: function () {
+        select: function (pos) {
             if (App.selection_capacity > 0) { // if still can select
-
+                if (App.is_touch_device()){
+                    App.mouse.x = pos[0]
+                    App.mouse.y = pos[1]
+                }
                 //casts a ray from camera through mouse at object
                 Obj.object_set[0].raycaster.setFromCamera(App.mouse, Obj.object_set[0].camera);
 
