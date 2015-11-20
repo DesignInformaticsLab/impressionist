@@ -517,11 +517,18 @@ var GAME = (function($){
             App.$score.css('width','100%');
         },
         // playing on mobile device?
-        is_touch_device: function () {
-            return 'ontouchstart' in window // works on most browsers
-                || 'onmsgesturechange' in window; // works on ie10
+        //is_touch_device: function () {
+        //    return 'ontouchstart' in window // works on most browsers
+        //        || 'onmsgesturechange' in window; // works on ie10
+        //},
+        is_touch_device: function() {
+            try {
+                document.createEvent("TouchEvent");
+                return true;
+            } catch (e) {
+                return false;
+            }
         },
-
         /**
          * Initial parameters
          */
@@ -766,35 +773,30 @@ var GAME = (function($){
 
             window.addEventListener('load', function(){
 
-                var box1 = document.getElementById('box1')
-                var statusdiv = document.getElementById('statusdiv')
-                var startx = 0
-                var dist = 0
+                var box1 = document.getElementById('model')
 
                 box1.addEventListener('touchstart', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point (ie: first finger)
-                    startx = parseInt(touchobj.clientX) // get x position of touch point relative to left edge of browser
-                    //statusdiv.innerHTML = 'Status: touchstart<br> ClientX: ' + startx + 'px'
-                    $('#instruction p').html('Status: touchstart<br> ClientX: ' + startx + 'px');
+                    $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
                     e.preventDefault()
+                    App.select();
                 }, false)
 
                 box1.addEventListener('touchmove', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
-                    var dist = parseInt(touchobj.clientX) - startx
-                    //statusdiv.innerHTML = 'Status: touchmove<br> Horizontal distance traveled: ' + dist + 'px'
-                    $('#instruction p').html('Status: touchmove<br> Horizontal distance traveled: ' + dist + 'px');
+                    $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
                     e.preventDefault()
+                    App.select();
                 }, false)
 
                 box1.addEventListener('touchend', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
-                    //statusdiv.innerHTML = 'Status: touchend<br> Resting x coordinate: ' + touchobj.clientX + 'px'
-                    $('#instruction p').html('Status: touchend<br> Resting x coordinate: ' + touchobj.clientX + 'px');
+                    $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
                     e.preventDefault()
+                    App.select();
                 }, false)
 
-            }, false);
+            }, false)
 
             // Player
             App.$guessinput.on('keypress', App.onGuessinputKeyPress);
@@ -1067,6 +1069,18 @@ var GAME = (function($){
          */
         onMouseMove: function (e, target) {
             e.preventDefault();
+
+            if(App.is_touch_device()){
+                var posx = e.changedTouches[0].clientX
+                var posy = e.changedTouches[0].clientY
+                //var posx = e.originalEvent.touches[0].pageX;
+                //var posy = e.originalEvent.touches[0].pageY;
+            }else{
+                var posx = e.pageX
+                var posy = e.pageY
+            }
+
+
             var tempx = App.mouse.x;
             var tempy = App.mouse.y;
 
@@ -1074,8 +1088,8 @@ var GAME = (function($){
             App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
             App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
 
-            App.mouse.x = ( (e.pageX-App.modelleftmargin) / target.width()) * 2 - 1;
-            App.mouse.y = - ( (e.pageY-App.modeltopmargin) / target.height() ) * 2 + 1;
+            App.mouse.x = ( (posx-App.modelleftmargin) / target.width()) * 2 - 1;
+            App.mouse.y = - ( (posy-App.modeltopmargin) / target.height() ) * 2 + 1;
             if (App.PRESSED == true){
                 if (App.SELECT == true && (App.myRole == 'Host'||!App.tutorial_shown)) {
                     App.select();
@@ -1097,6 +1111,17 @@ var GAME = (function($){
          */
         onMouseDown: function (e, target) {
             e.preventDefault();
+
+            if(App.is_touch_device()){
+                var posx = e.changedTouches[0].clientX
+                var posy = e.changedTouches[0].clientY
+                //var posx = e.originalEvent.touches[0].pageX;
+                //var posy = e.originalEvent.touches[0].pageY;
+            }else{
+                var posx = e.pageX
+                var posy = e.pageY
+            }
+
             if (!App.isJqmGhostClick(event)) {
 
                 // $model margins
@@ -1105,8 +1130,8 @@ var GAME = (function($){
 
                 App.PRESSED = true;
                 if (App.PRESSED == true && App.SELECT == true) {
-                    App.mouse.x = ( (e.pageX-App.modelleftmargin) / target.width() ) * 2 - 1;
-                    App.mouse.y = -( (e.pageY-App.modeltopmargin) / target.height() ) * 2 + 1;
+                    App.mouse.x = ( (posx-App.modelleftmargin) / target.width() ) * 2 - 1;
+                    App.mouse.y = -( (posy-App.modeltopmargin) / target.height() ) * 2 + 1;
                     App.select();
                 }
             }
@@ -2229,4 +2254,5 @@ GAME.IO.init();
 //    event.preventDefault();
 //    $('#home h1').html('page init!');
 //})
+
 
