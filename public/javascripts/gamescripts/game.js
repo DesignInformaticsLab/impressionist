@@ -105,7 +105,7 @@ var GAME = (function($){
                 $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
             else{
-                if(App.MOBILE = false){
+                if(App.is_touch_device() == false){
                     $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
                     '<b>To reveal the object, use left mouse while pressing S button down</b>' );
                 }
@@ -516,6 +516,11 @@ var GAME = (function($){
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
+        // playing on mobile device?
+        is_touch_device: function () {
+            return 'ontouchstart' in window // works on most browsers
+                || 'onmsgesturechange' in window; // works on ie10
+        },
 
         /**
          * Initial parameters
@@ -631,14 +636,6 @@ var GAME = (function($){
 
             // number of guesses made
             App.guess_made = 0;
-
-            // playing on mobile device?
-            //App.mobile = false;
-            function is_touch_device() {
-                return 'ontouchstart' in window // works on most browsers
-                    || 'onmsgesturechange' in window; // works on ie10
-            };
-            App.MOBILE = is_touch_device();
 
         },
 
@@ -1768,7 +1765,7 @@ var GAME = (function($){
 
             this.render = function() {
                 //default select if in mobile side
-                if( App.MOBILE == true) {
+                if( App.is_touch_device() == true) {
                     App.SELECT = true;
                 }else{
                     App.$rotation_left.hide();
