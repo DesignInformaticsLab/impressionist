@@ -774,14 +774,14 @@ var GAME = (function($){
             window.addEventListener('load', function(){
 
                 var box1 = document.getElementById('model')
-                var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
-                var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
 
                 box1.addEventListener('touchstart', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point (ie: first finger)
+                    var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                    var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
                     var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
                     var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
-                    $(' h3').html('x: ' + posx + 'y:' + posy);
+                    //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
                     App.select(pos);
@@ -789,10 +789,11 @@ var GAME = (function($){
 
                 box1.addEventListener('touchmove', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
-                    $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
+                    var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                    var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
                     var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
                     var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
-                    $(' h3').html('x: ' + posx + 'y:' + posy);
+                    //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
                     App.select(pos);
@@ -800,10 +801,11 @@ var GAME = (function($){
 
                 box1.addEventListener('touchend', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
-                    $(' h3').html('x: ' + touchobj.clientX + 'y:' + touchobj.clientY);
+                    var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                    var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
                     var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
                     var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
-                    $(' h3').html('x: ' + posx + 'y:' + posy);
+                    //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
                     App.select(pos);
