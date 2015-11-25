@@ -1,0 +1,77 @@
+//
+   Created by p2admin on 11/12/2015.
+block content
+
+
+   head
+      meta(name='viewport', content='width=device-width, initial-scale=1')
+      link(rel='stylesheet', href='http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css')
+      //link(rel='stylesheet', type='text/css', href='stylesheets/jquery.mobile-1.4.5.min.css')
+      script(src='javascripts/jquery-2.1.3.min.js')
+      script(src='javascripts/jquery.mobile-1.4.5.min.js')
+
+      //script.
+      //   $(document).on("pagecreate","#pageone",function(){
+      //      $("p").on("swipe",function(){
+      //         $("span").text("Swipe detected!");
+      //      });
+      //   });
+      //script.
+      //   $(document).on("pagecreate", "#pageone", function () {
+      //      $("p").on("tap", function () {
+      //         $(this).hide();
+      //      });
+      //   });
+      //script.
+      //   $(document).on('touchstart', function (e) {
+      //      if (e.touches.length > 1) {
+      //         $("span").text("two finger swipe detected!");
+      //      }
+      //   });
+      //script.
+      //   $('.rotate').click(function() {
+      //      Obj.object_set.theta += 3.14/4;
+      //      $(this).rotate(rotation);
+      //   });
+
+
+
+
+
+
+
+
+   body
+      #home
+         h1
+            | Is this a mobile device?
+         p.
+            Let me see...<br>
+
+      #pageone(data-role='page')
+         div(data-role='header')
+            h1 The swipe and tap Event
+         .ui-content(data-role='main')
+            p If you tap me, I will disappear.
+            p Swipe this text or in the box below.
+            p(style='border:1px solid black;height:200px;width:200px;')
+               p
+                  span(style='color:red')
+            h2 Let me see...
+            div(data-role='footer')
+               script(src="javascripts/touch.js")
+               p
+                  | The mouse pointer position is at:
+                  span2
+
+   //script(src="javascripts/jquery-2.1.3.min.js")
+      //| &#x9;
+      //script(src="javascripts/three.min.js")
+      //| &#x9;
+      //script(src="javascripts/modernizr.min.js")
+      //| &#x9;
+      //script(src="javascripts/fulltilt.js")
+      //| &#x9;
+
+
+

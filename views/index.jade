@@ -15,6 +15,12 @@ block content
        }(document, 'script', 'facebook-jssdk'));
 
 
+      script.
+       $(document).on("pagecreate", "#home", function () {
+          $("p").on("tap", function () {
+            $('#home h1').html('page init!');
+          });
+       });
 
       .site-wrapper
           .site-wrapper-inner
@@ -52,6 +58,22 @@ block content
                   #continue.inner.cover
                       #continue_btn.btn.btn-lg.btn-default
                           | Continue
+
+
+                  //#box1.box
+                  //    h3  Touch Me!
+                  //    | &nbsp;
+                  //    h3#statusdiv Status
+
+
+                  //#gyrotest
+                  //#gyroViewer
+                  //      #js
+                  //          script(src="javascripts/jquery-2.1.3.min.js")
+                  //          script(src="javascripts/three.min.js")
+                  //          script(src="javascripts/modernizr.min.js")
+                  //          script(src="javascripts/fulltilt.js")
+                  //          script(src="javascripts/common.js")
                   #game
                       //#menu
                       //    .button.mouse-look
@@ -75,6 +97,23 @@ block content
                       #model(tabindex='0')
                       #instruction
                           p
+                      #rotate.rt_left
+                          | L
+                      #rotate.rt_right
+                          | R
+                      #rotate.rt_up
+                          | U
+                      #rotate.rt_down
+                          | D
+
+                      //#rotation_left
+                      //    | L
+                      //#rotation_rightt
+                      //    | R
+                      //#rotation_up
+                      //    | U
+                      //#rotation_down
+                      //    | D
                   #stat
                       #objlist
                       #comp_model1(tabindex='0')
@@ -109,3 +148,19 @@ block content
                               <a href="http://www.public.asu.edu/~yren32">DILab</a>.
       script(src="stylesheets/bootstrap/js/bootstrap.min.js")
       script(src="javascripts/gamescripts/game.js")
+      script(src="javascripts/touchy.js")
+      //script.
+      //      Touchy.stopWindowBounce();
+      //      var touchMe = document.getElementById('home');
+      //      function drawPoint(point) {
+      //          var elem = document.createElement('div');
+      //          elem.className = 'point';
+      //          elem.style.top = point.y + 'px';
+      //          elem.style.left = point.x + 'px';
+      //          touchMe.appendChild(elem);
+      //      }
+      //      Touchy(touchMe, true, function (hand, finger) {
+      //          finger.on('start', drawPoint);
+      //          finger.on('move', drawPoint);
+      //          finger.on('end', drawPoint);
+      //      });

@@ -1,0 +1,51 @@
+//
+   Created by p2admin on 11/16/2015.
+
+doctype html
+html
+   head
+      title Touchy Demos - Basic
+      | &#x9;&#x9;
+      meta(content='yes', name='apple-mobile-web-app-capable')
+      | &#x9;&#x9;
+      meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+      | &#x9;&#x9;
+      style.
+         #touch-me {
+            z-index: 1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+         }
+         .point {
+            z-index: 2;
+            position: absolute;
+            margin: -12px 0 0 -12px;
+            height: 25px;
+            width: 25px;
+            background: #000;
+            border-radius: 12px;
+         }
+   | &#x9;
+   body
+      #touch-me
+      | &#x9;&#x9;
+      script(src='javascripts/touchy.js')
+      //| &#x9;&#x9;
+      //script.
+      //   Touchy.stopWindowBounce();
+      //   var touchMe = document.getElementById('touch-me');
+      //   function drawPoint (point) {
+      //      var elem = document.createElement('div');
+      //      elem.className = 'point';
+      //      elem.style.top = point.y + 'px';
+      //      elem.style.left = point.x + 'px';
+      //      touchMe.appendChild(elem);
+      //   }
+      //   Touchy(touchMe, true, function (hand, finger) {
+      //      finger.on('start', drawPoint);
+      //      finger.on('move' , drawPoint);
+      //      finger.on('end'  , drawPoint);
+      //   });

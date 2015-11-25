@@ -3,8 +3,8 @@ var router = express.Router();
 var pg = require('pg');
 
 var connection = process.env.DATABASE_URL
-          ||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
-    //|| "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
+        //   ||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
+    || "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
 
 //for local postgres server, and Heroku server
 var objectstring_set = [
@@ -43,7 +43,28 @@ function handle_error(res, err) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Impressionist' });
+    res.render('index', { title: 'Impressionist' });
+});
+
+/* test touch effect */
+router.get('/touchtest', function(req, res, next) {
+    res.render('touchtest', { title: 'touchtest' });
+});
+
+/* test multi touch effect */
+router.get('/multitouch', function(req, res, next) {
+    res.render('multitouch', { title: 'multitouch' });
+});
+router.get('/basic', function(req, res, next) {
+    res.render('basic', { title: 'basic' });
+});
+
+router.get('/box', function(req, res, next) {
+    res.render('box', { title: 'box' });
+});
+/* test gyro effect */
+router.get('/gyrotest', function(req, res, next) {
+    res.render('gyrotest', { title: 'gyrotest' });
 });
 
 /* GET game page. */

@@ -223,7 +223,7 @@
     z-index: 5;
 }
 .object_div a{
-    font-size: 10;
+    font-size: 10px;
     background: #eee;
     color: #222;
 }
@@ -368,15 +368,6 @@ body {
     border-bottom-color: #222;
 }
 
-@media (min-width: 768px) {
-    .masthead-brand {
-        float: left;
-    }
-    .masthead-nav {
-        float: right;
-    }
-}
-
 
 /*
  * Cover
@@ -407,35 +398,35 @@ body {
  * Affix and center
  */
 
-@media (min-width: 768px) {
     /* Pull out the header and footer */
-    .masthead {
-        position: fixed;
-        top: 0;
-    }
-    .mastfoot {
-        position: fixed;
-        bottom: 0;
-    }
-    /* Start the vertical centering */
-    .site-wrapper-inner {
-        vertical-align: middle;
-    }
-    /* Handle the widths */
-    .masthead,
-    .mastfoot,
-    .cover-container {
-        width: 100%; /* Must be percentage or pixels for horizontal alignment */
-    }
+.masthead {
+    position: fixed;
+    top: 0;
+    width: 900px;
+}
+.mastfoot {
+    position: fixed;
+    bottom: 0;
+    width: 900px;
+}
+/* Start the vertical centering */
+.site-wrapper-inner {
+    vertical-align: middle;
+}
+/* Handle the widths */
+.cover-container {
+    /*width: 100%; /!* Must be percentage or pixels for horizontal alignment *!/*/
+    width: 900px;
+}
+.masthead-brand {
+    float: left;
+}
+.masthead-nav {
+    float: right;
 }
 
-@media (min-width: 992px) {
-    .masthead,
-    .mastfoot,
-    .cover-container {
-        width: 900px;
-    }
-}
+
+
 /* From bootstrap cover template */
 
 /* For loading sign */
@@ -452,4 +443,110 @@ body {
 @-webkit-keyframes spin2 {
     from { -webkit-transform: rotate(0deg); }
     to { -webkit-transform: rotate(360deg); }
+}
+
+#rotate{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    color: #333333;
+    border-radius: 5px;
+    border: 0;
+    padding: 0;
+    font-size: 40px;
+    line-height: 50px;
+    text-align: center;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+    z-index: 10;
+}
+.rt_left{
+    bottom: 100px;
+    left: 50px;
+}
+.rt_right{
+    bottom: 100px;
+    left: 150px;
+}
+.rt_up{
+    bottom: 135px;
+    left: 100px;
+}
+.rt_down{
+    bottom: 65px;
+    left: 100px;
+}
+
+
+/***************************************/
+
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 1024px) {
+    .masthead {
+        position: fixed;
+        top: 0;
+        width: 90%;
+    }
+    .mastfoot {
+        position: fixed;
+        bottom: 0;
+        width: 90%;
+    }
+    /* Start the vertical centering */
+    .site-wrapper-inner {
+        vertical-align: middle;
+    }
+    /* Handle the widths */
+    .cover-container {
+        /*width: 100%; /!* Must be percentage or pixels for horizontal alignment */
+        width: 90%;
+    }
+    .masthead-brand {
+        float: left;
+    }
+    .masthead-nav {
+        float: right;
+    }
+    .cover{
+        /*width: 90%;*/
+        font-size: 90%;
+    }
+    .cover .btn-lg{
+        padding: 6px 15px;
+    }
+    .mastfoot{
+        font-size: 50%;
+    }
+    .cover-heading{
+        font-size: 170%;
+    }
+    .lead{
+        font-size: 70%;
+    }
+    .inner{
+        padding: 0px;
+    }
+    .fb-like{
+        width: 50%;
+    }
+    /*.rt_left{*/
+        /*bottom: 100px;*/
+        /*left: 50px;*/
+    /*}*/
+    /*.rt_right{*/
+        /*bottom: 100px;*/
+        /*left: 150px;*/
+    /*}*/
+    /*.rt_up{*/
+        /*bottom: 135px;*/
+        /*left: 100px;*/
+    /*}*/
+    /*.rt_down{*/
+        /*bottom: 65px;*/
+        /*left: 100px;*/
+    /*}*/
+
+
 }

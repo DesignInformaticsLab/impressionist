@@ -108,9 +108,14 @@ var GAME = (function($){
                 $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
             }
             else{
-
-                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                if(App.is_touch_device() == false){
+                    $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
                     '<b>To reveal the object, use left mouse while pressing S button down</b>' );
+                }
+                else{
+                    $('#instruction p').html('You can rotate using U D L R<br>' +
+                    '<b>Touch object to select faces</b>' );
+                }
             }
 
             setTimeout(function(){
@@ -183,12 +188,14 @@ var GAME = (function($){
                     Obj.object_set[0].createMesh(selections, childName);
                     // update selection capacity
                     App.selection_capacity = App.selection_capacity - selections.length;
+
                     //App.$bar.css('opacity', App.selection_capacity / Obj.object_set[0].object.FaceArray[0] * App.progressbar_size);
                     //App.$bar.css('background-color', '#333333');
                 }
                 else if (App.myRole == 'Host') {
+
                     $.each(selections, function(id,i){
-                        Obj.object_set[0].object.getObjectByName(childName).geometry.faces[i].color.setHex(0xff7777);
+                        Obj.object_set[0].object.getObjectByName(childName).geometry.faces[i].color.setHex(0x0003FF);
                     });
                     Obj.object_set[0].object.getObjectByName(childName).geometry.colorsNeedUpdate = true;
                 }
@@ -518,11 +525,24 @@ var GAME = (function($){
             if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
 
             App.setInitParameter();
+
             $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
-
+        // playing on mobile device?
+        //is_touch_device: function () {
+        //    return 'ontouchstart' in window // works on most browsers
+        //        || 'onmsgesturechange' in window; // works on ie10
+        //},
+        is_touch_device: function() {
+            try {
+                document.createEvent("TouchEvent");
+                return true;
+            } catch (e) {
+                return false;
+            }
+        },
         /**
          * Initial parameters
          */
@@ -690,6 +710,11 @@ var GAME = (function($){
 
             // instruction
             App.$instruction = $('#instruction');
+            //App.$rotate = $('#rotate');
+            App.$rotation_left = $('#rotate.rt_left');
+            App.$rotation_right = $('#rotate.rt_right');
+            App.$rotation_up = $('#rotate.rt_up');
+            App.$rotation_down = $('#rotate.rt_down');
 
             // scoreboard
             App.$myscore = $('#myscore');
@@ -728,6 +753,16 @@ var GAME = (function($){
             App.$guessinput.css('left',margin_left+'px');
             //App.progressbar_size = App.$select.css('opacity')/1;
         },
+
+        //swipeRotate: function(){
+        swipeRotate: function (e, target) {
+            $("p").on("tap", function () {
+                $.each(Obj.object_set, function (i, o) {
+                    o.theta += 3.14 / 4;
+                });
+            });
+        },
+
 
         /**
          * Create some click handlers for the various buttons that appear on-screen.
@@ -774,6 +809,48 @@ var GAME = (function($){
 
             window.addEventListener( 'resize', App.onWindowResize, false );
 
+            window.addEventListener('load', function(){
+
+                var box1 = document.getElementById('model')
+
+                box1.addEventListener('touchstart', function(e){
+                    var touchobj = e.changedTouches[0] // reference first touch point (ie: first finger)
+                    var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                    var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
+                    var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
+                    var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    //$(' h3').html('x: ' + posx + 'y:' + posy);
+                    var pos = [posx,posy];
+                    e.preventDefault()
+                    App.select(pos);
+                }, false)
+
+                box1.addEventListener('touchmove', function(e){
+                    var touchobj = e.changedTouches[0] // reference first touch point for this event
+                    var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                    var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
+                    var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
+                    var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    //$(' h3').html('x: ' + posx + 'y:' + posy);
+                    var pos = [posx,posy];
+                    e.preventDefault()
+                    App.select(pos);
+                }, false)
+
+                box1.addEventListener('touchend', function(e){
+                    var touchobj = e.changedTouches[0] // reference first touch point for this event
+                    var modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
+                    var modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
+                    var posx = ( (touchobj.clientX-modelleftmargin) / App.$model.width()) * 2 - 1;
+                    var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
+                    //$(' h3').html('x: ' + posx + 'y:' + posy);
+                    var pos = [posx,posy];
+                    e.preventDefault()
+                    App.select(pos);
+                }, false)
+
+            }, false)
+
             // Player
             App.$guessinput.on('keypress', App.onGuessinputKeyPress);
 
@@ -797,6 +874,40 @@ var GAME = (function($){
                 IO.getSocketStats();
                 App.showTutorial();
             });
+
+            $('#rotate.rt_down').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving down!');
+                Obj.object_set[0].beta -=  3.1415 / 32;
+            });
+            $('#rotate.rt_down').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving down then stop!');
+                Obj.object_set[0].beta +=  3.1415 / 32;
+            });
+            $('#rotate.rt_up').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving up!');
+                Obj.object_set[0].beta += 3.1415 / 32;
+            });
+            $('#rotate.rt_up').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving up then stop!');
+                Obj.object_set[0].beta -= 3.1415 / 32;
+            });
+            $('#rotate.rt_left').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving left!');
+                Obj.object_set[0].theta -= 3.1415 / 32;
+            });
+            $('#rotate.rt_left').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving left then stop!');
+                Obj.object_set[0].theta += 3.1415 / 32;
+            });
+            $('#rotate.rt_right').bind( "touchstart", function(e){
+                //$('#instruction p').html('Moving right!');
+                Obj.object_set[0].theta += 3.1415 / 32;
+            });
+            $('#rotate.rt_right').bind( "touchend", function(e){
+                //$('#instruction p').html('Moving right then stop!');
+                Obj.object_set[0].theta -= 3.1415 / 32;
+            });
+
 
             App.$continue_btn.click(function(){
                 App.$continue.hide();
@@ -995,6 +1106,19 @@ var GAME = (function($){
          */
         onMouseMove: function (e, target) {
             e.preventDefault();
+
+            //if(App.is_touch_device()){
+            //    var posx = e.changedTouches[0].clientX
+            //    var posy = e.changedTouches[0].clientY
+            //    //var posx = e.originalEvent.touches[0].pageX;
+            //    //var posy = e.originalEvent.touches[0].pageY;
+            //}else
+            {
+                var posx = e.pageX
+                var posy = e.pageY
+            }
+
+
             var tempx = App.mouse.x;
             var tempy = App.mouse.y;
 
@@ -1002,8 +1126,8 @@ var GAME = (function($){
             App.modeltopmargin = Number(App.$model.css('margin-top').slice(0,-2))||0;
             App.modelleftmargin = Number(App.$model.css('margin-left').slice(0,-2))||0;
 
-            App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width()) * 2 - 1;
-            App.mouse.y = - ( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
+            App.mouse.x = ( (posx-App.modelleftmargin) / target.width()) * 2 - 1;
+            App.mouse.y = - ( (posy-App.modeltopmargin) / target.height() ) * 2 + 1;
             if (App.PRESSED == true){
                 if (App.SELECT == true && (App.myRole == 'Host'||!App.tutorial_shown)) {
                     App.select();
@@ -1025,6 +1149,17 @@ var GAME = (function($){
          */
         onMouseDown: function (e, target) {
             e.preventDefault();
+
+            if(App.is_touch_device()){
+                var posx = e.changedTouches[0].clientX
+                var posy = e.changedTouches[0].clientY
+                //var posx = e.originalEvent.touches[0].pageX;
+                //var posy = e.originalEvent.touches[0].pageY;
+            }else{
+                var posx = e.pageX
+                var posy = e.pageY
+            }
+
             if (!App.isJqmGhostClick(event)) {
 
                 // $model margins
@@ -1033,8 +1168,8 @@ var GAME = (function($){
 
                 App.PRESSED = true;
                 if (App.PRESSED == true && App.SELECT == true) {
-                    App.mouse.x = ( (e.clientX-App.modelleftmargin) / target.width() ) * 2 - 1;
-                    App.mouse.y = -( (e.clientY-App.modeltopmargin) / target.height() ) * 2 + 1;
+                    App.mouse.x = ( (posx-App.modelleftmargin) / target.width() ) * 2 - 1;
+                    App.mouse.y = -( (posy-App.modeltopmargin) / target.height() ) * 2 + 1;
                     App.select();
                 }
             }
@@ -1052,6 +1187,9 @@ var GAME = (function($){
                 o.beta = 0;
             });
         },
+
+
+
 
         /**
          * when key down: s: make selection, z: show heatmap (obsolete soon), u: upload heatmap (obsolete soon)
@@ -1160,11 +1298,19 @@ var GAME = (function($){
         },
 
         // method invoked if the user clicks on a geometry while pressing s
-        select: function () {
+        select: function (pos) {
             if (App.selection_capacity > 0) { // if still can select
-
+                if (App.is_touch_device()){
+                    App.mouse.x = pos[0]
+                    App.mouse.y = pos[1]
+                }
                 //casts a ray from camera through mouse at object
                 Obj.object_set[0].raycaster.setFromCamera(App.mouse, Obj.object_set[0].camera);
+
+
+                //var projector = new THREE.Projector();
+                //Obj.object_set[0].raycaster = projector.pickingRay( App.mouse, Obj.object_set[0].camera );
+
                 App.selectedStrings = []; //initialized the selectedStrings array as empty
                 var intersections = []; //creates a empty intersection array as multiple selection are possible --
                 // raycaster might intersect more than one face such as at the front and back of a geometry
@@ -1244,6 +1390,10 @@ var GAME = (function($){
                     }
                 }
             }
+        },
+
+        touch_select: function(){
+            select();
         },
 
         /**
@@ -1327,8 +1477,6 @@ var GAME = (function($){
                 });
             });
         },
-
-
 
         /**
          * Click handler for the 'JOIN' button
@@ -1775,6 +1923,15 @@ var GAME = (function($){
 
 
             this.render = function() {
+                //default select if in mobile side
+                if( App.is_touch_device() == true) {
+                    App.SELECT = true;
+                }else{
+                    App.$rotation_left.hide();
+                    App.$rotation_right.hide();
+                    App.$rotation_up.hide();
+                    App.$rotation_down.hide();
+                }
                 // if in tutorial
                 if(!App.tutorial_shown && App.myRole=='Host'){
                     // finish tutorial once the player selected a few
@@ -1809,8 +1966,9 @@ var GAME = (function($){
 
                 if(App.myRole != 'Player'){
                     if(typeof(d.object)!='undefined'){
-                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
-                            d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        //d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                        //    d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        d.object.rotation.set( d.object.rotation.x - d.beta, d.object.rotation.y + d.theta, 0, 'XYZ' );
                         if (d.scale>1){
                             var scale = d.global_scale* d.scale || 1;
                             d.object.children[0].scale.set(scale, scale, scale);
@@ -1820,8 +1978,9 @@ var GAME = (function($){
                 }
                 else{
                     if(typeof(d.emptyobject)!='undefined'){
-                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                        //d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                        //    d.object.rotation.y + d.theta, 0, 'XYZ' );
+                        d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta, d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                         //if (d.scale>1){
                         //    var scale = d.global_scale* d.scale || 1;
                         //    d.emptyobject.scale.set(scale, scale, scale);
