@@ -62,7 +62,7 @@ var GAME = (function($){
          */
         onNewGameCreated : function(data) {
             //App.$instruction.hide();
-            $('#instruction p').html('');
+
             App.myRole = 'Host';
             //App.$select.show();
             //App.$bar.show();
@@ -74,7 +74,6 @@ var GAME = (function($){
             setTimeout(function () {
                 if(App.playWithComputer){App.playComputer();}
             },5000);
-
         },
 
         /**
@@ -105,42 +104,46 @@ var GAME = (function($){
             App.object_loaded = false;
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
+                $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!</b>');
+
             }
             else{
                 if(App.is_touch_device() == false){
-                    $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
-                    '<b>To reveal the object, use left mouse while pressing S button down</b>' );
+                    $('#instruction .modal-body p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                        '<b>To reveal the object, use left mouse while pressing S button down</b>');
                 }
                 else{
-                    $('#instruction p').html('You can rotate using U D L R<br>' +
+                    $('#instruction .modal-body p').html('You can rotate using U D L R<br>' +
                     '<b>Touch object to select faces</b>' );
                 }
             }
+            App.$instruction.modal();
 
-            setTimeout(function(){
-                App.$wait.hide();
-                App.$game.show();
+            App.$instruction.on('hidden.bs.modal', function () {
+                setTimeout(function(){
+                    App.$wait.hide();
+                    App.$game.show();
 
-                // host saves the game
-                if(App.myRole=='Host'){
-                    //App.$select.show();
-                    //App.$bar.show();
-                    $.post('/newGame',{'amt':App.amt},function(data){
-                        // broadcast game id
-                        IO.socket.emit('broadcastGameID', data[0].id);
-                        // create a new object and start the game
+                    // host saves the game
+                    if(App.myRole=='Host'){
+                        //App.$select.show();
+                        //App.$bar.show();
+                        $.post('/newGame',{'amt':App.amt},function(data){
+                            // broadcast game id
+                            IO.socket.emit('broadcastGameID', data[0].id);
+                            // create a new object and start the game
+                            Obj.object_set = [];
+                            IO.onNewObjData(App.$model);
+                        });
+                    }
+                    else{
+                        //App.$select.hide();
+                        //App.$bar.hide();
                         Obj.object_set = [];
                         IO.onNewObjData(App.$model);
-                    });
-                }
-                else{
-                    //App.$select.hide();
-                    //App.$bar.hide();
-                    Obj.object_set = [];
-                    IO.onNewObjData(App.$model);
-                }
-            }, 2000);
+                    }
+                }, 2000);
+            });
         },
 
         /**
@@ -257,12 +260,15 @@ var GAME = (function($){
                 }
                 // if during the tutorial
                 else if (!App.tutorial_shown && App.myRole=='Player'){
-                    $('#instruction p').html('Now you are in charge of revealing the object.<br>' +
+                    $('#instruction .modal-body p').html('Now you are in charge of revealing the object.<br>' +
                         'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
                         'button</b> to select parts of the object for the other player to guess.<br>'+
                         'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
                         'Selecting more faces will result in time penalty!<br>');
-                    App.tutorialChoose();
+                    App.$instruction.modal();
+                    App.$instruction.on('hidden.bs.modal', function () { App.tutorialChoose(); });
+
+
                 }
                 else{
                     //App.$continue.show();
@@ -282,16 +288,18 @@ var GAME = (function($){
                 App.$guessoutput.html(data.answer+'?');
             }
             else if (App.myRole == 'Player'){
-                $('#instruction p').html('<b>Nope...please try again');
+                //$('#instruction p').html('<b>Nope...please try again');
                 setTimeout(function () {
                     App.$wait.hide();
-                    //App.$menu.css('background-color', '#f5f5ff');
+                    App.$menu.css('background-color', '#f5f5ff');
                 },1500);
                 App.$guessinput.css('background-color', '#000000');
-                //App.$menu.css('background-color', '#000000');
+                App.$menu.css('background-color', '#000000');
+                App.$guessinput.html('Wrong Answer');
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
-                    //App.$menu.css('background-color', '#f5f5ff');
+                    App.$menu.css('background-color', '#f5f5ff');
+                    App.$guessinput.html('');
                 },800);
             }
         },
@@ -314,13 +322,14 @@ var GAME = (function($){
             }
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!');
+                $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!');
             }
             else{
 
-                $('#instruction p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                $('#instruction .modal-body p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
                     '<b>To reveal the object, use left mouse while pressing S button down' );
             }
+            App.$instruction.modal();
 
             App.$wait.hide();
             App.$game.show();
@@ -445,25 +454,27 @@ var GAME = (function($){
                     App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
 
                     if(!App.tutorial_shown){
-                        $('#instruction p').html('Welcome to the tutorial!<br>' +
+                        $('#instruction .modal-body p').html('Welcome to the tutorial!<br>' +
                             'This is a game between two players.<br>' +
                             'One player reveals an object and the other guesses what it is.<br><br>' +
                             'Now, an object is being gradually revealed.<br>' +
                             'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
                             'Go ahead and guess what this object is!<br>' +
                             'Do it fast to achieve higher scores!');
-                        App.$instruction.fadeIn();
+                        //App.$instruction.fadeIn();
                     }
                     else{
-                        $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
+                        $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!</b>');
                     }
+                    App.$instruction.modal();
+                    App.$instruction.on('hidden.bs.modal', function () {
+                        o.object.rotation.y = Math.random()*Math.PI*2;
 
-                    o.object.rotation.y = Math.random()*Math.PI*2;
+                        App.object_loaded = true;
 
-                    App.object_loaded = true;
-
-                    // let computer select faces
-                    App.autoSelect();
+                        // let computer select faces
+                        App.autoSelect();
+                    });
                 });
             };
             App.$game.show();
@@ -1232,12 +1243,12 @@ var GAME = (function($){
                     if (App.myRole == 'Host') {
                         //$('#wait.inner.cover p.lead').html('<b>Be aware, select more face will reduce your time!');
                         //App.$wait.show();
-                        $('#instruction p').html('<b>Be aware, select more faces will reduce your time!</b>');
+                        //$('#instruction p').html('<b>Be aware, select more faces will reduce your time!</b>');
                         //setTimeout(function () { App.$wait.hide()}, 1500);
                     }
                 }else{
                     if (App.myRole == 'Host') {
-                        $('#instruction p').html('<b>Press S key to select');
+                        //$('#instruction p').html('<b>Press S key to select');
                     }
                 }
             }
@@ -1267,7 +1278,7 @@ var GAME = (function($){
                     App.SELECT = false;
                     App.$game.removeClass('active');
                 }
-                $('#instruction p').html('');
+                //$('#instruction p').html('');
             }
         },
 
@@ -1937,7 +1948,7 @@ var GAME = (function($){
                     // finish tutorial once the player selected a few
                     if (App.selection_capacity <= Obj.object_set[0].object.FaceArray[0]*0.98){
                         $('#wait.inner.cover p.lead').html('Nice:) You are done with tutorials. Now moving on to a real game...');
-                        $('#instruction p').html('');
+                        //$('#instruction p').html('');
 
                         App.$wait.fadeIn();
 
