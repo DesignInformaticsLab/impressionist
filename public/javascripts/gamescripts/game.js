@@ -388,13 +388,14 @@ var GAME = (function($){
                             App.startingTime = Date.now(); // starting time of a game, don't change
                         }
                         App.object_loaded = true;
+
+                        o.animate();
                     }
                 }
                 App.$model.html('');
                 var o = Obj.init(target, callback);
                 App.$model.focus(); // focus on $model so that key events can work
-
-                o.animate();
+                o.render(); // just render once
             });
         },
 
@@ -447,11 +448,12 @@ var GAME = (function($){
                     App.$guessinput.fadeIn();
                     App.$guessinput[0].value='';
 
-                    App.start_obj_time = Date.now();
-                    App.currentTime = Date.now();
-
                     App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                     App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
+
+                    o.object.rotation.y = Math.random()*Math.PI*2;
+
+                    App.object_loaded = true;
 
                     if(!App.tutorial_shown){
                         $('#instruction .modal-body p').html('Welcome to the tutorial!<br>' +
@@ -468,10 +470,10 @@ var GAME = (function($){
                     }
                     App.$instruction.modal();
                     App.$instruction.on('hidden.bs.modal', function () {
-                        o.object.rotation.y = Math.random()*Math.PI*2;
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
 
-                        App.object_loaded = true;
-
+                        o.animate();
                         // let computer select faces
                         App.autoSelect();
                     });
