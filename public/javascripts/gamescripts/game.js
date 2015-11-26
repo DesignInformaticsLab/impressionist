@@ -215,7 +215,7 @@ var GAME = (function($){
             App.allSelectedID = [];
             App.selectedStrings = [];
 
-            // d    o some celebration before moving on...
+            // do some celebration before moving on...
             App.celebrate(function(){
                 // if playing with a computer now
                 if (App.playWithComputer){
@@ -228,10 +228,16 @@ var GAME = (function($){
                 // if during the tutorial
                 else if (!App.tutorial_shown && App.myRole=='Player'){
                     $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
+                    if(App.is_touch_device()==false){
+                        $('#instruction .modal-body p').html('Now you are in charge of revealing the object.<br>' +
                         'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
                         'button</b> to select parts of the object for the other player to guess.<br>'+
                         'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
                         'Selecting more faces will result in time penalty!<br>');
+                    }else{
+                        $('#instruction .modal-body p').html('Now you are in charge of revealing the object.<br>' +
+                        'Selecting more faces will result in time penalty!<br>');
+                    }
                     App.$instruction.modal();
                 }
                 else{
@@ -433,14 +439,21 @@ var GAME = (function($){
                     App.object_loaded = true;
 
                     if(!App.tutorial_shown){
-                        $('#instruction .modal-body p').html('Welcome to the tutorial!<br>' +
+                        if(App.is_touch_device()==false){
+                            $('#instruction .modal-body p').html('Welcome to the tutorial!<br>' +
+                                'This is a game between two players.<br>' +
+                                'One player reveals and the other guesses what it is.<br><br>' +
+                                'Now, an object is being gradually revealed.<br>' +
+                                'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
+                                'Go ahead and guess what this object is!<br>' +
+                                'Do it fast to achieve higher scores!');
+                        }else{
+                            $('#instruction .modal-body p').html(
                             'This is a game between two players.<br>' +
-                            'One player reveals an object and the other guesses what it is.<br><br>' +
+                            'One player reveals and the other guesses.<br><br>' +
                             'Now, an object is being gradually revealed.<br>' +
-                            'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
-                            'Go ahead and guess what this object is!<br>' +
-                            'Do it fast to achieve higher scores!');
-                        //App.$instruction.fadeIn();
+                            'Go ahead and guess what this object is!<br>');
+                        }
                     }
                     else{
                         $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!</b>');
@@ -705,6 +718,8 @@ var GAME = (function($){
             App.$rotation_right = $('#rotate.rt_right');
             App.$rotation_up = $('#rotate.rt_up');
             App.$rotation_down = $('#rotate.rt_down');
+            //App.$zoom_bigger = $('#zoom.bigger');
+            //App.$zoom_smaller = $('#zoom.smaller');
 
             // scoreboard
             App.$myscore = $('#myscore');
@@ -898,6 +913,22 @@ var GAME = (function($){
                 Obj.object_set[0].theta -= 3.1415 / 32;
             });
 
+            //$('#zoom.bigger').bind( "touchstart", function(e){
+            //    $('#instruction p').html('Moving up!');
+            //    //Obj.object_set[0].beta += 3.1415 / 32;
+            //});
+            //$('#zoom.bigger').bind( "touchend", function(e){
+            //    $('#instruction p').html('Moving up then stop!');
+            //    //Obj.object_set[0].beta -= 3.1415 / 32;
+            //});
+            //$('#zoom.smaller').bind( "touchstart", function(e){
+            //    $('#instruction p').html('Moving up!');
+            //    //Obj.object_set[0].beta += 3.1415 / 32;
+            //});
+            //$('#zoom.smaller').bind( "touchend", function(e){
+            //    $('#instruction p').html('Moving up then stop!');
+            //    //Obj.object_set[0].beta -= 3.1415 / 32;
+            //});
 
             //App.$continue_btn.click(function(){
             //    App.$continue.hide();
@@ -1930,6 +1961,8 @@ var GAME = (function($){
                     App.$rotation_right.hide();
                     App.$rotation_up.hide();
                     App.$rotation_down.hide();
+                    //App.$zoom_bigger.hide();
+                    //App.$zoom_smaller.hide();
                 }
                 // if in tutorial
                 if(!App.tutorial_shown && App.myRole=='Host'){

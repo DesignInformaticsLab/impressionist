@@ -479,6 +479,30 @@ body {
 }
 
 
+/*#rotate{*/
+/*position: absolute;*/
+/*width: 50px;*/
+/*height: 50px;*/
+/*background-color: #eee;*/
+/*color: #333333;*/
+/*border-radius: 5px;*/
+/*border: 0;*/
+/*padding: 0;*/
+/*font-size: 40px;*/
+/*line-height: 50px;*/
+/*text-align: center;*/
+/*-webkit-transition: background-color 0.5s, -webkit-transform 0.5s;*/
+/*transition: background-color 0.5s, transform 0.5s;*/
+/*z-index: 10;*/
+/*}*/
+/*.bigger{*/
+/*bottom: 135px;*/
+/*right: 100px;*/
+/*}*/
+/*.smaller{*/
+/*bottom: 65px;*/
+/*right: 150px;*/
+/*}*/
 /***************************************/
 
 @media only screen
