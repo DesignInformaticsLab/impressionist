@@ -79,6 +79,19 @@ var GAME = (function($){
         playerJoinedRoom : function(data) {
             if (App.playWithComputer){// if still playing with computer, be the host
                 App.myRole = 'Host';
+
+                // stop loops
+                $.each(App.rendering, function(i,rendering) {
+                    window.cancelAnimationFrame(rendering);
+                });
+                if(App.autoSelecting){clearInterval(App.autoSelecting);}
+                // clean memory
+                $.each(Obj.object_set, function(i,o){
+                    o.desposeMesh();
+                });
+                App.allSelectedIDMaster = [];
+                App.allSelectedID = [];
+                App.selectedStrings = [];
             }
             // if player joined, do not play with computer
             App.playWithComputer = false;
@@ -227,15 +240,14 @@ var GAME = (function($){
                 }
                 // if during the tutorial
                 else if (!App.tutorial_shown && App.myRole=='Player'){
-                    $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
                     if(App.is_touch_device()==false){
-                        $('#instruction .modal-body p').html('Now you are in charge of revealing the object.<br>' +
+                        $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
                         'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
                         'button</b> to select parts of the object for the other player to guess.<br>'+
                         'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
                         'Selecting more faces will result in time penalty!<br>');
                     }else{
-                        $('#instruction .modal-body p').html('Now you are in charge of revealing the object.<br>' +
+                        $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
                         'Selecting more faces will result in time penalty!<br>');
                     }
                     App.$instruction.modal();
@@ -246,7 +258,7 @@ var GAME = (function($){
                     App.$wait.show();
 
                     // after the first round, show tutorial again because roles will be switched
-                    if (App.currentRound==1){
+                    if (App.currentRound==1 && !App.playWithComputer){
                         if (App.myRole=='Host'){
                             $('#instruction .modal-body p').html('<b>Now you switched roles. An object will show up, guess what it is before time runs out!');
                         }
@@ -275,14 +287,14 @@ var GAME = (function($){
                 //$('#instruction p').html('<b>Nope...please try again');
                 setTimeout(function () {
                     App.$wait.hide();
-                    App.$menu.css('background-color', '#f5f5ff');
+                    //App.$menu.css('background-color', '#f5f5ff');
                 },1500);
                 App.$guessinput.css('background-color', '#000000');
-                App.$menu.css('background-color', '#000000');
+                //App.$menu.css('background-color', '#000000');
                 App.$guessinput.html('Wrong Answer');
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
-                    App.$menu.css('background-color', '#f5f5ff');
+                    //App.$menu.css('background-color', '#f5f5ff');
                     App.$guessinput.html('');
                 },800);
             }
@@ -438,35 +450,36 @@ var GAME = (function($){
 
                     App.object_loaded = true;
 
-                    if(!App.tutorial_shown){
-                        if(App.is_touch_device()==false){
-                            $('#instruction .modal-body p').html('Welcome to the tutorial!<br>' +
-                                'This is a game between two players.<br>' +
-                                'One player reveals and the other guesses what it is.<br><br>' +
-                                'Now, an object is being gradually revealed.<br>' +
-                                'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
-                                'Go ahead and guess what this object is!<br>' +
-                                'Do it fast to achieve higher scores!');
-                        }else{
-                            $('#instruction .modal-body p').html(
-                            'This is a game between two players.<br>' +
-                            'One player reveals and the other guesses.<br><br>' +
-                            'Now, an object is being gradually revealed.<br>' +
-                            'Go ahead and guess what this object is!<br>');
+                    if(App.currentRound==0){
+                        if(!App.tutorial_shown){
+                            if(App.is_touch_device()==false){
+                                $('#instruction .modal-body p').html('Welcome to the tutorial!<br>' +
+                                    'This is a game between two players.<br>' +
+                                    'One player reveals and the other guesses what it is.<br><br>' +
+                                    'Now, an object is being gradually revealed.<br>' +
+                                    'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
+                                    'Go ahead and guess what this object is!<br>' +
+                                    'Do it fast to achieve higher scores!');
+                            }else{
+                                $('#instruction .modal-body p').html(
+                                    'This is a game between two players.<br>' +
+                                    'One player reveals and the other guesses.<br><br>' +
+                                    'Now, an object is being gradually revealed.<br>' +
+                                    'Go ahead and guess what this object is!<br>');
+                            }
                         }
+                        else{
+                            $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!</b>');
+                        }
+                        App.$instruction.modal();
                     }
                     else{
-                        $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!</b>');
-                    }
-                    App.$instruction.modal();
-                    App.$instruction.on('hidden.bs.modal', function () {
                         App.start_obj_time = Date.now();
                         App.currentTime = Date.now();
-
-                        o.animate();
+                        Obj.object_set[0].animate();
                         // let computer select faces
                         App.autoSelect();
-                    });
+                    }
                 });
             };
             App.$game.show();
@@ -1009,7 +1022,16 @@ var GAME = (function($){
 
             App.$instruction.on('hidden.bs.modal', function () {
                 if (App.tutorial_shown){
-                    IO.socket.emit('playerReady');
+                    if (App.playWithComputer){
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
+                        Obj.object_set[0].animate();
+                        // let computer select faces
+                        App.autoSelect();
+                    }
+                    else{
+                        IO.socket.emit('playerReady');
+                    }
                 }
                 else {
                     App.tutorialChoose();
