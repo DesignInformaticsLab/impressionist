@@ -66,6 +66,10 @@ router.get('/box', function(req, res, next) {
 router.get('/gyrotest', function(req, res, next) {
     res.render('gyrotest', { title: 'gyrotest' });
 });
+/* test zoom  effect */
+router.get('/zoomtest', function(req, res, next) {
+    res.render('zoom', { title: 'zoomtest' });
+});
 
 /* GET game page. */
 router.get('/game', function(req, res, next) {
