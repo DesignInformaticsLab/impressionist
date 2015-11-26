@@ -272,8 +272,6 @@ var GAME = (function($){
                     }
                     App.$instruction.modal();
                     App.$instruction.on('hidden.bs.modal', function () { App.tutorialChoose(); });
-
-
                 }
                 else{
                     //App.$continue.show();
@@ -555,11 +553,7 @@ var GAME = (function($){
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
-        // playing on mobile device?
-        //is_touch_device: function () {
-        //    return 'ontouchstart' in window // works on most browsers
-        //        || 'onmsgesturechange' in window; // works on ie10
-        //},
+
         is_touch_device: function() {
             try {
                 document.createEvent("TouchEvent");
@@ -849,7 +843,9 @@ var GAME = (function($){
                     //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
-                    App.select(pos);
+                    if(App.myRole = 'Player'){
+                        App.select(pos);
+                    }
                 }, false)
 
                 box1.addEventListener('touchmove', function(e){
@@ -861,7 +857,9 @@ var GAME = (function($){
                     //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
-                    App.select(pos);
+                    if(App.myRole = 'Player'){
+                        App.select(pos);
+                    }
                 }, false)
 
                 box1.addEventListener('touchend', function(e){
@@ -873,7 +871,9 @@ var GAME = (function($){
                     //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
                     e.preventDefault()
-                    App.select(pos);
+                    if(App.myRole = 'Player'){
+                        App.select(pos);
+                    }
                 }, false)
 
             }, false)
@@ -1433,10 +1433,6 @@ var GAME = (function($){
                     }
                 }
             }
-        },
-
-        touch_select: function(){
-            select();
         },
 
         /**
