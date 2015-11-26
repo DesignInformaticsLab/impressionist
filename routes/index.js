@@ -46,11 +46,11 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Impressionist' });
 });
 
+/***********ADDED BY HOPE*******************************************
 /* test touch effect */
 router.get('/touchtest', function(req, res, next) {
     res.render('touchtest', { title: 'touchtest' });
 });
-
 /* test multi touch effect */
 router.get('/multitouch', function(req, res, next) {
     res.render('multitouch', { title: 'multitouch' });
@@ -58,7 +58,7 @@ router.get('/multitouch', function(req, res, next) {
 router.get('/basic', function(req, res, next) {
     res.render('basic', { title: 'basic' });
 });
-
+/*test stopping default browser swipe effect*/
 router.get('/box', function(req, res, next) {
     res.render('box', { title: 'box' });
 });
@@ -70,6 +70,7 @@ router.get('/gyrotest', function(req, res, next) {
 router.get('/zoomtest', function(req, res, next) {
     res.render('zoom', { title: 'zoomtest' });
 });
+/***************************************************************/
 
 /* GET game page. */
 router.get('/amt', function(req, res, next) {
