@@ -61,11 +61,7 @@ var GAME = (function($){
          * @param data {{ gameId: int, mySocketId: * }}
          */
         onNewGameCreated : function(data) {
-            //App.$instruction.hide();
-
             App.myRole = 'Host';
-            //App.$select.show();
-            //App.$bar.show();
             App.gameId = data.gameId; // this is the room id
             console.log('my id:'+data.mySocketId); // this is the user id
             App.playWithComputer = true;
@@ -73,7 +69,7 @@ var GAME = (function($){
             // wait for the player, if no one shows up, play with a computer
             setTimeout(function () {
                 if(App.playWithComputer){App.playComputer();}
-            },5000);
+            },5000); // wait long enough to catch another player
         },
 
         /**
@@ -92,7 +88,6 @@ var GAME = (function($){
             App.game_score = 9999;
 
             App.$guessinput.html(''); // clean input area
-            //App.$score.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
 
             console.log('player '+ data.mySocketId +  ' joined room #' + data.gameId);
@@ -118,32 +113,6 @@ var GAME = (function($){
                 }
             }
             App.$instruction.modal();
-
-            App.$instruction.on('hidden.bs.modal', function () {
-                setTimeout(function(){
-                    App.$wait.hide();
-                    App.$game.show();
-
-                    // host saves the game
-                    if(App.myRole=='Host'){
-                        //App.$select.show();
-                        //App.$bar.show();
-                        $.post('/newGame',{'amt':App.amt},function(data){
-                            // broadcast game id
-                            IO.socket.emit('broadcastGameID', data[0].id);
-                            // create a new object and start the game
-                            Obj.object_set = [];
-                            IO.onNewObjData(App.$model);
-                        });
-                    }
-                    else{
-                        //App.$select.hide();
-                        //App.$bar.hide();
-                        Obj.object_set = [];
-                        IO.onNewObjData(App.$model);
-                    }
-                }, 2000);
-            });
         },
 
         /**
@@ -161,7 +130,6 @@ var GAME = (function($){
             App.$model.html('');
             App.myRole = 'Host';
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
-
             App.gameOver();
         },
 
@@ -218,17 +186,16 @@ var GAME = (function($){
             App.$guessinput.css('background-color', '#ffffff');
             App.$guessinput.css('background-color', '#f5f5ff');
             App.$guessinput.html(''); // clean input area
-            //if(typeof(App.game_score)=='undefined'){App.game_score = 0;}
-            //App.game_score += Math.round(App.current_score); // this needs to change depending on the difficulty of the object
+
             App.currentRound += 1;
-            //App.$gamescore.html(App.game_score); // update score
+
             App.$guessoutput.html(''); // clean output area
 
             App.object_loaded = false; // stop rendering
 
             App.$game.hide();
 
-            IO.getSocketStats();
+            //IO.getSocketStats();
 
             //if (!App.playWithComputer){ // give reward if playing with human
             App.game_score += 2000;
@@ -248,7 +215,7 @@ var GAME = (function($){
             App.allSelectedID = [];
             App.selectedStrings = [];
 
-            // do some celebration before moving on...
+            // d    o some celebration before moving on...
             App.celebrate(function(){
                 // if playing with a computer now
                 if (App.playWithComputer){
@@ -260,21 +227,32 @@ var GAME = (function($){
                 }
                 // if during the tutorial
                 else if (!App.tutorial_shown && App.myRole=='Player'){
-                    $('#instruction .modal-body p').html('Now you are in charge of revealing the object.<br>' +
+                    $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
                         'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
                         'button</b> to select parts of the object for the other player to guess.<br>'+
                         'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
                         'Selecting more faces will result in time penalty!<br>');
                     App.$instruction.modal();
-                    App.$instruction.on('hidden.bs.modal', function () { App.tutorialChoose(); });
-
-
                 }
                 else{
                     //App.$continue.show();
                     $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
                     App.$wait.show();
-                    IO.socket.emit('playerReady');
+
+                    // after the first round, show tutorial again because roles will be switched
+                    if (App.currentRound==1){
+                        if (App.myRole=='Host'){
+                            $('#instruction .modal-body p').html('<b>Now you switched roles. An object will show up, guess what it is before time runs out!');
+                        }
+                        else{
+                            $('#instruction .modal-body p').html('<b>Now you switched roles.' +
+                                'To reveal the object, use left mouse while pressing S button down.</b>' );
+                        }
+                        App.$instruction.modal();
+                    }
+                    else{
+                        IO.socket.emit('playerReady');
+                    }
                 }
             });
         },
@@ -309,27 +287,15 @@ var GAME = (function($){
          * @param data
          */
         onPlayerReady : function(objectId) {
-            // switch role
-            if(App.myRole == 'Host'){
-                App.myRole = 'Player';
-                //App.$select.hide();
-                //App.$bar.hide();
+            // switch role on the second round on
+            if(App.currentRound>0){
+                if(App.myRole == 'Host'){
+                    App.myRole = 'Player';
+                }
+                else{
+                    App.myRole = 'Host';
+                }
             }
-            else{
-                App.myRole = 'Host';
-                //App.$select.show();
-                //App.$bar.show();
-            }
-
-            if (App.myRole=='Player'){
-                $('#instruction .modal-body p').html('<b>An object will show up, guess what it is before time runs out!');
-            }
-            else{
-
-                $('#instruction .modal-body p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
-                    '<b>To reveal the object, use left mouse while pressing S button down' );
-            }
-            App.$instruction.modal();
 
             App.$wait.hide();
             App.$game.show();
@@ -337,8 +303,26 @@ var GAME = (function($){
 
             App.objectString = App.objectstring_set[objectId.objectID];
 
-            Obj.object_set = [];
-            IO.onNewObjData(App.$model);
+            // host saves the game on the first round
+            if(App.currentRound==0){
+                if(App.myRole=='Host'){
+                    $.post('/newGame',{'amt':App.amt},function(data){
+                        // broadcast game id
+                        IO.socket.emit('broadcastGameID', data[0].id);
+                        // create a new object and start the game
+                        Obj.object_set = [];
+                        IO.onNewObjData(App.$model);
+                    });
+                }
+                else{
+                    Obj.object_set = [];
+                    IO.onNewObjData(App.$model);
+                }
+            }
+            else{ // if not the first round, keep playing
+                Obj.object_set = [];
+                IO.onNewObjData(App.$model);
+            }
         },
 
         /**
@@ -354,7 +338,6 @@ var GAME = (function($){
                         // reset game
                         App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                         App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
-                        //o.correct_answer = answer[0]; // get correct answers
                         o.correct_answer = answer; // get correct answers
                         o.height = zheight;
                         o.scale = scale;
@@ -364,8 +347,6 @@ var GAME = (function($){
                             App.$guessoutput.hide();
                             App.$guessinput.show();
                             App.$guessinput[0].value='';
-                            //App.$select.hide();
-                            //App.$bar.hide();
                             App.SELECT = false;
                         }
                         else if(App.myRole == 'Host'){
@@ -373,18 +354,15 @@ var GAME = (function($){
                             App.$guessoutput.show();
                             App.$guessoutput[0].value='';
                             App.$guessinput.hide();
-                            //App.$select.show();
-                            //App.$bar.show();
                         }
-                        //o.object.rotation.y = Math.PI*2;
                         o.object.rotation.y = Math.random()*Math.PI*2;
 
                         // show object when everything is ready
                         App.$wait.fadeOut();
 
                         App.currentTime = Date.now(); // current time
-                        App.start_obj_time = Date.now();
-                        if (App.round==0){
+                        App.start_obj_time = Date.now(); // starting time for the current object
+                        if (App.currentRound==0){
                             App.startingTime = Date.now(); // starting time of a game, don't change
                         }
                         App.object_loaded = true;
@@ -436,7 +414,6 @@ var GAME = (function($){
                     //App.mergeSort(o.faceSaliency);
 
                     // prepare the interface and misc. data
-                    //o.correct_answer = answer[0]; // get correct answers
                     o.correct_answer = answer; // get correct answers
                     o.height = zheight;
                     o.scale = scale;
@@ -543,6 +520,7 @@ var GAME = (function($){
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
+
         // playing on mobile device?
         //is_touch_device: function () {
         //    return 'ontouchstart' in window // works on most browsers
@@ -556,6 +534,7 @@ var GAME = (function($){
                 return false;
             }
         },
+
         /**
          * Initial parameters
          */
@@ -588,9 +567,7 @@ var GAME = (function($){
              */
             App.currentRound = 0;
 
-
             App.currentTime = Date.now(); // current time
-
 
             App.startingTime = Date.now(); // starting time of a game, don't change
 
@@ -834,9 +811,9 @@ var GAME = (function($){
                     var posy = - ( (touchobj.clientY-modeltopmargin) / App.$model.height() ) * 2 + 1;
                     //$(' h3').html('x: ' + posx + 'y:' + posy);
                     var pos = [posx,posy];
-                    e.preventDefault()
+                    e.preventDefault();
                     App.select(pos);
-                }, false)
+                }, false);
 
                 box1.addEventListener('touchmove', function(e){
                     var touchobj = e.changedTouches[0] // reference first touch point for this event
@@ -922,18 +899,18 @@ var GAME = (function($){
             });
 
 
-            App.$continue_btn.click(function(){
-                App.$continue.hide();
-                App.$wait.show();
-
-                // clean memory
-                $.each(Obj.object_set, function(i,o){
-                    o.desposeMesh();
-                });
-
-                IO.socket.emit('playerReady');
-                IO.getSocketStats();
-            });
+            //App.$continue_btn.click(function(){
+            //    App.$continue.hide();
+            //    App.$wait.show();
+            //
+            //    // clean memory
+            //    $.each(Obj.object_set, function(i,o){
+            //        o.desposeMesh();
+            //    });
+            //
+            //    IO.socket.emit('playerReady');
+            //    IO.getSocketStats();
+            //});
 
             // navigation
             App.$home_btn.click(function(){
@@ -997,6 +974,15 @@ var GAME = (function($){
                     Obj.showHeatmap(id,1,App.$comp_model2);
                 });
                 // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
+            });
+
+            App.$instruction.on('hidden.bs.modal', function () {
+                if (App.tutorial_shown){
+                    IO.socket.emit('playerReady');
+                }
+                else {
+                    App.tutorialChoose();
+                }
             });
         },
 
