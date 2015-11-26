@@ -228,26 +228,26 @@
     color: #222;
 }
 
-#instruction {
-    /*display: none;*/
-    position: absolute;
-    top: 100px;
-    width: 100%;
-    /*height: 60px;*/
-    z-index: 1;
-    /*transition: all 0.5s;*/
-    /*box-shadow: 5px 5px 50px #333333;*/
-}
+/*#instruction {*/
+    /*/!*display: none;*!/*/
+    /*position: absolute;*/
+    /*top: 100px;*/
+    /*width: 100%;*/
+    /*/!*height: 60px;*!/*/
+    /*z-index: 1;*/
+    /*/!*transition: all 0.5s;*!/*/
+    /*/!*box-shadow: 5px 5px 50px #333333;*!/*/
+/*}*/
 
-#instruction p{
-    width: 50%;
-    margin: auto;
-    font-style: italic;
-    font-size: 16px;
-    line-height: 20px;
-    text-align: left;
-    /*transition: all 0.5s;*/
-}
+/*#instruction p{*/
+    /*width: 50%;*/
+    /*margin: auto;*/
+    /*font-style: italic;*/
+    /*font-size: 16px;*/
+    /*line-height: 20px;*/
+    /*text-align: left;*/
+    /*/!*transition: all 0.5s;*!/*/
+/*}*/
 
 #gamescore{
     position: absolute;

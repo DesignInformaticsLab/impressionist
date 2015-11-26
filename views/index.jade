@@ -95,8 +95,7 @@ block content
                           #guessoutput
                       //#gamescore
                       #model(tabindex='0')
-                      #instruction
-                          p
+
                       #rotate.rt_left
                           | L
                       #rotate.rt_right
@@ -118,6 +117,13 @@ block content
                       #objlist
                       #comp_model1(tabindex='0')
                       #comp_model2(tabindex='0')
+                  #instruction(class='modal fade',role='dialog')
+                      .modal-dialog
+                          .modal-content
+                              .modal-body
+                                  p
+                                  button(type="button", class="btn btn-default", data-dismiss="modal")
+                                      |OK
                   #scoreboard(class='modal fade',role='dialog')
                       .modal-dialog
                           .modal-content
@@ -128,6 +134,7 @@ block content
                               .modal-body
                                   #myscore
                                   #myrank
+                                  #amt
                               .modal-footer
                                   button(type="button", class="btn btn-default", data-dismiss="modal")
                                       |Close
