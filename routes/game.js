@@ -32,8 +32,8 @@ var objectstring_set = [
 
 var pg = require('pg');
 var connection = process.env.DATABASE_URL
-    //|| "postgres://postgres:54093960@localhost:5432/postgres";
-    || "postgres://postgres:GWC464doi@localhost:5432/postgres";
+    || "postgres://postgres:54093960@localhost:5432/postgres";
+    //|| "postgres://postgres:GWC464doi@localhost:5432/postgres";
 //for local postgres server, and Heroku server
 
 /**
@@ -161,21 +161,17 @@ function broadcastGameID(data){
 }
 
 function onPlayerReady(data){
-
     var roomid = this.gameId;
     if (!playerReady[roomid]){
         playerReady[roomid] = true;
     }
     else {
-
         try {
             var numOfObjects = objectstring_set.length;
         } catch (e) {
             var numOfObjects = 1;
         }
-
         var objID = Math.floor(Math.random() * numOfObjects);
-
         playerReady[roomid] = false;
         io.sockets.in(roomid).emit('playerReady', {objectID: objID});
     }
