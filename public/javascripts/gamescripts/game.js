@@ -117,11 +117,11 @@ var GAME = (function($){
             }
             else{
                 if(App.is_touch_device() == false){
-                    $('#instruction .modal-body p').html('You can rotate the object using left mouse button or zoom with mouse wheel<br>' +
+                    $('#instruction .modal-body p').html('<b>Rotate</b> the object using left mouse button or <b>zoom</b> with mouse wheel<br>' +
                         '<b>To reveal the object, use left mouse while pressing S button down</b>');
                 }
                 else{
-                    $('#instruction .modal-body p').html('You can rotate using U D L R<br>' +
+                    $('#instruction .modal-body p').html('<b>Rotate</b> using the rotation buttons to the left bottom corner of the screen<br>' +
                     '<b>Touch object to select faces</b>' );
                 }
             }
