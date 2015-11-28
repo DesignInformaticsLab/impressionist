@@ -880,6 +880,7 @@ var GAME = (function($){
             });
 
             App.$tutorial.click(function(){
+                App.tutorial_shown = false; //  tutorial
                 App.gameId = -1; // -1 is for tutorials
                 App.$home_btn.removeClass('active');
                 App.$game_btn.addClass('active');
@@ -1056,6 +1057,7 @@ var GAME = (function($){
 
             // start a game with the computer
             App.myRole = 'Player';
+            //App.playWithComputer = false;
             IO.socket.emit('grabBestObject');
         },
 
@@ -1616,6 +1618,7 @@ var GAME = (function($){
             App.myRole = 'Player';
             //App.$select.hide();
             //App.$bar.hide();
+            //App.playWithComputer = false;
             IO.socket.emit('grabBestObject');
         },
 
@@ -2038,7 +2041,7 @@ var GAME = (function($){
                     }
                 }
                 else{
-                    if(typeof(d.emptyobject)!='undefined'){
+                    if(App.tutorial_shown == false){
                         //d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
                         //    d.object.rotation.y + d.theta, 0, 'XYZ' );
                         d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta, d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
@@ -2074,7 +2077,11 @@ var GAME = (function($){
                 // update score based on selection, time and guesses
                 if (App.object_loaded){ // to prevent long loading time
                     if (App.game_score > 0 && App.numSelectedFaces > 0){
-                        var penalty = (Date.now()-App.currentTime)*0.20;
+
+                        var penalty;
+                        if (App.tutorial_shown == true){
+                            penalty = (Date.now()-App.currentTime)*0.20;
+                        }
                         // MAX: penalty on selection is too high on geometries with few faces
                         penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
                         App.game_score -= penalty;
