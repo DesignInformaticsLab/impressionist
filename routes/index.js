@@ -128,7 +128,7 @@ router.post('/store_selection', function(req,res){
         var object_name = req.body.object_name;
         var correct = req.body.correct;
         var round = req.body.round;
-        var penalty = req.body.penalty; // use penalty to save whether the device is mobile or not
+        var penalty = JSON.parse(req.body.penalty); // use penalty to save whether the device is mobile or not
         var computer_player = req.body.computer_player;
         var amt = JSON.parse(req.body.amt);
         if (amt){

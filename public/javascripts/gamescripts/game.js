@@ -1576,9 +1576,9 @@ var GAME = (function($){
                 computer_player: 0,
                 //weight: JSON.stringify(weight)
                 amt: App.amt,
-                penalty: [App.is_touch_device()+0.0] // use penalty to save whether the device is mobile or not, 1 if mobile
+                penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
             };
-            if (App.playWithComputer){data.game_id = -1; data.computer_player=1;}
+            if (App.playWithComputer){data.computer_player=1;}
 
             // if during a real game
             if (App.tutorial_shown){
