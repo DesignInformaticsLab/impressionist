@@ -2042,7 +2042,7 @@ var GAME = (function($){
                     }
                 }
                 else{
-                    if(App.tutorial_shown == false){
+                    if(typeof(d.emptyobject)!='undefined'){
                         //d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
                         //    d.object.rotation.y + d.theta, 0, 'XYZ' );
                         d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta, d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
