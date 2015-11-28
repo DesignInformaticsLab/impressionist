@@ -1575,7 +1575,8 @@ var GAME = (function($){
                 all_selected_id: JSON.stringify(App.allSelectedIDMaster),
                 computer_player: 0,
                 //weight: JSON.stringify(weight)
-                amt: App.amt
+                amt: App.amt,
+                penalty: App.is_touch_device()+0.0 // use penalty to save whether the device is mobile or not, 1 if mobile
             };
             if (App.playWithComputer){data.game_id = -1; data.computer_player=1;}
 
