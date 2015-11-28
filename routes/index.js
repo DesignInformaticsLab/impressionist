@@ -3,8 +3,8 @@ var router = express.Router();
 var pg = require('pg');
 
 var connection = process.env.DATABASE_URL
-           //||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
-    || "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
+           ||"postgres://postgres:54093960@127.0.0.1:5432/postgres";
+    //|| "postgres://postgres:GWC464doi@127.0.0.1:5432/postgres";
 
 //for local postgres server, and Heroku server
 var objectstring_set = [
@@ -122,14 +122,14 @@ router.post('/store_selection', function(req,res){
         if(err) res.send("Could not connect to DB: " + err);
         var game_id = req.body.game_id;
         var all_selected_id = JSON.parse(req.body.all_selected_id);
-        var duration = req.body.duration;
-        var score = req.body.score;
+        var duration = JSON.parse(req.body.duration);
+        var score = JSON.parse(req.body.score);
         var guess = req.body.answer;
         var object_name = req.body.object_name;
-        var correct = req.body.correct;
-        var round = req.body.round;
+        var correct = JSON.parse(req.body.correct);
+        var round = JSON.parse(req.body.round);
         var penalty = JSON.parse(req.body.penalty); // use penalty to save whether the device is mobile or not
-        var computer_player = req.body.computer_player;
+        var computer_player = JSON.parse(req.body.computer_player);
         var amt = JSON.parse(req.body.amt);
         if (amt){
             var insert_query = client.query('INSERT INTO impressionist_result_table_amt (game_id, round, all_selected_id, duration,' +
