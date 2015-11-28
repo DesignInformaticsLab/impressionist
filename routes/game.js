@@ -32,8 +32,8 @@ var objectstring_set = [
 
 var pg = require('pg');
 var connection = process.env.DATABASE_URL
-    || "postgres://postgres:54093960@localhost:5432/postgres";
-    //|| "postgres://postgres:GWC464doi@localhost:5432/postgres";
+    //|| "postgres://postgres:54093960@localhost:5432/postgres";
+    || "postgres://postgres:GWC464doi@localhost:5432/postgres";
 //for local postgres server, and Heroku server
 
 /**
@@ -184,8 +184,8 @@ function grabBestObject(){
     //var objID = pool[Math.floor(Math.random() * 2)];
     var objID1 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
     var objID2 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
-    var objID3 = Math.floor(Math.random() * 30) + 24 +5;//3+2 models, test new idea
-    var pool = [objID1, objID2, objID3]
+    var objID3 = Math.floor(Math.random() * 5) + 24;//3+2 models, test new idea
+    var pool = [objID1, objID2, objID3];
     var objID = pool[Math.floor(Math.random() * 3)];
     //var objID = 28;
 
