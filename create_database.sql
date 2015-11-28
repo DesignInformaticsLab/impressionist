@@ -50,6 +50,10 @@ CREATE TABLE impressionist_result_table
     computer_player boolean,
     PRIMARY KEY(id)
 );
+/*
+for duration, use "SELECT EXTRACT(EPOCH FROM INTERVAL 'stored number')/3600" to calculate the seconds;
+*/
+
 
 /*
 player id: the id of the participant who first played as PLAYER

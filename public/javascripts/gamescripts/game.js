@@ -2081,7 +2081,7 @@ var GAME = (function($){
 
                         var penalty;
                         if (App.tutorial_shown == true){
-                            penalty = (Date.now()-App.currentTime)*0.20;
+                            penalty = (Date.now()-App.currentTime)*0.10;
                         }
                         // MAX: penalty on selection is too high on geometries with few faces
                         penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
