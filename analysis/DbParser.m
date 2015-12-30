@@ -4,17 +4,17 @@
 close all; fclose all; clear; clc
 
 %% extract info from database
-cmd_l1 = '-- this part is used to compute entropy (object selected by human player and correctly guessed)';
-cmd_l2 = '\n\\COPY (SELECT all_selected_id FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''size.txt'' csv;';
-%%%%%%%%%%%%%%%%%   NOTICE::: dont know why output M085 has vtx number 10554
-% cmd_l3 = '\n\\COPY (SELECT id,object_name,array_length(all_selected_id, 1),all_selected_id    FROM impressionist_result_table_amt where (array_length(all_selected_id, 1)<>0) order by object_name ASC) to ''idx.txt'' csv;';
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-cmd_l3 = '\n\\COPY (SELECT object_name     FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''idx.txt'' csv;';
-cmd = strcat(cmd_l1,cmd_l2,cmd_l3);
-fileID = fopen('test.sql','w');
-fprintf(fileID,cmd);
-fclose(fileID);
-status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
+% cmd_l1 = '-- this part is used to compute entropy (object selected by human player and correctly guessed)';
+% cmd_l2 = '\n\\COPY (SELECT all_selected_id FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''size.txt'' csv;';
+% %%%%%%%%%%%%%%%%%   NOTICE::: dont know why output M085 has vtx number 10554
+% % cmd_l3 = '\n\\COPY (SELECT id,object_name,array_length(all_selected_id, 1),all_selected_id    FROM impressionist_result_table_amt where (array_length(all_selected_id, 1)<>0) order by object_name ASC) to ''idx.txt'' csv;';
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cmd_l3 = '\n\\COPY (SELECT object_name     FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''idx.txt'' csv;';
+% cmd = strcat(cmd_l1,cmd_l2,cmd_l3);
+% fileID = fopen('test.sql','w');
+% fprintf(fileID,cmd);
+% fclose(fileID);
+% status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
 
 %% read database file
 sel_db = cell(1);        line_nume = 1;
@@ -104,12 +104,12 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         num_vtx = num_vtx - 1;
         %store selection
         A = zeros(1,3);
-        fileID = fopen('selection.txt','w');
+        fileID = fopen('vtx_selection.txt','w');
         for i=1:num_vtx
             fprintf(fileID,'%s \n',cell2mat(select(i)));
         end
         fclose(fileID);
-        fileID = fopen('selection.txt','r');
+        fileID = fopen('vtx_selection.txt','r');
         for i=1:num_vtx
             tmp = fscanf(fileID, '%g,%g,%g', 3);
             A(i,:) = tmp;
@@ -139,19 +139,19 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         num_face = num_face - 1;
         %store selection
         B = zeros(1,3);
-        fileID = fopen('selection.txt','w');
+        fileID = fopen('face_selection.txt','w');
         for i=1:num_face
             fprintf(fileID,'%s \n',cell2mat(select(i)));
         end
         fclose(fileID);
-        fileID = fopen('selection.txt','r');
+        fileID = fopen('face_selection.txt','r');
         for i=1:num_face
             tmp = fscanf(fileID, '%g,%g,%g', 3);
             B(i,:) = tmp;
         end
         fclose(fileID);
         B = B + 1; %make A and B have the same starting index
-        
+        save('info.txt','tt','-ascii');
         
         %% compute entropy for every play
         C = cell2mat(sel_db(db_line_idx));
@@ -167,6 +167,7 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         end
         sel_vtx = sort(sel_vtx);
         cnt = 1; cluster = zeros(1,3);
+        D = zeros(0);
         for i=1:length(sel_vtx)-1
             if (sel_vtx(i)~=sel_vtx(i+1))
                 vtx_idx = sel_vtx(i);
@@ -184,8 +185,22 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         figure();
         plot(cluster(:,1),cluster(:,2),'.','MarkerSize',5);axis equal;
         saveas(gcf,strcat('./output/',num2str(db_line_idx),'.png'));close;
+        
+        % output for heatmap and graph generation
+        if played_idx==1
+            agg_sel = zeros(size(A,1),1);
+        end
+        sel_tmp = cell2mat(sel_db(db_line_idx));
+        for jj=1:length(D)
+            agg_sel(D(jj)) = agg_sel(D(jj))+1;
+        end
+        
     end
-    
+    % output for heatmap and graph generation
+    save('aggregated.txt','agg_sel','-ascii');
+    fff = fopen('obj_name_graph.txt','w');
+    fprintf(fff,'%s\n',obj_name);
+    fclose(fff);
     %% overall result for a object
     num_played = floor(obj_played(dbname_idx)/2);
     D = sort(D);
@@ -206,6 +221,7 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
     axis equal; hold on; view(2);
     saveas(gcf,strcat('./output/',num2str(dbname_idx),'.fig'));
  
+
 end
 
 

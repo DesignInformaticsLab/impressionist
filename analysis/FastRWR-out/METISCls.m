@@ -56,7 +56,7 @@ if iToInt ~=0%turn the weight into integrate
     W = round(W * 1000000);    
 end
     W = (W + W')/2;
-    W = sparse(W);
+%     W = sparse(W);
 
 fname = [fname '_metis.txt'];
 fid1 = fopen(fname,'w');
