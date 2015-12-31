@@ -40,6 +40,7 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
     tt = load('../info.txt');
     num_vtx = tt(1);    num_face = tt(2);
     % read vertex position
+    
     vtx = zeros(1,3);
     fileID = fopen('../vtx_selection.txt','r');
     for i=1:num_vtx
