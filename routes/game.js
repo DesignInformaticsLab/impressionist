@@ -197,14 +197,13 @@ function onPlayerReady(data){
 // during human-computer games, grab an object that requires validation
 function grabBestObject(){
     // TODO: read from database
-    //var randID = Math.floor(Math.random() * 28);
-    //var objID = pool[Math.floor(Math.random() * 2)];
-    var objID1 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
-    var objID2 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
-    var objID3 = Math.floor(Math.random() * 5) + 24;//3+2 models, test new idea
-    var pool = [objID1, objID2, objID3];
-    var objID = pool[Math.floor(Math.random() * 3)];
-    //var objID = 28;
+    //var objID1 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
+    //var objID2 = Math.floor(Math.random() * 24);//27-3 models, compare with ground truth
+    //var objID3 = Math.floor(Math.random() * 5) + 24;//3+2 models, test new idea
+    //var pool = [objID1, objID2, objID3];
+    //var objID = pool[Math.floor(Math.random() * 3)];
+
+    var objID = pool[Math.floor(Math.random() * 53)];
 
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
