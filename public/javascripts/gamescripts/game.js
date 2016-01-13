@@ -72,6 +72,7 @@ var GAME = (function($){
             },5000); // wait long enough to catch another player
         },
 
+
         /**
          * A player has successfully joined the game.
          * @param data {{playerName: string, gameId: int, mySocketId: int}}
@@ -462,13 +463,13 @@ var GAME = (function($){
                         //        'Now, an object is being gradually revealed.<br>' +
                         //        'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>'
                         //        );
-                            $('#instruction .modal-body p').html('You can rotate the object by buttom button!');
+                            $('#instruction .modal-body p').html('You can rotate the object by draging!');
                         }else{
                         //    $('#instruction .modal-body p').html('This is a game between two players.<br>' +
                         //        'One player reveals the object and the other guesses what it is.<br><br>' +
                         //        'Now, an object is being gradually revealed.<br>' +
                         //        'Use the <b>rotation buttons</b> to the left bottom corner of the screen to <b>rotate</b> the object.<br>');
-                            $('#instruction .modal-body p').html('You can rotate the object by draging!');
+                            $('#instruction .modal-body p').html('You can rotate the object by buttom button!');
                         }
 
                         /////////////// commended for single player version
