@@ -233,8 +233,10 @@ var GAME = (function($){
                 // if playing with a computer now
                 if (App.playWithComputer){
                     // look for a human player, if none, keep playing with the computer
-                    $('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
-                    App.$wait.show();
+
+                    /////////////// commended for single player version
+                    //$('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
+                    //App.$wait.show();
 
                     IO.onNewGameCreated(App);
                 }
@@ -453,19 +455,23 @@ var GAME = (function($){
                     App.object_loaded = true;
 
                     if(App.currentRound==0){
+                        /////////////// commended for single player version
                         if(App.is_touch_device()==false){
-                            $('#instruction .modal-body p').html('This is a game between two players.<br>' +
-                                'One player reveals the object and the other guesses what it is.<br><br>' +
-                                'Now, an object is being gradually revealed.<br>' +
-                                'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>'
-                                );
+                        //    $('#instruction .modal-body p').html('This is a game between two players.<br>' +
+                        //        'One player reveals the object and the other guesses what it is.<br><br>' +
+                        //        'Now, an object is being gradually revealed.<br>' +
+                        //        'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>'
+                        //        );
+                            $('#instruction .modal-body p').html('You can rotate the object by buttom button!');
                         }else{
-                            $('#instruction .modal-body p').html('This is a game between two players.<br>' +
-                                'One player reveals the object and the other guesses what it is.<br><br>' +
-                                'Now, an object is being gradually revealed.<br>' +
-                                'Use the <b>rotation buttons</b> to the left bottom corner of the screen to <b>rotate</b> the object.<br>');
+                        //    $('#instruction .modal-body p').html('This is a game between two players.<br>' +
+                        //        'One player reveals the object and the other guesses what it is.<br><br>' +
+                        //        'Now, an object is being gradually revealed.<br>' +
+                        //        'Use the <b>rotation buttons</b> to the left bottom corner of the screen to <b>rotate</b> the object.<br>');
+                            $('#instruction .modal-body p').html('You can rotate the object by draging!');
                         }
 
+                        /////////////// commended for single player version
                         App.$instruction.modal();
                     }
                     else{
@@ -537,7 +543,8 @@ var GAME = (function($){
 
             App.setInitParameter();
 
-            $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+            /////////////// commended for single player version
+            //$('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
@@ -1481,8 +1488,9 @@ var GAME = (function($){
                 App.$stat.hide();
                 App.$game.hide();
                 setTimeout(function () {
-                    $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
-                    App.$wait.hide();
+                    /////////////// commended for single player version
+                    //$('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+                    //App.$wait.hide();
                     App.$home.show();
                     $('.mastfoot').show();
                     App.$home_btn.addClass('active');
