@@ -1,6 +1,5 @@
 %% generate tree structure. needs to run after DbParser.m
-clear; clc;
-
+% clc;
 %% read aggregated selection
 sel_db = cell(1);        line_nume = 1;
 aggregated = importdata('../aggregated.txt');  %every row represents a object
@@ -10,8 +9,9 @@ name_pool = importdata('../obj_name_graph.txt');
 
 %% read mesh for every object
 for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
-    obj_name = cell2mat(name_pool(dbname_idx));
-    disp(dbname_idx);disp(obj_name);
+    obj_name = cell2mat(name_pool(1));
+%     disp(dbname_idx);
+%     disp(obj_name);
 %     selection = aggregated(dbname_idx);
     % detect meshfile name from index
     count = 1;
@@ -66,25 +66,37 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         vtx_num1 = face(i,1)+1;
         vtx_num2 = face(i,2)+1;
         vtx_num3 = face(i,3)+1;
-        v1 = (vtx(vtx_num1));
-        v2 = (vtx(vtx_num2));
-        v3 = (vtx(vtx_num3));
+        v1 = vtx(vtx_num1,:);
+        v2 = vtx(vtx_num2,:);
+        v3 = vtx(vtx_num3,:);
         if(W(vtx_num1,vtx_num2)==0)
             W(vtx_num1,vtx_num2)= norm(v1-v2,2);
         else
             W(vtx_num1,vtx_num2)= min(norm(v1-v2,2),W(vtx_num1,vtx_num2));            
         end
-        if(W(vtx_num1,vtx_num2)==0)
-            W(vtx_num2,vtx_num3)= min(norm(v3-v2,2),W(vtx_num2,vtx_num3));
+        if(W(vtx_num2,vtx_num3)==0)
+            W(vtx_num2,vtx_num3)= norm(v2-v3,2);
+        else
+            W(vtx_num2,vtx_num3)= min(norm(v2-v3,2),W(vtx_num2,vtx_num3));
         end
-        if(W(vtx_num1,vtx_num2)==0)
-            W(vtx_num1,vtx_num3)= min(norm(v1-v3,2),W(vtx_num1,vtx_num3));
+        if(W(vtx_num3,vtx_num1)==0)
+            W(vtx_num3,vtx_num1)= norm(v3-v1,2);
+        else
+            W(vtx_num3,vtx_num1)= min(norm(v3-v1,2),W(vtx_num3,vtx_num1));
         end
     end
     W = (W+W')/2;
+    ww=find(W>0); minw=min(W(ww));
+    W=ceil(W/minw);
     % process this graph for heatmap
     %     [Q1,U,V,Lam,t0] = BLin_Pre(W,para);
     [Q1,U,V,Lam,t0] = BLin_Pre(W);
-    c=0.3; i=1;
-    [r, qt] = BLin_OQ(Q1,U,V,Lam,c,i,W,k0);
+    c=0.3; k0 = 1000; r=zeros(num_vtx);
+    for i=1:num_vtx
+        [r(:,i), qt] = BLin_OQ(Q1,U,V,Lam,c,i,W,k0);
+    end
+    heatmap = r * aggregated;
+    heatmap = heatmap/max(heatmap);
+    heatmap_filename = strcat(num2str(obj_idx),'.val');
+    save(heatmap_filename,'heatmap','-ascii');
 end

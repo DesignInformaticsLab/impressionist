@@ -144,6 +144,7 @@ I = zeros(0,3);
 [m,n] = size(Ad);
 
 for i=1:len%for every block diagonal piece
+%     i
     pp = pos{i};
     tmp = Ad(pp,pp);
     a = inv(eye(length(pp))-c*tmp);

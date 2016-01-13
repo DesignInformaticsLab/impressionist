@@ -20,7 +20,8 @@ if k>m
     k=m;
 end
 
-metis = '(''./kmetis MeIn_metis.txt ';
+% metis = '(''./kmetis MeIn_metis.txt ';
+metis = '(''kmetis MeIn_metis.txt ';
 
 
 cmnd = strcat([shell metis ' ' num2str(k) ''')']);
@@ -35,8 +36,8 @@ end
 cmnd2 = 'load MeIn_metis.txt.part';
 cmnd2 = strcat([cmnd2 '.' num2str(k)]);
 eval(cmnd2);
-cRe = MeIn_metis;
-
+% cRe = MeIn_metis;
+cRe = MeIn_metis_txt_part;
 
 
 function W2MetisInput(W,fname,iToInt)
@@ -56,7 +57,7 @@ if iToInt ~=0%turn the weight into integrate
     W = round(W * 1000000);    
 end
     W = (W + W')/2;
-%     W = sparse(W);
+    W = sparse(W);
 
 fname = [fname '_metis.txt'];
 fid1 = fopen(fname,'w');
@@ -71,12 +72,14 @@ end
 %try to do it columnise, this should be much better (faster) than row-wise
 %for large graphs.
 W = W';
+test_cnt = 0;
 for i=1:m
     pos  = find(W(:,i)>0);
     for j=1:length(pos)
-        fprintf(fid1,'%d %d ',pos(j),W(pos(j),i));
-        
+%         fprintf(fid1,'%d %d ',pos(j),W(pos(j),i));
+        fprintf(fid1,'%d %d ',pos(j),full(W(pos(j),i)));
     end
+test_cnt = test_cnt + length(pos);        
     fprintf(fid1,'\n');
     
 end
@@ -91,5 +94,5 @@ end
 %     
 % end
 
-
+test_cnt
 fclose(fid1);

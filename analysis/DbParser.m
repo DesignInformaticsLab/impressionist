@@ -1,9 +1,9 @@
 %% This parser is used to process data collected from impressionist
 % author: Hope Yao, DOI lab, 12/17/2015
 
-close all; fclose all; clear; clc
+close all; fclose all; clc
 
-%% extract info from database
+% %% extract info from database
 % cmd_l1 = '-- this part is used to compute entropy (object selected by human player and correctly guessed)';
 % cmd_l2 = '\n\\COPY (SELECT all_selected_id FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''size.txt'' csv;';
 % %%%%%%%%%%%%%%%%%   NOTICE::: dont know why output M085 has vtx number 10554
@@ -51,7 +51,7 @@ obj_played(1)=obj_played(1)+1;
 
 
 % for dbname_idx = 10:dbobj_num
-for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
+for dbname_idx = dont_know_what_to_call:dont_know_what_to_call %THERE IS AN ERROR AT 9 and 58!!
     D = zeros(1,1);
     for played_idx = 1:obj_played(dbname_idx)
         db_line_idx = sum(obj_played(1:dbname_idx-1))+played_idx;
@@ -72,6 +72,11 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         %% read mesh file, only needs to be done once
         fclose all;
         mesh_dir = '..\public\obj\Princeton\';
+        % change M111 to M112
+        if(strcmp(obj_name,'M111')==1)
+            obj_name='M112';
+            obj_idx='112';
+        end
         if ('M'==obj_name(1))
             mesh_file = strcat(mesh_dir,strcat(obj_idx,' - Copy.json'));
         else
@@ -151,9 +156,13 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         end
         fclose(fileID);
         B = B + 1; %make A and B have the same starting index
-        save('info.txt','tt','-ascii');
+        ttt=[num_vtx num_face];
+        save('info.txt','ttt','-ascii');
         
         %% compute entropy for every play
+        if max(cell2mat(sel_db(db_line_idx)))>size(B,1)
+            continue
+        end
         C = cell2mat(sel_db(db_line_idx));
         sel_vtx = zeros(length(C)*3,1);
         kk = 1;
@@ -209,11 +218,11 @@ for dbname_idx = 1:1 %THERE IS AN ERROR AT 9 and 58!!
         ss = 2;
     end
     for i=ss:length(D)-num_played
-        if (D(i)==D(i+num_played-1)&&D(i)~=D(i+num_played)) % for those have been selected for num times
+%         if (D(i)==D(i+num_played-1)&&D(i)~=D(i+num_played)) % for those have been selected for num times
             vtx_idx = D(i);
             reduced_cluster(cnt,:) = A(vtx_idx,:);
             cnt = cnt + 1;
-        end
+%         end
     end
     
     figure();
