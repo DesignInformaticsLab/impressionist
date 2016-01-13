@@ -203,7 +203,7 @@ function grabBestObject(){
     //var pool = [objID1, objID2, objID3];
     //var objID = pool[Math.floor(Math.random() * 3)];
 
-    var objID = pool[Math.floor(Math.random() * 53)];
+    var objID = Math.floor(Math.random() * 53);
 
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
