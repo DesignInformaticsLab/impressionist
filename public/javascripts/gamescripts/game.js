@@ -678,7 +678,7 @@ var GAME = (function($){
             App.guess_made = 0;
 
             // Amazon MTurk
-            App.amt = false;
+            App.amt = true;
 
             // time when start typing
             App.time_start_typing = 0;
