@@ -4,18 +4,18 @@
 close all; fclose all; clear; clc
 
 %% extract info from database
-% cmd_l1 = '-- this part is used to compute similarity graph ';
-% % wrong guesses
-% cmd_l2 = '\n\\COPY (SELECT guess FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''graph.txt'' csv';
-% % wrong guesses
-% cmd_l3 = '\n\\COPY (SELECT array_length(all_selected_id, 1) FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''size.txt'' csv';
-% % idx for wrong guesses
-% cmd_l4 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''idx.txt'' csv;';
-% cmd = strcat(cmd_l1,cmd_l2,cmd_l3,cmd_l4);
-% fileID = fopen('test.sql','w');
-% fprintf(fileID,cmd);
-% fclose(fileID);
-% status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
+cmd_l1 = '-- this part is used to compute similarity graph ';
+% wrong guesses
+cmd_l2 = '\n\\COPY (SELECT guess FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''graph.txt'' csv';
+% wrong guesses
+cmd_l3 = '\n\\COPY (SELECT array_length(all_selected_id, 1) FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''size.txt'' csv';
+% idx for wrong guesses
+cmd_l4 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''idx.txt'' csv;';
+cmd = strcat(cmd_l1,cmd_l2,cmd_l3,cmd_l4);
+fileID = fopen('test.sql','w');
+fprintf(fileID,cmd);
+fclose(fileID);
+status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
 
 %%
 guess=importdata('graph.txt');
@@ -133,12 +133,35 @@ for i=1:dbobj_num
         count = count + 1;
     end
     obj_idx = obj_name(count+1:length(obj_name));
+    % change M111 to M112
+    if(strcmp(obj_name,'M111')==1)
+        obj_name='M112';
+        obj_idx='112';
+    end
+    if(strcmp(obj_name,'M735')==1)
+        continue;
+    end
+    if(strcmp(obj_name,'P035')==1)
+        continue;
+    end
+    if(strcmp(obj_name,'P183')==1)
+        continue;
+    end
+    if(strcmp(obj_name,'P385')==1)
+        continue;
+    end
+    if(strcmp(obj_name,'P400')==1)
+        continue;
+    end
+    
     js_dir = '..\public\obj\Princeton\';
     if ('M'==obj_name(1))
         js_file = strcat(js_dir,strcat(obj_idx,' - Copy.js'));
     else
         js_file = strcat(js_dir,strcat(obj_idx,'.js'));
     end
+
+        
     fid_mesh = fopen(js_file,'r');
     for ii=1:3 %read the third line
         tline = fgetl(fid_mesh);
