@@ -244,7 +244,8 @@ var GAME = (function($){
                 // if playing with a computer now
                 if (App.playWithComputer){
                     // look for a human player, if none, keep playing with the computer
-                    $('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
+                    //$('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
+                    $('#wait.inner.cover p.lead').html('Loading new objects...');
                     App.$wait.show();
 
                     IO.onNewGameCreated(App);
@@ -1281,7 +1282,7 @@ var GAME = (function($){
                 App.$stat.hide();
                 App.$game.hide();
                 setTimeout(function () {
-                    $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+                    $('#wait.inner.cover p.lead').html('Loading new objects...');
                     App.$wait.hide();
                     App.$home.show();
                     $('.mastfoot').show();
