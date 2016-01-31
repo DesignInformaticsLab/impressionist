@@ -1353,7 +1353,7 @@ var GAME = (function($){
 
             console.log('Try finding a player...');
 
-            IO.socket.emit('joinGame');
+            IO.socket.emit('joinGame_single');
         },
 
         /**

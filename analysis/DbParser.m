@@ -24,15 +24,23 @@ if(-1==fileID)
 end
 tline = fgetl(fileID);
 while ischar(tline)
+%     %pick out selection
+%     select = tline(3:length(tline)-2);
+%     %store selection
+%     fid = fopen('selection.txt','w');
+%     fprintf(fid,'%s',select);
+%     fclose(fid);
+%     fid = fopen('selection.txt','r');
+%     [tmp,~] = fscanf(fid, ['%d'  ',']);
+%     sel_db(line_nume,:) = {tmp+1}; %starts from 1, make index compartible
+%     line_nume = line_nume + 1;
+%     tline = fgetl(fileID);
+
+    % version 2, no file io this time
     %pick out selection
     select = tline(3:length(tline)-2);
-    %store selection
-    fid = fopen('selection.txt','w');
-    fprintf(fid,'%s',select);
-    fclose(fid);
-    fid = fopen('selection.txt','r');
-    [tmp,~] = fscanf(fid, ['%d'  ',']);
-    sel_db(line_nume,:) = {tmp+1}; %starts from 1, make index compartible
+    %clean up
+    sel_db(line_nume,:) = {str2num(select)};
     line_nume = line_nume + 1;
     tline = fgetl(fileID);
 end

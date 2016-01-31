@@ -72,7 +72,6 @@ var GAME = (function($){
             },5000); // wait long enough to catch another player
         },
 
-
         /**
          * A player has successfully joined the game.
          * @param data {{playerName: string, gameId: int, mySocketId: int}}
@@ -123,7 +122,7 @@ var GAME = (function($){
                 }
                 else{
                     $('#instruction .modal-body p').html('<b>Rotate</b> using the rotation buttons to the left bottom corner of the screen<br>' +
-                    '<b>Touch object to select faces</b>' );
+                        '<b>Touch object to select faces</b>' );
                 }
             }
             App.$instruction.modal();
@@ -234,10 +233,8 @@ var GAME = (function($){
                 // if playing with a computer now
                 if (App.playWithComputer){
                     // look for a human player, if none, keep playing with the computer
-
-                    /////////////// commended for single player version
-                    //$('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
-                    //App.$wait.show();
+                    $('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
+                    App.$wait.show();
 
                     IO.onNewGameCreated(App);
                 }
@@ -245,10 +242,10 @@ var GAME = (function($){
                 else if (!App.tutorial_shown && App.myRole=='Player'){
                     if(App.is_touch_device()==false){
                         $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
-                        'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
-                        'button</b> to reveal parts of the object for the other player to guess.<br>'+
-                        'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
-                        'Selecting more faces will result in time penalty!<br>');
+                            'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
+                            'button</b> to reveal parts of the object for the other player to guess.<br>'+
+                            'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
+                            'Selecting more faces will result in time penalty!<br>');
                     }else{
                         $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
                             '<b>Touch</b> the object to reveal parts of it for the other player to guess.<br>'+
@@ -456,23 +453,19 @@ var GAME = (function($){
                     App.object_loaded = true;
 
                     if(App.currentRound==0){
-                        /////////////// commended for single player version
                         if(App.is_touch_device()==false){
-                        //    $('#instruction .modal-body p').html('This is a game between two players.<br>' +
-                        //        'One player reveals the object and the other guesses what it is.<br><br>' +
-                        //        'Now, an object is being gradually revealed.<br>' +
-                        //        'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>'
-                        //        );
-                            $('#instruction .modal-body p').html('You can rotate the object by draging!');
+                            $('#instruction .modal-body p').html('This is a game between two players.<br>' +
+                                'One player reveals the object and the other guesses what it is.<br><br>' +
+                                'Now, an object is being gradually revealed.<br>' +
+                                'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>'
+                            );
                         }else{
-                        //    $('#instruction .modal-body p').html('This is a game between two players.<br>' +
-                        //        'One player reveals the object and the other guesses what it is.<br><br>' +
-                        //        'Now, an object is being gradually revealed.<br>' +
-                        //        'Use the <b>rotation buttons</b> to the left bottom corner of the screen to <b>rotate</b> the object.<br>');
-                            $('#instruction .modal-body p').html('You can rotate the object by buttom button!');
+                            $('#instruction .modal-body p').html('This is a game between two players.<br>' +
+                                'One player reveals the object and the other guesses what it is.<br><br>' +
+                                'Now, an object is being gradually revealed.<br>' +
+                                'Use the <b>rotation buttons</b> to the left bottom corner of the screen to <b>rotate</b> the object.<br>');
                         }
 
-                        /////////////// commended for single player version
                         App.$instruction.modal();
                     }
                     else{
@@ -544,8 +537,7 @@ var GAME = (function($){
 
             App.setInitParameter();
 
-            /////////////// commended for single player version
-            //$('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+            $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
@@ -678,7 +670,7 @@ var GAME = (function($){
             App.guess_made = 0;
 
             // Amazon MTurk
-            App.amt = true;
+            App.amt = false;
 
             // time when start typing
             App.time_start_typing = 0;
@@ -1489,9 +1481,8 @@ var GAME = (function($){
                 App.$stat.hide();
                 App.$game.hide();
                 setTimeout(function () {
-                    /////////////// commended for single player version
-                    //$('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
-                    //App.$wait.hide();
+                    $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+                    App.$wait.hide();
                     App.$home.show();
                     $('.mastfoot').show();
                     App.$home_btn.addClass('active');
@@ -1534,7 +1525,7 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(App.currentRound>4){
+                        if(App.currentRound>2){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
