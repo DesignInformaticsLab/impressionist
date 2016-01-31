@@ -34,8 +34,7 @@ block content
                     h1.cover-heading
                         | Welcome to Impressionist
                     p.lead.
-                        Your goal is to collaborate with another player to identify as many objects as possible!<br>
-                        This game is inspired by Dr. Luis Von Ahn's <a href="https://www.cs.cmu.edu/~biglou/Peekaboom.pdf">Peekaboo game</a>.
+                        Your goal is to identify four objects correctly.<br>
                     //#tutorial.btn.btn-lg.btn-default
                     //    | Teach me how to play!
                     | &nbsp;
@@ -69,12 +68,22 @@ block content
                         #guessoutput
                     //#gamescore
                     #model(tabindex='0')
-                    #instruction
-                        p
                 #stat
                     #objlist
                     #comp_model1(tabindex='0')
                     #comp_model2(tabindex='0')
+                #instruction(class='modal fade',role='dialog')
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button(type='button',class='close',data-dismiss="modal",aria-hidden="true")
+                                    | &times;
+                                h4.modal-title
+                            .modal-body
+                                p
+                            .modal-footer
+                                button(type="button", class="btn btn-default", data-dismiss="modal")
+                                    | OK I got it
                 #scoreboard(class='modal fade',role='dialog')
                     .modal-dialog
                         .modal-content

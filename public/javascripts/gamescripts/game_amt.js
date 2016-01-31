@@ -105,7 +105,7 @@ var GAME = (function($){
             App.object_loaded = false;
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
+                //$('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
             }
             else{
 
@@ -324,7 +324,7 @@ var GAME = (function($){
             }
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
+                //$('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
             }
             else{
 
@@ -390,13 +390,14 @@ var GAME = (function($){
                             App.startingTime = Date.now(); // starting time of a game, don't change
                         }
                         App.object_loaded = true;
+
+                        o.animate();
                     }
                 }
                 App.$model.html('');
                 var o = Obj.init(target, callback);
                 App.$model.focus(); // focus on $model so that key events can work
-
-                o.animate();
+                o.render(); // just render once
             });
         },
 
@@ -449,35 +450,39 @@ var GAME = (function($){
                     App.$guessinput.fadeIn();
                     App.$guessinput[0].value='';
 
-                    App.start_obj_time = Date.now();
-                    App.currentTime = Date.now();
-
                     App.selection_capacity = Obj.object_set[0].object.FaceArray[0]; // assign player selection capacity for current obj
                     App.numSelectedFaces = Obj.object_set[0].object.FaceArray[0];
 
-                    if(!App.tutorial_shown){
-                        $('#instruction p').html('Welcome to the tutorial!<br>' +
-                            'This is a game between two players.<br>' +
-                            'One player reveals an object and the other guesses what it is.<br><br>' +
-                            'Now, an object is being gradually revealed.<br>' +
-                            'Hold your <b>left mouse button</b> down and move your mouse to <b>rotate</b> the object.<br>' +
-                            'Go ahead and guess what this object is!<br>' +
-                            'Do it fast to achieve higher scores!');
-                        App.$instruction.fadeIn();
-                    }
-                    else{
-                        $('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
-                    }
-
-                    o.object.rotation.y = Math.random()*Math.PI*2;
-
                     App.object_loaded = true;
 
-                    // let computer select faces
-                    App.autoSelect();
+                    if(App.currentRound==0){
+                        if(App.is_touch_device()==false){
+                            $('#instruction .modal-body p').html(
+                                'An object will be gradually revealed.<br>' +
+                                'You can always drag to <b> rotate </b> the object.<br>' +
+                                '<b>Input your guess </b> in the bottom box before time runs out!'
+                            );
+                        }else{
+                            $('#instruction .modal-body p').html(
+                                'An object will be gradually revealed.<br>' +
+                                'You can always <b>rotate </b> the object using buttom in the bottom.<br>' +
+                                '<b>Input your guess </b> in the bottom box before time runs out!'
+                            );
+                        }
+
+                        App.$instruction.modal();
+                    }
+                    else{
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
+                        Obj.object_set[0].animate();
+                        // let computer select faces
+                        App.autoSelect();
+                    }
                 });
             };
             App.$game.show();
+
             IO.onNewObjData(App.$model, callback);
             App.$model.focus(); // focus on $model so that key events can work
         },
@@ -886,6 +891,35 @@ var GAME = (function($){
                 });
                 // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
             });
+
+            // actions after instruction is closed
+            App.$instruction.on('hidden.bs.modal', function () {
+                if (App.tutorial_shown){
+                    if (App.playWithComputer){
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
+                        Obj.object_set[0].animate();
+                        // let computer select faces
+                        App.autoSelect();
+                    }
+                    else{
+                        IO.socket.emit('playerReady');
+                    }
+                }
+                else {
+                    if (App.myRole=='Player'){
+                        App.start_obj_time = Date.now();
+                        App.currentTime = Date.now();
+                        Obj.object_set[0].animate();
+                        // let computer select faces
+                        App.autoSelect();
+                    }
+                    else{
+                        App.tutorialChoose();
+                    }
+                }
+            });
+
         },
 
         // show the first tutorial on guessing
