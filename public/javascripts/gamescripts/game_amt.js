@@ -105,7 +105,7 @@ var GAME = (function($){
             App.object_loaded = false;
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
+                $('#instruction p').html('<b>Guess what it is before time runs out! You can always rotate the object by dragging.');
             }
             else{
 
@@ -272,11 +272,26 @@ var GAME = (function($){
             App.guess_made += 1;
             App.game_score -= 200;
 
+
+            $('#instruction p').html('<b>Time is reduced at wrong guesses!');
+            $('#instruction p').show();
+            setTimeout(function () {
+                $('#instruction p').hide();
+            },1500);
+
+
+
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
             }
             else if (App.myRole == 'Player'){
-                $('#instruction p').html('<b>Nope...please try again');
+                $('#instruction p').html('<b>Time is reduced at wrong guesses!');
+                //$('#instruction p').show();
+                //setTimeout(function () {
+                //    $('#instruction p').hide();
+                //},1500);
+                //
+                //$('#instruction p').html('<b>Nope...please try again');
                 setTimeout(function () {
                     App.$wait.hide();
                     //App.$menu.css('background-color', '#f5f5ff');
@@ -308,7 +323,7 @@ var GAME = (function($){
             }
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!');
+                $('#instruction p').html('<b>Guess what it is before time runs out! You can always rotate the object by dragging.');
             }
             else{
 
@@ -450,7 +465,7 @@ var GAME = (function($){
                         App.$instruction.fadeIn();
                     }
                     else{
-                        $('#instruction p').html('<b>An object will show up, guess what it is before time runs out!</b>');
+                        $('#instruction p').html('<b>Guess what it is before time runs out! You can always rotate the object by dragging.');
                     }
 
                     o.object.rotation.y = Math.random()*Math.PI*2;
@@ -520,11 +535,18 @@ var GAME = (function($){
             if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
 
             App.setInitParameter();
-            $('#wait.inner.cover p.lead').html('Looking for another human...Please wait');
+            $('#wait.inner.cover p.lead').html('Loading new objects...');
             Obj.object_set = [];
             App.$score.css('width','100%');
         },
-
+        is_touch_device: function() {
+            try {
+                document.createEvent("TouchEvent");
+                return true;
+            } catch (e) {
+                return false;
+            }
+        },
         /**
          * Initial parameters
          */
@@ -1303,13 +1325,13 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(App.currentRound>1){
+                        if(App.currentRound>3){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
                         }
                         else{
-                            App.$amt.html('Try to make two correct guesses to get the MTURK code!');
+                            App.$amt.html('Try to make more correct guesses to get the MTURK code!');
                         }
                     }
                     App.$scoreboard.modal();
@@ -1355,7 +1377,8 @@ var GAME = (function($){
                 all_selected_id: JSON.stringify(App.allSelectedIDMaster),
                 computer_player: 0,
                 //weight: JSON.stringify(weight)
-                amt: App.amt
+                amt: App.amt,
+                penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
             };
             if (App.playWithComputer){data.game_id = -1; data.computer_player=1;}
 
@@ -1393,7 +1416,7 @@ var GAME = (function($){
          */
         playComputer: function() {
             App.gameId = -2; // -2 for playing with a computer outside of a tutorial
-            $('#wait.inner.cover p.lead').html('A computer is joining the game...');
+            $('#wait.inner.cover p.lead').html('Comimg soon...');
             App.playWithComputer = true;
             App.myRole = 'Player';
             //App.$select.hide();

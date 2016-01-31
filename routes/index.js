@@ -74,8 +74,7 @@ router.get('/zoomtest', function(req, res, next) {
 
 /* GET game page. */
 router.get('/amt', function(req, res, next) {
-    //res.render('index_amt', { title: 'Impressionist | MTURK'});
-    res.render('index', { title: 'Impressionist | MTURK'});
+    res.render('index_amt', { title: 'Impressionist | MTURK'});
 });
 
 

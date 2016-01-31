@@ -1534,7 +1534,7 @@ var GAME = (function($){
                     App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(App.currentRound>5){
+                        if(App.currentRound>4){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
