@@ -212,6 +212,10 @@ var GAME = (function($){
             //if(typeof(App.game_score)=='undefined'){App.game_score = 0;}
             //App.game_score += Math.round(App.current_score); // this needs to change depending on the difficulty of the object
             App.currentRound += 1;
+            if(App.currentRound>3){
+                App.showScoreBoard();
+            }
+
             //App.$gamescore.html(App.game_score); // update score
             App.$guessoutput.html(''); // clean output area
 
@@ -1356,8 +1360,9 @@ var GAME = (function($){
                 $.post('/getRanking',{'score':App.currentRound,'amt':App.amt},function(response){
                     var worse = response.result[0].count;
                     var survived = Math.round((Date.now() - App.startingTime)/1000*10)/10;
-                    $('h4.modal-title').html('Congratulations! You survived ' + survived + ' seconds in the game!');
-                    App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
+                    $('h4.modal-title').html('Congratulations! You have completed the test!');
+                    //$('h4.modal-title').html('Congratulations! You survived ' + survived + ' seconds in the game!');
+                    //App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
                         if(App.currentRound>3){
