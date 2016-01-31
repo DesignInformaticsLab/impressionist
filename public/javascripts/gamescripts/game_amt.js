@@ -105,7 +105,7 @@ var GAME = (function($){
             App.object_loaded = false;
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>Guess what it is before time runs out! You can always rotate the object by dragging.');
+                $('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
             }
             else{
 
@@ -324,7 +324,7 @@ var GAME = (function($){
             }
 
             if (App.myRole=='Player'){
-                $('#instruction p').html('<b>Guess what it is before time runs out! You can always rotate the object by dragging.');
+                $('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
             }
             else{
 
@@ -466,7 +466,7 @@ var GAME = (function($){
                         App.$instruction.fadeIn();
                     }
                     else{
-                        $('#instruction p').html('<b>Guess what it is before time runs out! You can always rotate the object by dragging.');
+                        $('#instruction p').html('<b>Input your guess to the box on the left before time runs out! You can always rotate the object by dragging.');
                     }
 
                     o.object.rotation.y = Math.random()*Math.PI*2;
