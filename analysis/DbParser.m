@@ -1,20 +1,12 @@
 %% This parser is used to process data collected from impressionist
+% input: idex of the object in the database
+% output: result are writen into a file, namely object name and aggregated
+% selection number
 % author: Hope Yao, DOI lab, 12/17/2015
 
+function DbParser(dont_know_what_to_call)
 close all; fclose all; clc
 
-% %% extract info from database
-% cmd_l1 = '-- this part is used to compute entropy (object selected by human player and correctly guessed)';
-% cmd_l2 = '\n\\COPY (SELECT all_selected_id FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''size.txt'' csv;';
-% %%%%%%%%%%%%%%%%%   NOTICE::: dont know why output M085 has vtx number 10554
-% % cmd_l3 = '\n\\COPY (SELECT id,object_name,array_length(all_selected_id, 1),all_selected_id    FROM impressionist_result_table_amt where (array_length(all_selected_id, 1)<>0) order by object_name ASC) to ''idx.txt'' csv;';
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% cmd_l3 = '\n\\COPY (SELECT object_name     FROM impressionist_result_table_amt where computer_player=false AND array_length(all_selected_id, 1)<>0 AND correct = true order by object_name ASC) to ''idx.txt'' csv;';
-% cmd = strcat(cmd_l1,cmd_l2,cmd_l3);
-% fileID = fopen('test.sql','w');
-% fprintf(fileID,cmd);
-% fclose(fileID);
-% status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
 
 %% read database file
 sel_db = cell(1);        line_nume = 1;
@@ -61,6 +53,10 @@ obj_played(1)=obj_played(1)+1;
 % for dbname_idx = 10:dbobj_num
 for dbname_idx = dont_know_what_to_call:dont_know_what_to_call %THERE IS AN ERROR AT 9 and 58!!
     D = zeros(1,1);
+    if obj_played(dbname_idx)==0
+        disp(strcat('no correct guess at dbname_idx: ',num2str(dbname_idx)));
+        quit
+    end
     for played_idx = 1:obj_played(dbname_idx)
         db_line_idx = sum(obj_played(1:dbname_idx-1))+played_idx;
         obj_name = cell2mat(name_pool(db_line_idx));
@@ -241,5 +237,6 @@ for dbname_idx = dont_know_what_to_call:dont_know_what_to_call %THERE IS AN ERRO
 
 end
 
+end
 
 

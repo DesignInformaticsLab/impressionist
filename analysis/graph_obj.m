@@ -1,5 +1,8 @@
-%%used to create graph for related objects
+%% used to create graph for related objects
+% input: extracted from database inside function
+% output: shown in command window
 % author: Hope Yao, DOI lab, 12/18/2015
+
 function [ti,sel_db] = graph_obj()
 close all; fclose all; clear; clc
 
@@ -50,7 +53,7 @@ for i=1:length(name_pool)-1
 end
 obj_played(1)=obj_played(1)+1;
 
-ti = cell(dbobj_num,3);
+ti = cell(dbobj_num,4);
 
 for i=1:dbobj_num
     wrngus = cell(obj_played(i),1);
@@ -242,7 +245,7 @@ for i=1:dbobj_num
         disp(cluster(1:ttnum));
         disp(idx_wrong(1:ttnum));
     end
-    ti(i,:) = {correct_answer,sig_close,idx_wrong};
+    ti(i,:) = {correct_answer,sig_close,idx_wrong,name_pool(sum(obj_played(1:i-1))+1)};
 end
 
 end

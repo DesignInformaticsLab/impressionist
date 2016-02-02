@@ -1366,7 +1366,7 @@ var GAME = (function($){
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
                         if(App.currentRound>3){
-                            $.post('/getamtcode',{'score':App.currentRound},function(response){
+                                $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
                         }

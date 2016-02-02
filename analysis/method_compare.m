@@ -1,6 +1,9 @@
-%%compare human, random and pricenton selection
+%% compare human, random and pricenton selection
+% input: extracted from database inside function
+% output: percentage of mesh needed to guess correctly
 % author: Hope Yao, DOI lab, 12/20/2015
 
+function pct_sel=method_compare()
 close all; fclose all; clear; clc
 
 %% extract info from database
@@ -24,7 +27,20 @@ fprintf(fileID,cmd);
 fclose(fileID);
 status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
 
+% human round 2
+cmd_line10 = '\n\\COPY (SELECT array_length(all_selected_id, 1) FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0  AND correct = true order by object_name ASC) to ''single.txt'' csv';
+cmd_line11 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0  AND correct = true order by object_name ASC) to ''single_idx.txt'' csv';
+cmd = strcat(cmd_line10,cmd_line11);
+fileID = fopen('test.sql','w');
+fprintf(fileID,cmd);
+fclose(fileID);
+status2 = system('psql -U postgres -d mylocaldb_amt_single -a -f TEST.sql','-echo');
+
 %% load data
+single_idx = importdata('single_idx.txt');
+single_idx(length(single_idx)+1)={'null'};% for covinience
+single_sel = importdata('single.txt');
+
 human_idx = importdata('human_idx.txt');
 human_idx(length(human_idx)+1)={'null'};% for covinience
 human_sel = importdata('human.txt');
@@ -40,9 +56,13 @@ princeton_sel = importdata('princeton.txt');
 obj_idx = importdata('obj_name.txt');
 num_face = importdata('face_per_mesh.txt');
 
-for compare_idx = 1:3
+pct_sel = cell(4,length(obj_idx));
+for compare_idx = 0:3
     
     switch compare_idx
+        case 0
+            any_idx = single_idx;
+            any_sel = single_sel;
         case 1
             any_idx = human_idx;
             any_sel = human_sel;
@@ -53,9 +73,12 @@ for compare_idx = 1:3
             any_idx = princeton_idx;
             any_sel = princeton_sel;
     end
-    
+    % count how many wrong guesses are there for every object
     num_wrong = zeros(length(obj_idx),1);
     for i=1:length(obj_idx)
+        if strcmp(cell2mat(obj_idx(i)),'M111')
+            obj_idx(i) = {'M112'};
+        end
         cnt = 1; count1 = 0;
         for j=1:length(any_idx)-1
             if strcmp(cell2mat(any_idx(j)),cell2mat(obj_idx(i)))==1
@@ -71,23 +94,16 @@ for compare_idx = 1:3
             end
             cnt = cnt + 1;
         end
-%         if (i==1 && count1==1)
-%             count2 = 0;
-%         end
         if (count1==0)
             continue;
         end
-%                 disp(i);
-%                 disp(count1);
-%                 disp(count1+count2-1);
-%                 disp(any_idx(count1:count1+count2-1));
         num_wrong(i) = count2;
     end
-%     num_wrong(1) = num_wrong(1) - 1;
     
     sel = cell(length(obj_idx),1); 
     avg_sel = zeros(length(obj_idx),1); 
     var_sel = zeros(length(obj_idx),1); 
+    std_sel = zeros(length(obj_idx),1); 
     for i=1:length(obj_idx)
         tmp=zeros(0);
         tt = sum(num_wrong(1:i-1));
@@ -97,28 +113,38 @@ for compare_idx = 1:3
         sel(i) = {tmp} ;
         
         tmp = cell2mat(sel(i));
-        if length(tmp)<3
+        if length(tmp)<1
+%         if length(tmp)<3
             avg_sel(i) = 0;
             var_sel(i) = 0;
+            std_sel(i) = 0;
+            disp((i));
         else
-            avg_sel(i) = (sum(tmp)-max(tmp)-min(tmp))/(length(tmp)-2)/num_face(i);%average in percentage
-            var_sel(i) = var(tmp)/num_face(i);%variance
-            
+            tmp = tmp/num_face(i); % percentage
+%             tmp(tmp == max(tmp)) = []; % remove max
+%             tmp(tmp == min(tmp)) = []; % remove min
+            avg_sel(i) = sum(tmp)/length(tmp);%average in percentage
+            var_sel(i) = var(tmp);%variance
+            std_sel(i) = sqrt(var_sel(i));%standard deviation
+            pct_sel(compare_idx+1,i) = {tmp};
         end
         
     end
     f1=figure(1);plot(avg_sel,'*'); hold on; grid on; 
-    f2=figure(2);plot(var_sel,'*'); hold on; grid on; 
+    f2=figure(2);plot(std_sel,'*'); hold on; grid on; 
 end
 figure(1);
-axis([0,60,0.0001,0.3]); legend('human', 'random', 'pricenton');
+% axis([0,60,0.0001,0.3]);
+axis auto; legend('single', 'human', 'random', 'priceton');
 xlabel('object idx'); ylabel('average revealing percentage');
 saveas(f1,'./output/compare_avg.fig');saveas(f1,'./output/compare_avg.png');
 figure(2);
-axis([0,60,1,300]); legend('human', 'random', 'pricenton');
+% axis([0,60,0.0001,0.3]); 
+axis auto; legend('single', 'human', 'random', 'priceton');
 xlabel('object idx'); ylabel('variance revealing percentage');
 saveas(f2,'./output/compare_var.fig');saveas(f2,'./output/compare_var.png');
-%%
+
+end
 
 
 
