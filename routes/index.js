@@ -77,6 +77,11 @@ router.get('/amt', function(req, res, next) {
     res.render('index_amt', { title: 'Impressionist | MTURK'});
 });
 
+/* GET game page. */
+router.get('/cmp', function(req, res, next) {
+    res.render('index_cmp', { title: 'Impressionist | MTURK-CMP'});
+});
+
 
 ///* try sketchy output */
 //router.get('/game_sketch', function(req, res, next) {
