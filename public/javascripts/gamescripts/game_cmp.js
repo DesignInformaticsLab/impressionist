@@ -226,8 +226,8 @@ var GAME = (function($){
             IO.getSocketStats();
 
             //if (!App.playWithComputer){ // give reward if playing with human
-                App.game_score += 2000;
-                App.game_score = Math.min(App.game_score, 9999);
+            App.game_score += 2000;
+            App.game_score = Math.min(App.game_score, 9999);
             //}
 
             // stop loops
@@ -799,29 +799,15 @@ var GAME = (function($){
             App.$guessinput.on('keypress', App.onGuessinputKeyPress);
 
             App.$entry.click(function(){
-                //App.tutorial_shown = true; // skip tutorial
-                //App.$home.hide();
-                //$('.mastfoot').hide();
-                //App.$wait.show();
-                //App.$home_btn.removeClass('active');
-                //App.$game_btn.addClass('active');
-                //App.$stat_btn.removeClass('active');
-                //IO.getSocketStats();
-                //App.onJoinClick();
-
-                App.quit(); // quit game
-                App.myRole = 'None';
+                App.tutorial_shown = true; // skip tutorial
                 App.$home.hide();
                 $('.mastfoot').hide();
-                App.$wait.hide();
-                App.$game.hide();
-                App.$stat.show();
-                App.$comp_model1.html(""); // clean div for new models
-                App.$comp_model2.html("");
-                App.showList(); // show all objects available
+                App.$wait.show();
                 App.$home_btn.removeClass('active');
-                App.$game_btn.removeClass('active');
-                App.$stat_btn.addClass('active');
+                App.$game_btn.addClass('active');
+                App.$stat_btn.removeClass('active');
+                IO.getSocketStats();
+                App.onJoinClick();
             });
 
             App.$tutorial.click(function(){
@@ -874,7 +860,6 @@ var GAME = (function($){
                     App.$stat_btn.removeClass('active');
                     App.onJoinClick();
                 }
-
             });
 
             App.$stat_btn.click(function(){
@@ -903,14 +888,10 @@ var GAME = (function($){
                 App.$comp_model2.html('');
 
                 // show our saliency
-                var id = this.id-1; //starts from 0
+                var id = this.id-1;
                 Obj.showHeatmap(id,0,App.$comp_model1, function(){
                     // show existing saliency
                     Obj.showHeatmap(id,1,App.$comp_model2);
-                });
-                Obj.showPartial(id,App.$comp_model1, function(){
-                    // show existing saliency
-                    Obj.showPartial(id,App.$comp_model2);
                 });
                 // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
             });
@@ -923,7 +904,14 @@ var GAME = (function($){
                         App.currentTime = Date.now();
                         Obj.object_set[0].animate();
                         // let computer select faces
-                        App.autoSelect();
+                        //App.autoSelect();
+                        var o = Obj.object_set[0];
+                        var selection = o.faceSaliency;
+                        o.createMesh(selection,"0");
+                        //App.autoSelecting = setInterval(function(){
+                        //    var selection = o.faceSaliency.sortIndices.pop();
+                        //    o.createMesh([selection],"0");
+                        //}, 0);
                     }
                     else{
                         IO.socket.emit('playerReady');
@@ -935,7 +923,14 @@ var GAME = (function($){
                         App.currentTime = Date.now();
                         Obj.object_set[0].animate();
                         // let computer select faces
-                        App.autoSelect();
+                        //App.autoSelect();
+                        var o = Obj.object_set[0];
+                        var selection = o.faceSaliency;
+                        o.createMesh(selection,"0");
+                        //App.autoSelecting = setInterval(function(){
+                        //    var selection = o.faceSaliency.sortIndices.pop();
+                        //    o.createMesh([selection],"0");
+                        //}, 0);
                     }
                     else{
                         App.tutorialChoose();
@@ -1385,7 +1380,7 @@ var GAME = (function($){
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
                         if(App.currentRound>3){
-                                $.post('/getamtcode',{'score':App.currentRound},function(response){
+                            $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
                         }
@@ -1660,7 +1655,7 @@ var GAME = (function($){
 
                     $.each(selection, function (i, s) {
                         var geom = new THREE.Geometry();
-                        var f = d.object.getObjectByName(childName).geometry.faces[s];
+                        var f = d.object.getObjectByName(childName).geometry.faces[i];
                         var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
                         var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
                         var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
@@ -2065,18 +2060,6 @@ var GAME = (function($){
             return o;
         },
 
-        showPartial: function(id,target,callback) {
-            var pct = id; //percentage to be revealed
-
-            var o = Obj.object_set[0];
-            //var selection = o.faceSaliency.sortIndices.pop();
-            var selection = o.faceSaliency;
-            o.createMesh([selection],"0");
-            var o = Obj.init(target,inner_callback);
-            o.animate();
-        },
-
-        //    Obj.showHeatmap(id,1,App.$comp_model2);
         showHeatmap: function(id,method,target,callback) {
             $.get('/getRawObjectList', function(response) {
                 App.objectstring_set = response.objectstring_set;

@@ -291,7 +291,7 @@ function grabBestObject(){
 
     //var objID = Math.floor(Math.random() * 53);
     var objID = Math.floor(Math.random() * 23);
-
+    objID = 1;
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
 
