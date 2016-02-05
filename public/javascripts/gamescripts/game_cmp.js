@@ -905,13 +905,18 @@ var GAME = (function($){
                         Obj.object_set[0].animate();
                         // let computer select faces
                         //App.autoSelect();
+
+
                         var o = Obj.object_set[0];
-                        var selection = o.faceSaliency;
-                        o.createMesh(selection,"0");
-                        //App.autoSelecting = setInterval(function(){
-                        //    var selection = o.faceSaliency.sortIndices.pop();
-                        //    o.createMesh([selection],"0");
-                        //}, 0);
+                        var num_partial = 0.05*o.faceSaliency.length;
+                        var partial_selection=[];
+                        for (var i = 0; i < num_partial; ++i) {
+                            partial_selection[i] = o.faceSaliency.sortIndices.pop();
+                        }
+                        o.createMesh(partial_selection,"0");
+
+
+
                     }
                     else{
                         IO.socket.emit('playerReady');
@@ -1654,8 +1659,9 @@ var GAME = (function($){
                     App.allSelectedIDMaster = App.allSelectedIDMaster.concat(uniqueValues);
 
                     $.each(selection, function (i, s) {
+                        //console.log(s);
                         var geom = new THREE.Geometry();
-                        var f = d.object.getObjectByName(childName).geometry.faces[i];
+                        var f = d.object.getObjectByName(childName).geometry.faces[s];
                         var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
                         var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
                         var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
@@ -1920,7 +1926,8 @@ var GAME = (function($){
                 // update score based on selection, time and guesses
                 if (App.object_loaded){ // to prevent long loading time
                     if (App.game_score > 0 && App.numSelectedFaces > 0){
-                        var penalty = (Date.now()-App.currentTime)*0.10;
+                        //var penalty = (Date.now()-App.currentTime)*0.10;
+                        var penalty = (Date.now()-App.currentTime)*0;
                         // MAX: penalty on selection is too high on geometries with few faces
                         penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
                         App.game_score -= penalty;
