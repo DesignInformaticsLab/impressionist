@@ -3,18 +3,20 @@
 % output: shown in command window
 % author: Hope Yao, DOI lab, 12/18/2015
 
-function [ti,sel_db] = graph_obj()
+function [ti,sel_db,face_per_mesh] = graph_obj()
 close all; fclose all; clear; clc
 
 %% extract info from database
 cmd_l1 = '-- this part is used to compute similarity graph ';
 % wrong guesses
 cmd_l2 = '\n\\COPY (SELECT guess FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''graph.txt'' csv';
-% wrong guesses
+% faces selected at wrong guess
 cmd_l3 = '\n\\COPY (SELECT all_selected_id FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''size.txt'' csv';
 % idx for wrong guesses
 cmd_l4 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND correct = false order by object_name ASC) to ''idx.txt'' csv;';
-cmd = strcat(cmd_l1,cmd_l2,cmd_l3,cmd_l4);
+% total number of faces for every object
+cmd_l5 = '\n\\COPY (SELECT face_per_mesh[1] FROM impressionist_object_table_amt  order by object_name ASC) to ''face_per_mesh.txt'' csv';
+cmd = strcat(cmd_l1,cmd_l2,cmd_l3,cmd_l4,cmd_l5);
 fileID = fopen('test.sql','w');
 fprintf(fileID,cmd);
 fclose(fileID);
@@ -24,7 +26,7 @@ status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
 
 guess=importdata('graph.txt');
 name_pool = importdata('idx.txt');
-% gsize=importdata('size.txt');
+face_per_mesh = importdata('face_per_mesh.txt');
 
 sel_db = cell(1);        line_nume = 1;
 fileID = fopen('size.txt','r');

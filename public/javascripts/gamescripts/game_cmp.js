@@ -725,6 +725,9 @@ var GAME = (function($){
             // instruction
             App.$instruction = $('#instruction');
 
+            //select between two resutls
+            App.$cmp = $('#cmp');
+
             // scoreboard
             App.$myscore = $('#myscore');
             App.$myrank = $('#myrank');
@@ -766,7 +769,7 @@ var GAME = (function($){
         /**
          * Create some click handlers for the various buttons that appear on-screen.
          */
-        bindEvents: function () {
+        bindEvents: function ()  {
             // Host and Player
             App.$model.mousemove(function(e){App.onMouseMove(e, App.$model)});
             App.$model.mousedown(function(e){App.onMouseDown(e, App.$model)});
@@ -889,11 +892,23 @@ var GAME = (function($){
 
                 // show our saliency
                 var id = this.id-1;
-                Obj.showHeatmap(id,0,App.$comp_model1, function(){
+                //Obj.showHeatmap(id,0,App.$comp_model1, function(){
+                //    // show existing saliency
+                //    Obj.showHeatmap(id,1,App.$comp_model2);
+                //});
+                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     // show existing saliency
-                    Obj.showHeatmap(id,1,App.$comp_model2);
+                    Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
                 // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
+
+                //var o = Obj.object_set[0];
+                //var num_partial = 0.05*o.faceSaliency.length;
+                //var partial_selection=[];
+                //for (var i = 0; i < num_partial; ++i) {
+                //    partial_selection[i] = o.faceSaliency.sortIndices.pop();
+                //}
+                //o.createMesh(partial_selection,"0");
             });
 
             // actions after instruction is closed
@@ -903,17 +918,28 @@ var GAME = (function($){
                         App.start_obj_time = Date.now();
                         App.currentTime = Date.now();
                         Obj.object_set[0].animate();
-                        // let computer select faces
-                        //App.autoSelect();
 
+                        App.quit(); // quit game
+                        App.myRole = 'None';
+                        App.$home.hide();
+                        $('.mastfoot').hide();
+                        App.$wait.hide();
+                        App.$game.hide();
+                        App.$stat.show();
+                        App.$comp_model1.html(""); // clean div for new models
+                        App.$comp_model2.html("");
+                        App.showList(); // show all objects available
+                        App.$home_btn.removeClass('active');
+                        App.$game_btn.removeClass('active');
+                        App.$stat_btn.addClass('active');
 
-                        var o = Obj.object_set[0];
-                        var num_partial = 0.05*o.faceSaliency.length;
-                        var partial_selection=[];
-                        for (var i = 0; i < num_partial; ++i) {
-                            partial_selection[i] = o.faceSaliency.sortIndices.pop();
-                        }
-                        o.createMesh(partial_selection,"0");
+                        //var o = Obj.object_set[0];
+                        //var num_partial = 0.05*o.faceSaliency.length;
+                        //var partial_selection=[];
+                        //for (var i = 0; i < num_partial; ++i) {
+                        //    partial_selection[i] = o.faceSaliency.sortIndices.pop();
+                        //}
+                        //o.createMesh(partial_selection,"0");
 
 
 
@@ -943,6 +969,13 @@ var GAME = (function($){
                 }
             });
 
+
+            $('#cmp.rt_left').click( function(){
+                $('#instruction p').html('Moving right then stop!');
+            });
+            $('#cmp.rt_right').click( function(){
+                $('#instruction p').html('Moving right then stop!');
+            });
         },
 
         // show the first tutorial on guessing
@@ -1657,14 +1690,14 @@ var GAME = (function($){
                         uniqueValues.push(s+bias);
                     });
                     App.allSelectedIDMaster = App.allSelectedIDMaster.concat(uniqueValues);
-
+                    var D = d.object.getObjectByName(childName).children[0].geometry;
                     $.each(selection, function (i, s) {
                         //console.log(s);
                         var geom = new THREE.Geometry();
-                        var f = d.object.getObjectByName(childName).geometry.faces[s];
-                        var v1 = d.object.getObjectByName(childName).geometry.vertices[f.a];
-                        var v2 = d.object.getObjectByName(childName).geometry.vertices[f.b];
-                        var v3 = d.object.getObjectByName(childName).geometry.vertices[f.c];
+                        var f = D.faces[s];
+                        var v1 = D.vertices[f.a];
+                        var v2 = D.vertices[f.b];
+                        var v3 = D.vertices[f.c];
                         geom.vertices.push(v1, v2, v3);
 
                         var nf = new THREE.Face3(0, 1, 2);
@@ -1672,11 +1705,11 @@ var GAME = (function($){
                         nf.normal = f.normal;
                         geom.faces.push(nf);
 
-                        var mesh = new THREE.Mesh(geom, d.object.getObjectByName(childName).material);
+                        var mesh = new THREE.Mesh(geom, d.object.children[0].material);
 
-                        mesh.rotation.x = d.object.getObjectByName(childName).rotation.x;
-                        mesh.rotation.y = d.object.getObjectByName(childName).rotation.y;
-                        mesh.rotation.z = d.object.getObjectByName(childName).rotation.z;
+                        mesh.rotation.x = d.object.rotation.x;
+                        mesh.rotation.y = d.object.rotation.y;
+                        mesh.rotation.z = d.object.rotation.z;
 
                         mesh.scale.set(d.scale, d.scale, d.scale);
                         mesh.position.z = d.height;
@@ -1691,7 +1724,14 @@ var GAME = (function($){
                         //    mesh.position.y = 0;
                         //    mesh.position.z = 0;
                         //}
-                        d.emptyobject.add(mesh);
+
+                        //try{
+                            d.emptyobject.add(mesh);
+                        //}
+                        //catch(e){
+                        //    d.emptyobject.push(mesh);
+                        //}
+
                     });
                 };
 
@@ -1878,29 +1918,28 @@ var GAME = (function($){
                         App.onJoinClick();
                     }
                 }
-
-                if(App.myRole != 'Player'){
-                    if(typeof(d.object)!='undefined'){
+                //
+                //if(App.myRole != 'Player'){
+                //    if(typeof(d.object)!='undefined'){
                         d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
                             d.object.rotation.y + d.theta, 0, 'XYZ' );
-                        if (d.scale>1){
-                            var scale = d.global_scale* d.scale || 1;
-                            d.object.children[0].scale.set(scale, scale, scale);
-                        }
-
-                    }
-                }
-                else{
-                    if(typeof(d.emptyobject)!='undefined'){
-                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
-                        //if (d.scale>1){
-                        //    var scale = d.global_scale* d.scale || 1;
-                        //    d.emptyobject.scale.set(scale, scale, scale);
-                        //}
-
-                    }
-                }
+                //        if (d.scale>1){
+                //            var scale = d.global_scale* d.scale || 1;
+                //            d.object.children[0].scale.set(scale, scale, scale);
+                //        }
+                //    }
+                //}
+                //else{
+                //    if(typeof(d.emptyobject)!='undefined'){
+                //        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                //            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                //        //if (d.scale>1){
+                //        //    var scale = d.global_scale* d.scale || 1;
+                //        //    d.emptyobject.scale.set(scale, scale, scale);
+                //        //}
+                //
+                //    }
+                //}
 
                 d.camera.position.x = 0;
                 d.camera.position.y = d.height; //don't change
@@ -1998,16 +2037,10 @@ var GAME = (function($){
             o.object = THREE.SceneLoad(callback);
             //o.object.name = o.correct_answer[0]; // use the first answer as the object name
 
-            if(App.myRole=='Player'){
-                o.emptyobject = new THREE.Scene();
-                o.emptyobject.name = "emptyobject";
-                o.emptyobject.castShadow  = true;
-                o.scene.add(o.emptyobject);
-            }
-            else{
-                o.object.castShadow  = true;
-                o.scene.add(o.object);
-            }
+            o.emptyobject = new THREE.Scene();
+            o.emptyobject.name = "emptyobject";
+            o.emptyobject.castShadow  = true;
+            o.scene.add(o.emptyobject);
 
             o.camera.position.x = -o.radius;
             o.camera.position.y = o.height; //don't change
@@ -2065,6 +2098,189 @@ var GAME = (function($){
             container.appendChild( o.renderer.domElement );
             Obj.object_set.push(o);
             return o;
+        },
+
+        showPartialCmp: function(id,method,target,callback) {
+            $.get('/getRawObjectList', function(response) {
+                App.objectstring_set = response.objectstring_set;
+                App.objectString = App.objectstring_set[id];
+                $.getScript(App.objectString, function () {
+                    var inner_callback = function(){
+                        o.height = zheight;
+                        o.scale = scale;
+
+                        var weight = new Array(o.object.FaceArray.length);
+                        $.each(weight, function (i, e) {
+                            weight[i] = new Array(o.object.children[i].geometry.faces.length);
+                        });
+
+                        //if (method == 0) { // our method
+                        //    var raw_face_id_array, mesh_id, face_id, max_weight, count;
+                        //    $.post('/read_selection', {'object_name': o.object.name,'amt':App.amt}, function (response) {
+                        //            $.each(response, function (i, r) {
+                        //                raw_face_id_array = r.all_selected_id;
+                        //                $.each(raw_face_id_array, function (j, raw_face_id) {
+                        //                    mesh_id = 0;
+                        //                    face_id = raw_face_id;
+                        //                    count = 0;
+                        //                    while (face_id - o.object.FaceArray[count] >= 0) {
+                        //                        face_id -= o.object.FaceArray[count];
+                        //                        mesh_id++;
+                        //                        count++;
+                        //                    }
+                        //                    if (typeof weight[mesh_id][face_id] == 'undefined') {
+                        //                        weight[mesh_id][face_id] = 1;
+                        //                    }
+                        //                    else {
+                        //                        weight[mesh_id][face_id] += 1;
+                        //                    }
+                        //                })
+                        //            });
+                        //
+                        //            max_weight = [];
+                        //            $.each(weight, function (i, w_mesh) {
+                        //                max_weight.push(Math.max.apply(null, w_mesh.filter(function (x) {
+                        //                    return isFinite(x);
+                        //                })));
+                        //            });
+                        //            var max_max_weight = Math.max.apply(Math, max_weight);
+                        //            $.each(weight, function (mesh_id, face_for_mesh) {
+                        //                $.each(face_for_mesh, function (face_id, w) {
+                        //                    if (w) {
+                        //                        if (face_id >= o.object.children[mesh_id].geometry.faces.length) {
+                        //                            var stop = 1;
+                        //                        }
+                        //                        //o.object.children[mesh_id].geometry.faces[face_id].color.r = Math.max(w / max_max_weight, 0.7);
+                        //                        //o.object.children[mesh_id].geometry.faces[face_id].color.g = Math.max(w / max_max_weight / 5.0, 0.2);
+                        //                        //o.object.children[mesh_id].geometry.faces[face_id].color.b = Math.max(w / max_max_weight / 5.0, 0.2);
+                        //                        var col = Obj.getRGB(w/max_max_weight);
+                        //                        o.object.children[mesh_id].geometry.faces[face_id].color.r = col[0]/255;
+                        //                        o.object.children[mesh_id].geometry.faces[face_id].color.g = col[1]/255;
+                        //                        o.object.children[mesh_id].geometry.faces[face_id].color.b = col[2]/255;
+                        //                    }
+                        //                });
+                        //                o.object.children[mesh_id].geometry.colorsNeedUpdate = true;
+                        //            });
+                        //            if (typeof(callback) != 'undefined'){
+                        //                callback();
+                        //            }
+                        //        }
+                        //    );
+                        //}
+                        if (method == 0){ // use saliency distribution data from Chen 2012
+                            // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
+                            var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
+                            try {
+                                $.get('obj/Princeton_saliency_distribution_Chen/orig/' + saliency_distribution_id + '.val', function (response) {
+                                    response = response.split('\n');
+                                    if (response[response.length - 1] == '') {
+                                        response = response.splice(0, response.length - 1);
+                                    }
+                                    $.each(response, function (i, r) {
+                                        response[i] = parseFloat(r);
+                                    });
+
+                                    var selection = [];
+                                    $.each(Obj.object_set[0].object.children[0].geometry.faces, function(i,f){
+                                        selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
+                                    });
+
+                                    var num_partial = 0.05*selection.length;
+                                    var partial_selection=[];
+                                    App.sortWithIndeces(selection);
+                                    for (var i = 0; i < num_partial; ++i) {
+                                        partial_selection[i] = selection.sortIndices.pop();
+                                        //partial_selection[i] = i;
+                                    }
+                                    o.createMesh(partial_selection, o.object.name);
+
+                                    o.animate();
+
+                                    //var max_weight = Math.max.apply(Math, response);
+                                    //$.each(response, function (i, r) {
+                                    //    o.object.children[0].geometry.vertices[i].salColor = r / max_weight;
+                                    //});
+                                    //
+                                    //o.paint_faces();
+                                    //if (typeof(callback) != 'undefined') {
+                                    //    callback();
+                                    //}
+                                    if (typeof(callback) != 'undefined'){
+                                        callback();
+                                    }
+                                });
+                                //var o = Obj.object_set[0];
+                                //var num_partial = 0.05*o.faceSaliency.length;
+                                //var partial_selection=[];
+                                //for (var i = 0; i < num_partial; ++i) {
+                                //    partial_selection[i] = o.faceSaliency.sortIndices.pop();
+                                //}
+                                //o.createMesh(partial_selection,"0");
+
+
+                            }
+                            catch(err){
+                                App.$comp_model2.html('no benchmark data available.');
+                            }
+                        }
+                        else if (method == 1) { // use saliency distribution data from Chen 2012
+                            // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
+                            var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
+                            try {
+                                $.get('obj/Princeton_saliency_distribution_Chen/imp/' + saliency_distribution_id + '.val', function (response) {
+                                    response = response.split('\n');
+                                    if (response[response.length - 1] == '') {
+                                        response = response.splice(0, response.length - 1);
+                                    }
+                                    $.each(response, function (i, r) {
+                                        response[i] = parseFloat(r);
+                                    });
+
+                                    var selection = [];
+                                    $.each(Obj.object_set[0].object.children[0].geometry.faces, function(i,f){
+                                        selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
+                                    });
+
+                                    var num_partial = 0.05*selection.length;
+                                    var partial_selection=[];
+                                    App.sortWithIndeces(selection);
+                                    for (var i = 0; i < num_partial; ++i) {
+                                        partial_selection[i] = selection.sortIndices.pop();
+                                        //partial_selection[i] = i;
+                                    }
+                                    o.createMesh(partial_selection, o.object.name);
+
+                                    o.animate();
+
+                                    //var max_weight = Math.max.apply(Math, response);
+                                    //$.each(response, function (i, r) {
+                                    //    o.object.children[0].geometry.vertices[i].salColor = r / max_weight;
+                                    //});
+                                    //
+                                    //o.paint_faces();
+                                    //if (typeof(callback) != 'undefined') {
+                                    //    callback();
+                                    //}
+                                });
+                                //var o = Obj.object_set[0];
+                                //var num_partial = 0.05*o.faceSaliency.length;
+                                //var partial_selection=[];
+                                //for (var i = 0; i < num_partial; ++i) {
+                                //    partial_selection[i] = o.faceSaliency.sortIndices.pop();
+                                //}
+                                //o.createMesh(partial_selection,"0");
+
+
+                            }
+                            catch(err){
+                                App.$comp_model2.html('no benchmark data available.');
+                            }
+                        }
+                    };
+                    var o = Obj.init(target,inner_callback);
+                    o.animate();
+                });
+            });
         },
 
         showHeatmap: function(id,method,target,callback) {
