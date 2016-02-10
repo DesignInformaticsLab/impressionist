@@ -69,7 +69,7 @@ var GAME = (function($){
             // wait for the player, if no one shows up, play with a computer
             setTimeout(function () {
                 if(App.playWithComputer){App.playComputer();}
-            },5000); // wait long enough to catch another player
+            },99); // wait long enough to catch another player
         },
 
         /**

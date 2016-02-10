@@ -2035,8 +2035,8 @@ var GAME = (function($){
                 //
                 //if(App.myRole != 'Player'){
                 //    if(typeof(d.object)!='undefined'){
-                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
-                            d.object.rotation.y + d.theta, 0, 'XYZ' );
+                //        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                //            d.object.rotation.y + d.theta, 0, 'XYZ' );
                 //        if (d.scale>1){
                 //            var scale = d.global_scale* d.scale || 1;
                 //            d.object.children[0].scale.set(scale, scale, scale);
@@ -2045,8 +2045,8 @@ var GAME = (function($){
                 //}
                 //else{
                 //    if(typeof(d.emptyobject)!='undefined'){
-                //        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                //            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                 //        //if (d.scale>1){
                 //        //    var scale = d.global_scale* d.scale || 1;
                 //        //    d.emptyobject.scale.set(scale, scale, scale);
