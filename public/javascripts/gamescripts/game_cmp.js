@@ -462,15 +462,13 @@ var GAME = (function($){
                     if(App.currentRound==0){
                         if(App.is_touch_device()==false){
                             $('#instruction .modal-body p').html(
-                                'An object will be gradually revealed.<br>' +
                                 'You can always drag to <b> rotate </b> the object.<br>' +
-                                '<b>Input your guess </b> in the bottom box before time runs out!'
+                                '<b>click the bottom button</b> to select!'
                             );
                         }else{
                             $('#instruction .modal-body p').html(
-                                'An object will be gradually revealed.<br>' +
-                                'You can always <b>rotate </b> the object using buttom in the bottom.<br>' +
-                                '<b>Input your guess </b> in the bottom box before time runs out!'
+                                'You can always drag to <b> rotate </b> the object.<br>' +
+                                '<b>click the bottom button</b> to select!'
                             );
                         }
 
