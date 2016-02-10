@@ -726,7 +726,9 @@ var GAME = (function($){
             App.$instruction = $('#instruction');
 
             //select between two resutls
-            App.$cmp = $('#cmp');
+            App.$cmp_l = $('#cmp.rt_left');
+            App.$cmp_r = $('#cmp.rt_right');
+            App.$cmp_u = $('#cmp.rt_up');
 
             // scoreboard
             App.$myscore = $('#myscore');
@@ -970,11 +972,77 @@ var GAME = (function($){
             });
 
 
-            $('#cmp.rt_left').click( function(){
-                $('#instruction p').html('Moving right then stop!');
+            App.$cmp_r.click(function(){
+                var answer = $('#guessinput')[0].value;
+                var data = {
+                    //game_id: App.gameId,
+                    game_id : -1,
+                    answer: answer,
+
+                    correct: true,
+                    round: App.currentRound,
+                    duration: Date.now()-App.start_obj_time, // time from start of the object
+                    score: Math.round(App.game_score),
+                    object_name: Obj.object_set[0].object.name,
+                    all_selected_id: "[1]",
+                    computer_player: 0,
+                    //weight: JSON.stringify(weight)
+                    amt: App.amt,
+                    penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+                };
+                if (App.playWithComputer){data.computer_player=1;}
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
+                //IO.socket.emit('grabBestObject');
             });
-            $('#cmp.rt_right').click( function(){
-                $('#instruction p').html('Moving right then stop!');
+            App.$cmp_l.click(function(){
+                var answer = $('#guessinput')[0].value;
+                var data = {
+                    //game_id: App.gameId,
+                    game_id : -1,
+                    answer: answer,
+
+                    correct: true,
+                    round: App.currentRound,
+                    duration: Date.now()-App.start_obj_time, // time from start of the object
+                    score: Math.round(App.game_score),
+                    object_name: Obj.object_set[0].object.name,
+                    all_selected_id: "[2]",
+                    computer_player: 0,
+                    //weight: JSON.stringify(weight)
+                    amt: App.amt,
+                    penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+                };
+                if (App.playWithComputer){data.computer_player=1;}
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
+                //IO.socket.emit('grabBestObject');
+            });
+            App.$cmp_u.click(function(){
+                var answer = $('#guessinput')[0].value;
+                var data = {
+                    //game_id: App.gameId,
+                    game_id : -1,
+                    answer: answer,
+
+                    correct: true,
+                    round: App.currentRound,
+                    duration: Date.now()-App.start_obj_time, // time from start of the object
+                    score: Math.round(App.game_score),
+                    object_name: Obj.object_set[0].object.name,
+                    all_selected_id: "[3]",
+                    computer_player: 0,
+                    //weight: JSON.stringify(weight)
+                    amt: App.amt,
+                    penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+                };
+                if (App.playWithComputer){data.computer_player=1;}
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
+                //IO.socket.emit('grabBestObject');
             });
         },
 

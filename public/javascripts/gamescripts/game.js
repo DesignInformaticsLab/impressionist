@@ -1018,7 +1018,6 @@ var GAME = (function($){
 
             // actions after instruction is closed
             App.$instruction.on('hidden.bs.modal', function () {
-                App.$cmp.show();
                 if (App.tutorial_shown){
                     if (App.playWithComputer){
                         App.start_obj_time = Date.now();
