@@ -52,7 +52,6 @@ block content
                     #continue_btn.btn.btn-lg.btn-default
                         | Continue
                 #game
-                    #score
                     #menu
                         input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
                         #guessoutput
@@ -67,12 +66,14 @@ block content
                     //    i.fa.fa-shield.fa-rotate-180
                     //#rotate.rt_down
                     //    i.fa.fa-shield
-                #cmp.rt_left
-                    i.fa.fa-shield.fa-rotate-90
-                #cmp.rt_right
-                    i.fa.fa-shield.fa-rotate-270
-                #cmp.rt_up
-                    i.fa.fa-shield.fa-rotate-180
+
+                #cmp_left.btn-default.btn.btn-lg
+                    | Choose This
+               #cmp_right.btn-default.btn.btn-lg
+                    | Choose This
+                #cmp_skip.btn-default.btn.btn-lg
+                    | Skip
+
 
 
                 #stat
