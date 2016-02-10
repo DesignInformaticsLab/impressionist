@@ -172,6 +172,7 @@
     -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
     transition: background-color 0.5s, transform 0.5s;
     bottom: -88px;
+    /*z-index: 10;*/
 }
 
 #guessinput {

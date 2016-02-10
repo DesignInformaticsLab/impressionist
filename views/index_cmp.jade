@@ -53,9 +53,6 @@ block content
                         | Continue
                 #game
                     #score
-                    #menu
-                        input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
-                        #guessoutput
                     #model(tabindex='0')
 
 
@@ -67,18 +64,21 @@ block content
                     //    i.fa.fa-shield.fa-rotate-180
                     //#rotate.rt_down
                     //    i.fa.fa-shield
-                #cmp.rt_left
-                    i.fa.fa-shield.fa-rotate-90
-                #cmp.rt_right
-                    i.fa.fa-shield.fa-rotate-270
-                #cmp.rt_up
-                    i.fa.fa-shield.fa-rotate-180
-
 
                 #stat
                     #objlist
                     #comp_model1(tabindex='0')
                     #comp_model2(tabindex='0')
+                    #cmp.rt_left
+                        i.fa.fa-shield.fa-rotate-90
+                    #cmp.rt_right
+                        i.fa.fa-shield.fa-rotate-270
+                    #cmp.rt_up
+                        i.fa.fa-shield.fa-rotate-180
+                    #menu
+                        input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
+                        #guessoutput
+
                 #instruction(class='modal fade',role='dialog')
                     .modal-dialog
                         .modal-content

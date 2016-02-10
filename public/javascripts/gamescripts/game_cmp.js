@@ -681,6 +681,8 @@ var GAME = (function($){
 
             // true if object is loaded and rendering should start
             App.object_loaded = false;
+
+            App.wrongtrial = 0;
         },
 
         /**
@@ -971,10 +973,15 @@ var GAME = (function($){
                         App.tutorialChoose();
                     }
                 }
+                App.$cmp_l.hide();
+                App.$cmp_r.hide();
+                App.$cmp_u.hide();
             });
 
 
             App.$cmp_r.click(function(){
+                App.$cmp_l.hide();
+                App.$cmp_r.hide();
                 var answer = $('#guessinput')[0].value;
                 var data = {
                     //game_id: App.gameId,
@@ -1014,6 +1021,8 @@ var GAME = (function($){
             });
 
             App.$cmp_l.click(function(){
+                App.$cmp_l.hide();
+                App.$cmp_r.hide();
                 var answer = $('#guessinput')[0].value;
                 var data = {
                     //game_id: App.gameId,
@@ -1053,6 +1062,8 @@ var GAME = (function($){
             });
 
             App.$cmp_u.click(function(){
+                App.$cmp_l.hide();
+                App.$cmp_u.hide();
                 var answer = $('#guessinput')[0].value;
                 var data = {
                     //game_id: App.gameId,
@@ -1089,6 +1100,7 @@ var GAME = (function($){
                 if(App.currentRound>8){
                     App.showScoreBoard();
                 }
+                App.wrongtrial = 0;
             });
         },
 
@@ -1565,44 +1577,28 @@ var GAME = (function($){
          *  Click handler for the Player to submit and store a guess.
          */
         onSubmitAnswer: function() {
-            //var weight = [];
-            //$.each(App.allSelectedIDMaster, function(i,d){
-            //    weight.push(1-weight.length/App.allSelectedIDMaster.length);
-            //});
 
+            //var correct_answer;
+            //$.getScript( App.objectString, function() {
+            //    correct_answer = answer;
+            //})
             var answer = $('#guessinput')[0].value;
-            var data = {
-                game_id: App.gameId,
-                answer: answer,
-
-                correct: $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0,
-                round: App.currentRound,
-                duration: Date.now()-App.start_obj_time, // time from start of the object
-                score: Math.round(App.game_score),
-                object_name: Obj.object_set[0].object.name,
-                all_selected_id: JSON.stringify(App.allSelectedIDMaster),
-                computer_player: 0,
-                //weight: JSON.stringify(weight)
-                amt: App.amt,
-                penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
-            };
-            if (App.playWithComputer){data.game_id = -1; data.computer_player=1;}
-
-            // if during a real game
-            if (App.tutorial_shown){
-                $.post('/store_selection',data,function(){
-                    IO.socket.emit('checkAnswer',data);
-                });
+            var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
+            if (correct){
+                App.$cmp_l.show();
+                App.$cmp_r.show();
+                App.$guessoutput.html(''); // clean output area
             }
-            // if during tutorial
             else{
-                var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
-                if (correct){
-                    App.object_loaded = false;
-                    IO.onAnswerCorrect();
-                }
-                else{
-                    IO.onAnswerWrong();
+                App.wrongtrial =  App.wrongtrial + 1;
+                App.$guessinput.css('background-color', '#000000');
+                setTimeout(function () {
+                    App.$guessinput.css('background-color', '#f5f5ff');
+                },800);
+                $('#instruction p').html('<b>Time is reduced at wrong guesses!');
+                //show skip button
+                if ( App.wrongtrial > 3){
+                    App.$cmp_u.show();
                 }
             }
         },
@@ -2082,7 +2078,7 @@ var GAME = (function($){
                         //var penalty = (Date.now()-App.currentTime)*0.10;
                         var penalty = (Date.now()-App.currentTime)*0;
                         // MAX: penalty on selection is too high on geometries with few faces
-                        penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
+                        //penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
                         App.game_score -= penalty;
                         App.currentTime = Date.now();
                         App.numSelectedFaces = App.selection_capacity;
@@ -2222,6 +2218,7 @@ var GAME = (function($){
                     var inner_callback = function(){
                         o.height = zheight;
                         o.scale = scale;
+                        o.correct_answer = answer;
 
                         var weight = new Array(o.object.FaceArray.length);
                         $.each(weight, function (i, e) {
