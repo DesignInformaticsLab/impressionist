@@ -902,15 +902,7 @@ var GAME = (function($){
                     // show existing saliency
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
-                // database id starts with 1. NOTE: Here database order and objectstring_set order are the same
 
-                //var o = Obj.object_set[0];
-                //var num_partial = 0.05*o.faceSaliency.length;
-                //var partial_selection=[];
-                //for (var i = 0; i < num_partial; ++i) {
-                //    partial_selection[i] = o.faceSaliency.sortIndices.pop();
-                //}
-                //o.createMesh(partial_selection,"0");
             });
 
             // actions after instruction is closed
@@ -935,14 +927,26 @@ var GAME = (function($){
                         App.$game_btn.removeClass('active');
                         App.$stat_btn.addClass('active');
 
-                        //var o = Obj.object_set[0];
-                        //var num_partial = 0.05*o.faceSaliency.length;
-                        //var partial_selection=[];
-                        //for (var i = 0; i < num_partial; ++i) {
-                        //    partial_selection[i] = o.faceSaliency.sortIndices.pop();
-                        //}
-                        //o.createMesh(partial_selection,"0");
 
+                        //show a random comparison first
+                        GAME.App.$objlist.hide();
+                        $.each(Obj.object_set, function(i,o){
+                            o.desposeMesh();
+                        });
+                        Obj.object_set = [];
+                        App.$comp_model1.html('');
+                        App.$comp_model2.html('');
+
+                        var id =  Math.floor(Math.random() * 23);
+                        $.each(Obj.object_set, function(i,o){
+                            o.desposeMesh();
+                        });
+                        Obj.object_set = [];
+                        App.$comp_model1.html('');
+                        App.$comp_model2.html('');
+                        Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                            Obj.showPartialCmp(id,1,App.$comp_model2);
+                        });
 
 
                     }
@@ -994,7 +998,18 @@ var GAME = (function($){
                 $.post('/store_selection',data,function(){
                     IO.socket.emit('checkAnswer',data);
                 });
-                //IO.socket.emit('grabBestObject');
+
+                var id =  Math.floor(Math.random() * 23);
+                $.each(Obj.object_set, function(i,o){
+                    o.desposeMesh();
+                });
+                Obj.object_set = [];
+                App.$comp_model1.html('');
+                App.$comp_model2.html('');
+                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                });
+
             });
             App.$cmp_l.click(function(){
                 var answer = $('#guessinput')[0].value;
@@ -1018,7 +1033,18 @@ var GAME = (function($){
                 $.post('/store_selection',data,function(){
                     IO.socket.emit('checkAnswer',data);
                 });
-                //IO.socket.emit('grabBestObject');
+
+                var id =  Math.floor(Math.random() * 23);
+                $.each(Obj.object_set, function(i,o){
+                    o.desposeMesh();
+                });
+                Obj.object_set = [];
+                App.$comp_model1.html('');
+                App.$comp_model2.html('');
+                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                });
+
             });
             App.$cmp_u.click(function(){
                 var answer = $('#guessinput')[0].value;
@@ -1042,7 +1068,18 @@ var GAME = (function($){
                 $.post('/store_selection',data,function(){
                     IO.socket.emit('checkAnswer',data);
                 });
-                //IO.socket.emit('grabBestObject');
+
+                var id =  Math.floor(Math.random() * 23);
+                $.each(Obj.object_set, function(i,o){
+                    o.desposeMesh();
+                });
+                Obj.object_set = [];
+                App.$comp_model1.html('');
+                App.$comp_model2.html('');
+                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                });
+
             });
         },
 
