@@ -1009,8 +1009,12 @@ var GAME = (function($){
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
-
+                App.currentRound += 1;
+                if(App.currentRound>8){
+                    App.showScoreBoard();
+                }
             });
+
             App.$cmp_l.click(function(){
                 var answer = $('#guessinput')[0].value;
                 var data = {
@@ -1044,8 +1048,12 @@ var GAME = (function($){
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
-
+                App.currentRound += 1;
+                if(App.currentRound>8){
+                    App.showScoreBoard();
+                }
             });
+
             App.$cmp_u.click(function(){
                 var answer = $('#guessinput')[0].value;
                 var data = {
@@ -1079,7 +1087,10 @@ var GAME = (function($){
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
-
+                App.currentRound += 1;
+                if(App.currentRound>8){
+                    App.showScoreBoard();
+                }
             });
         },
 
