@@ -726,9 +726,9 @@ var GAME = (function($){
             App.$instruction = $('#instruction');
 
             //select between two resutls
-            App.$cmp_l = $('#cmp.rt_left');
-            App.$cmp_r = $('#cmp.rt_right');
-            App.$cmp_u = $('#cmp.rt_up');
+            App.$cmp_l = $('#cmp_left');
+            App.$cmp_r = $('#cmp_right');
+            App.$cmp_u = $('#cmp_skip');
 
             // scoreboard
             App.$myscore = $('#myscore');
@@ -746,6 +746,9 @@ var GAME = (function($){
             var menu_bottom = $('.mastfoot').height();
             App.$menu.css('bottom',menu_bottom+'px');
             App.$objlist.css('bottom',menu_bottom+'px');
+            App.$cmp_l.css('right',App.$game.width()-margin_left+'px');
+            App.$cmp_r.css('left',App.$game.width()-margin_left+'px');
+            App.$cmp_u.css('left',(App.$game.width()-200)*.5+'px');
             //App.$game.height(game_height);
             //App.$time.css('marginLeft',margin_left+'px');
             //App.$timebar.css('marginLeft',margin_left+'px');
@@ -2031,8 +2034,8 @@ var GAME = (function($){
                 //
                 //if(App.myRole != 'Player'){
                 //    if(typeof(d.object)!='undefined'){
-                        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
-                            d.object.rotation.y + d.theta, 0, 'XYZ' );
+                //        d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                //            d.object.rotation.y + d.theta, 0, 'XYZ' );
                 //        if (d.scale>1){
                 //            var scale = d.global_scale* d.scale || 1;
                 //            d.object.children[0].scale.set(scale, scale, scale);
@@ -2041,8 +2044,8 @@ var GAME = (function($){
                 //}
                 //else{
                 //    if(typeof(d.emptyobject)!='undefined'){
-                //        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                //            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                            d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                 //        //if (d.scale>1){
                 //        //    var scale = d.global_scale* d.scale || 1;
                 //        //    d.emptyobject.scale.set(scale, scale, scale);
