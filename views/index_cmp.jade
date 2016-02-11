@@ -41,7 +41,7 @@ block content
                     h1.cover-heading
                         | Welcome to Impressionist
                     p.lead.
-                        Your goal is to decide which object is less ugly than the other!<br>
+                        From two 3D objects, please choose the one with more information <br>
                     #entry.btn.btn-lg.btn-default
                         | Let's just try it out!
                 #wait.inner.cover
@@ -69,12 +69,20 @@ block content
                     #objlist
                     #comp_model1(tabindex='0')
                     #comp_model2(tabindex='0')
-                    #cmp.rt_left
-                        i.fa.fa-shield.fa-rotate-90
-                    #cmp.rt_right
-                        i.fa.fa-shield.fa-rotate-270
-                    #cmp.rt_up
-                        i.fa.fa-shield.fa-rotate-180
+                    //#cmp.rt_left
+                    //    i.fa.fa-shield.fa-rotate-90
+                    //#cmp.rt_right
+                    //    i.fa.fa-shield.fa-rotate-270
+                    //#cmp.rt_up
+                    //    i.fa.fa-shield.fa-rotate-180
+
+                    #cmp_left.btn-default.btn.btn-lg
+                        | Choose This
+                    #cmp_right.btn-default.btn.btn-lg
+                        | Choose This
+                    #cmp_skip.btn-default.btn.btn-lg
+                        | Skip
+
                     #menu
                         input(id='guessinput', type='text', value='your guess', name='guessinput', onfocus="if(this.value=='your guess') {this.value='';}", onblur="if(this.value=='') {this.value='your guess';}")
                         #guessoutput

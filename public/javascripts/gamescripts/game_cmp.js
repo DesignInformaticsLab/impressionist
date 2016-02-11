@@ -462,13 +462,21 @@ var GAME = (function($){
                     if(App.currentRound==0){
                         if(App.is_touch_device()==false){
                             $('#instruction .modal-body p').html(
-                                'You can always drag to <b> rotate </b> the object.<br>' +
-                                '<b>click the bottom button</b> to select!'
+                                'You will see a sequence of object pairs.<br>' +
+                                'Your goal is to guess what objects they are by <b>typing</b> your answers down in the text box below and press Enter.<br>' +
+                                'Then please <b>choose one</b> object from the pair that can better help you to make the guess.<br>' +
+                                'You can skip a pair if you cannot identify the correct answer.<br>' +
+                                'In total, you will need to correctly guess 5 objects to complete the survey.<br>' +
+                                'You can always drag to <b> rotate </b> the object.<br>'
                             );
                         }else{
                             $('#instruction .modal-body p').html(
-                                'You can always drag to <b> rotate </b> the object.<br>' +
-                                '<b>click the bottom button</b> to select!'
+                                'You will see a sequence of object pairs.<br>' +
+                                'Your goal is to guess what objects they are by <b>typing</b> your answers down in the text box below and press Enter.<br>' +
+                                'Then please <b>choose one</b> object from the pair that can better help you to make the guess.<br>' +
+                                'You can skip a pair if you cannot identify the correct answer.<br>' +
+                                'In total, you will need to correctly guess 5 objects to complete the survey.<br>' +
+                                'You can always drag to <b> rotate </b> the object.<br>'
                             );
                         }
 
@@ -1018,7 +1026,7 @@ var GAME = (function($){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
                 App.currentRound += 1;
-                if(App.currentRound>8){
+                if(App.currentRound>=5){
                     App.showScoreBoard();
                 }
             });
@@ -1059,7 +1067,7 @@ var GAME = (function($){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
                 App.currentRound += 1;
-                if(App.currentRound>8){
+                if(App.currentRound>=5){
                     App.showScoreBoard();
                 }
             });
@@ -1099,10 +1107,6 @@ var GAME = (function($){
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
-                App.currentRound += 1;
-                if(App.currentRound>8){
-                    App.showScoreBoard();
-                }
                 App.wrongtrial = 0;
             });
         },
@@ -1194,7 +1198,9 @@ var GAME = (function($){
             //App.$score.css('marginLeft',margin_left+'px');
             App.$guessoutput.css('marginLeft',margin_left+'px');
             App.$guessinput.css('left',margin_left+'px');
-
+            App.$cmp_l.css('right',App.$game.width()-margin_left+'px');
+            App.$cmp_r.css('left',App.$game.width()-margin_left+'px');
+            App.$cmp_u.css('left',(App.$game.width()-200)*.5+'px');
             $.each(Obj.object_set, function(i,o){
                 if (Obj.object_set.length == 1){
                     o.camera.aspect = App.$model.width() / App.$model.height();
@@ -1546,7 +1552,7 @@ var GAME = (function($){
                     //App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(App.currentRound>3){
+                        if(App.currentRound>4){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
@@ -1588,6 +1594,7 @@ var GAME = (function($){
             var answer = $('#guessinput')[0].value;
             var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
             if (correct){
+                App.$cmp_u.hide();
                 App.$cmp_l.show();
                 App.$cmp_r.show();
                 App.$guessoutput.html(''); // clean output area
@@ -1600,7 +1607,7 @@ var GAME = (function($){
                 },800);
                 $('#instruction p').html('<b>Time is reduced at wrong guesses!');
                 //show skip button
-                if ( App.wrongtrial > 3){
+                if ( App.wrongtrial >= 1){
                     App.$cmp_u.show();
                 }
             }
