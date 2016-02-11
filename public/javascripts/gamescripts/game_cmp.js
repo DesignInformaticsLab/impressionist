@@ -464,18 +464,18 @@ var GAME = (function($){
                             $('#instruction .modal-body p').html(
                                 'You will see a sequence of object pairs.<br>' +
                                 'Your goal is to guess what objects they are by <b>typing</b> your answers down in the text box below and press Enter.<br>' +
-                                'Then please <b>choose one</b> object from the pair that can better help you to make the guess.<br>' +
+                                'Then please <b>choose one</b> object from the pair that characterizes the object better (i.e., with better saliency).<br>' +
                                 'You can skip a pair if you cannot identify the correct answer.<br>' +
-                                'In total, you will need to correctly guess 5 objects to complete the survey.<br>' +
+                                'In total, you will need to correctly guess <b>5</b> objects to complete the survey.<br>' +
                                 'You can always drag to <b> rotate </b> the object.<br>'
                             );
                         }else{
                             $('#instruction .modal-body p').html(
                                 'You will see a sequence of object pairs.<br>' +
                                 'Your goal is to guess what objects they are by <b>typing</b> your answers down in the text box below and press Enter.<br>' +
-                                'Then please <b>choose one</b> object from the pair that can better help you to make the guess.<br>' +
+                                'Then please <b>choose one</b> object from the pair that characterizes the object better (i.e., with better saliency).<br>' +
                                 'You can skip a pair if you cannot identify the correct answer.<br>' +
-                                'In total, you will need to correctly guess 5 objects to complete the survey.<br>' +
+                                'In total, you will need to correctly guess <b>5</b> objects to complete the survey.<br>' +
                                 'You can always drag to <b> rotate </b> the object.<br>'
                             );
                         }
@@ -824,6 +824,7 @@ var GAME = (function($){
                 App.$stat_btn.removeClass('active');
                 IO.getSocketStats();
                 App.onJoinClick();
+                $('h3.masthead-brand').html('What is this object? | 5 object(s) to go');
             });
 
             App.$tutorial.click(function(){
@@ -902,6 +903,8 @@ var GAME = (function($){
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
+                App.$guessinput[0].value = 'Your guess?';
+                $('h3.masthead-brand').html('Which one characterizes the object better?');
 
                 // show our saliency
                 var id = this.id-1;
@@ -1022,12 +1025,16 @@ var GAME = (function($){
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
-                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                    Obj.showPartialCmp(id,1,App.$comp_model2);
-                });
+
                 App.currentRound += 1;
+                $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
                 if(App.currentRound>=5){
                     App.showScoreBoard();
+                }
+                else{
+                    Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                        Obj.showPartialCmp(id,1,App.$comp_model2);
+                    });
                 }
             });
 
@@ -1063,12 +1070,15 @@ var GAME = (function($){
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
-                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                    Obj.showPartialCmp(id,1,App.$comp_model2);
-                });
                 App.currentRound += 1;
+                $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
                 if(App.currentRound>=5){
                     App.showScoreBoard();
+                }
+                else{
+                    Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                        Obj.showPartialCmp(id,1,App.$comp_model2);
+                    });
                 }
             });
 
@@ -1104,6 +1114,7 @@ var GAME = (function($){
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
+                $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
@@ -1598,10 +1609,13 @@ var GAME = (function($){
                 App.$cmp_l.show();
                 App.$cmp_r.show();
                 App.$guessoutput.html(''); // clean output area
+                App.$guessinput[0].value = 'Correct!';
+                $('h3.masthead-brand').html('Which object shows more salient parts of the ' +answer+ '?');
             }
             else{
                 App.wrongtrial =  App.wrongtrial + 1;
                 App.$guessinput.css('background-color', '#000000');
+                App.$guessinput[0].value = 'Nope...';
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
                 },800);
@@ -2051,7 +2065,7 @@ var GAME = (function($){
                 //}
                 //else{
                 //    if(typeof(d.emptyobject)!='undefined'){
-                        d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                        d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta,
                             d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
                 //        //if (d.scale>1){
                 //        //    var scale = d.global_scale* d.scale || 1;
@@ -2400,6 +2414,7 @@ var GAME = (function($){
                     };
                     var o = Obj.init(target,inner_callback);
                     o.animate();
+                    App.$guessinput[0].value = 'your guess';
                 });
             });
         },
