@@ -198,19 +198,19 @@ for i=1:dbobj_num
         obj_idx='112';
     end
     if(strcmp(obj_name,'M735')==1)
-        continue;
+%         continue;
     end
     if(strcmp(obj_name,'P035')==1)
-        continue;
+%         continue;
     end
     if(strcmp(obj_name,'P183')==1)
-        continue;
+%         continue;
     end
     if(strcmp(obj_name,'P385')==1)
-        continue;
+%         continue;
     end
     if(strcmp(obj_name,'P400')==1)
-        continue;
+%         continue;
     end
     
     js_dir = '..\public\obj\Princeton\';
@@ -222,6 +222,7 @@ for i=1:dbobj_num
     
     
     fid_mesh = fopen(js_file,'r');
+    assert(fid_mesh~=-1);
     for ii=1:3 %read the third line
         tline = fgetl(fid_mesh);
     end

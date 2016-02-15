@@ -195,9 +195,9 @@ for dbname_idx = dont_know_what_to_call:dont_know_what_to_call %THERE IS AN ERRO
             D = [D;vtx_idx];
         end
         
-        figure();
-        plot(cluster(:,1),cluster(:,2),'.','MarkerSize',5);axis equal;
-        saveas(gcf,strcat('./output/',num2str(db_line_idx),'.png'));close;
+%         figure();
+%         plot(cluster(:,1),cluster(:,2),'.','MarkerSize',5);axis equal;
+%         saveas(gcf,strcat('./output/',num2str(db_line_idx),'.png'));close;
         
         % output for heatmap and graph generation
         if played_idx==1
