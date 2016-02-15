@@ -179,7 +179,7 @@ assert(sum(idx_len1)==length(dbinfo{1}));
 assert(sum(idx_len2)==length(dbinfo{2}));
 
 % for i=1:cnt1
-for i=1:1 %only use one object here to test
+for i=1:1 %only use one correct guess here to test
     % find all coresponding wrong guesses for a correct guess
     ti = find_close_wrngus(i,idx_len1,idx_len2,cnt2,dbinfo);
     %find the most frequent guesses, sorted
@@ -206,32 +206,34 @@ row2 = dbinfo(4);    row2 = row2{1};
 guess1 = dbinfo(5);  guess1 = guess1{1};
 guess2 = dbinfo(6);  guess2 = guess2{1};
 
+correct = idx1(i);
+
 ti = cell(500,3);
 num = 1;
 for j=1:cnt2
-    if strcmp(cell2mat(idx1(i)),cell2mat(idx2(j)))==1 %correct and wrong guess for a particular obj
-        start_idx1 = sum(idx_len1(1:i-1));
-        end_idx1 = sum(idx_len1(1:i));
-        if 0==start_idx1
-            start_idx1=1;
-        end
+    if strcmp(cell2mat(correct),cell2mat(idx2(j)))==1 %correct and wrong guess for a particular obj
+%         start_idx1 = sum(idx_len1(1:i-1));
+%         end_idx1 = sum(idx_len1(1:i));
+%         if 0==start_idx1
+%             start_idx1=1;
+%         end
         start_idx2 = sum(idx_len2(1:j-1));
         end_idx2 = sum(idx_len2(1:j));
         if 0==start_idx2
             start_idx2=1;
         end
         
-        for k=start_idx1:end_idx1
+%         for k=start_idx1:end_idx1
             for kk=start_idx2:end_idx2
-                if (row1(k)==row2(kk)+1)
-                    disp([k,kk]);
-                    disp([guess1(k),guess2(kk)]);
+                if (row1(i)==row2(kk)+1)
+                    disp([i,kk]);
+                    disp([guess1(i),guess2(kk)]);
                     %store for further analysis
-                    ti(num,:)={kk,cell2mat(guess2(kk)),k};
+                    ti(num,:)={kk,cell2mat(guess2(kk)),i};
                     num = num+1;
                 end
             end
-        end
+%         end
     end    
 end
 
