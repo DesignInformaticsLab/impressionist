@@ -215,24 +215,24 @@ for dbname_idx = dont_know_what_to_call:dont_know_what_to_call %THERE IS AN ERRO
     fprintf(fff,'%s\n',obj_name);
     fclose(fff);
     %% overall result for a object
-    num_played = floor(obj_played(dbname_idx)/2);
-    D = sort(D);
-    cnt = 1; reduced_cluster = zeros(1,3); ss=1;
-    if (0==D(1))
-        ss = 2;
-    end
-    for i=ss:length(D)-num_played
-%         if (D(i)==D(i+num_played-1)&&D(i)~=D(i+num_played)) % for those have been selected for num times
-            vtx_idx = D(i);
-            reduced_cluster(cnt,:) = A(vtx_idx,:);
-            cnt = cnt + 1;
-%         end
-    end
-    
-    figure();
-    plot3(reduced_cluster(:,1),reduced_cluster(:,2),reduced_cluster(:,3),'.','MarkerSize',5);
-    axis equal; hold on; view(2);
-    saveas(gcf,strcat('./output/',num2str(dbname_idx),'.fig'));
+%     num_played = floor(obj_played(dbname_idx)/2);
+%     D = sort(D);
+%     cnt = 1; reduced_cluster = zeros(1,3); ss=1;
+%     if (0==D(1))
+%         ss = 2;
+%     end
+%     for i=ss:length(D)-num_played
+% %         if (D(i)==D(i+num_played-1)&&D(i)~=D(i+num_played)) % for those have been selected for num times
+%             vtx_idx = D(i);
+%             reduced_cluster(cnt,:) = A(vtx_idx,:);
+%             cnt = cnt + 1;
+% %         end
+%     end
+%     
+%     figure();
+%     plot3(reduced_cluster(:,1),reduced_cluster(:,2),reduced_cluster(:,3),'.','MarkerSize',5);
+%     axis equal; hold on; view(2);
+%     saveas(gcf,strcat('./output/',num2str(dbname_idx),'.fig'));
  
 
 end

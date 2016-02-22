@@ -197,53 +197,8 @@ function joinGame_single() {
     }
 
 
-    ///////////////// single player version
-    {
-        var thisGameId = ( Math.random() * 90000 +10000 ) | 0;
-
-        // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
-        //this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
-
-        // Join the Room and wait for the players
-        sock.join(thisGameId.toString());
-        sock.gameId = thisGameId; // assign room id to sock
-
-        // Emit an event notifying the clients that the player has joined the room.
-        io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
-    }
-    ///////////// commended for single player version
-
-    //// If find a room...
-    //if( room != null ){
-    //    // attach the socket id to the data object.
-    //    //update this number as the number of models increases
-    //    var numOfObjects = objectstring_set.length;
-    //    var data = {};
-    //    var objID = Math.floor(Math.random() * numOfObjects);
-    //    //var objID = 26;
-    //
-    //    data.objectstring_set = objectstring_set;
-    //    data.objectID = objID;
-    //    data.mySocketId = sock.id;
-    //
-    //
-    //    //data.playerId = sock.id;
-    //    //data.hostId = Object.keys(room)[0];
-    //
-    //    data.gameId = roomid;
-    //
-    //
-    //    // Join the room
-    //    sock.join(roomid);
-    //    sock.gameId = roomid; // assign room id to sock
-    //    //console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
-    //
-    //
-    //    // Emit an event notifying the clients that the player has joined the room.
-    //    io.sockets.in(roomid).emit('playerJoinedRoom', data);
-    //
-    //} else {
-    //    // If no room, create a new one.
+    /////////////////// single player version
+    //{
     //    var thisGameId = ( Math.random() * 90000 +10000 ) | 0;
     //
     //    // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
@@ -256,6 +211,51 @@ function joinGame_single() {
     //    // Emit an event notifying the clients that the player has joined the room.
     //    io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
     //}
+    /////////////// commended for single player version
+
+    // If find a room...
+    if( room != null ){
+        // attach the socket id to the data object.
+        //update this number as the number of models increases
+        var numOfObjects = objectstring_set.length;
+        var data = {};
+        var objID = Math.floor(Math.random() * numOfObjects);
+        //var objID = 26;
+
+        data.objectstring_set = objectstring_set;
+        data.objectID = objID;
+        data.mySocketId = sock.id;
+
+
+        //data.playerId = sock.id;
+        //data.hostId = Object.keys(room)[0];
+
+        data.gameId = roomid;
+
+
+        // Join the room
+        sock.join(roomid);
+        sock.gameId = roomid; // assign room id to sock
+        //console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+
+
+        // Emit an event notifying the clients that the player has joined the room.
+        io.sockets.in(roomid).emit('playerJoinedRoom', data);
+
+    } else {
+        // If no room, create a new one.
+        var thisGameId = ( Math.random() * 90000 +10000 ) | 0;
+
+        // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
+        //this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
+
+        // Join the Room and wait for the players
+        sock.join(thisGameId.toString());
+        sock.gameId = thisGameId; // assign room id to sock
+
+        // Emit an event notifying the clients that the player has joined the room.
+        io.sockets.in(thisGameId).emit('newGameCreated', {gameId: thisGameId, mySocketId: sock.id});
+    }
 }
 
 function broadcastGameID(data){

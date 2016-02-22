@@ -84,7 +84,7 @@ for i=1:dbobj_num
         end
     end
     
-    ttnum = 0; threshold = 0.01;%only number of wrong guess larger than this is considered significant
+    ttnum = 0; threshold = 0;%only number of wrong guess larger than this is considered significant
     for k=1:length(cluster)
         if cluster(k)>threshold*length(y)
             ttnum = ttnum+1;
