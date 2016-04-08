@@ -528,6 +528,18 @@ body {
     transition: background-color 0.5s, transform 0.5s;
 }
 
+#cmp_p{
+    height: 50px;
+    width: 200px;
+    left: auto;
+    right: auto;
+    z-index: 99;
+    bottom: 100px;
+    position: absolute;
+    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
+    transition: background-color 0.5s, transform 0.5s;
+}
+
 #cmp_left:hover{
     cursor: pointer;
     background-color: rgb(150, 150, 150);
