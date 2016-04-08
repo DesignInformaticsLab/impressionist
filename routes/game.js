@@ -306,13 +306,18 @@ for (var i = 0; i < 23; i++) {
     pool.push(i);
 }
 var randpool = shuffle(pool);
+var bkpool = [];
+for (var i = 0; i < 23; i++) {
+    bkpool.push(i);
+}
+var bkrandpool = shuffle(bkpool);
+randpool.concat(bkrandpool)
 
 
 
 // player selected meshes, emit to the other player
 function selection(data) {
     var roomid = this.gameId;
-    io.sockets.in(roomid).emit('selection', data);
 }
 
 /**

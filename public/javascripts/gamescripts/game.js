@@ -135,8 +135,9 @@ var GAME = (function($){
                 App.$guessoutput.html(res);
                 App.$guessoutput.show();
             }
-            var str1 = 'What is this object? | '
-            var nn = 6-App.currentRound;
+            //var str1 = 'What is this object? | '
+            var str1 = ''
+            var nn = 16-App.currentRound;
             var str2 = nn.toString();
             var str3 = ' object(s) to go'
             var res = str1.concat(str2.concat(str3));
@@ -214,6 +215,29 @@ var GAME = (function($){
             //    //App.$menu.css('background-color', '#f5f5ff');
             //},15000);
 
+
+            var answer = 'skip';
+            var data = {
+                game_id: App.gameId,
+                answer: answer,
+
+                correct: $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0,
+                round: App.currentRound,
+                duration: Date.now()-App.start_obj_time, // time from start of the object
+                score: Math.round(App.game_score),
+                object_name: Obj.object_set[0].object.name,
+                all_selected_id: JSON.stringify(App.allSelectedIDMaster),
+                computer_player: 0,
+                //weight: JSON.stringify(weight)
+                amt: App.amt,
+                penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+            };
+            if (App.playWithComputer){data.computer_player=1;}
+            if (App.tutorial_shown){
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
+            }
 
             App.$guessinput.css('background-color', '#ffffff');
             App.$guessinput.css('background-color', '#f5f5ff');
@@ -473,8 +497,9 @@ var GAME = (function($){
                             App.$cmp_u.hide();
                             App.$cmp_p.hide();
                         }
-                        var str1 = 'What is this object? | '
-                        var nn = 6-App.currentRound;
+                        //var str1 = 'What is this object? | '
+                        var str1 = ''
+                        var nn = 16-App.currentRound;
                         var str2 = nn.toString();
                         var str3 = ' object(s) to go'
                         var res = str1.concat(str2.concat(str3));
