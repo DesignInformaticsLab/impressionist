@@ -336,9 +336,8 @@ function skipornot() {
 }
 function skipp() {
     var roomid = this.gameId;
-    //io.sockets.in(roomid).emit('skipp');
-    var data;
-    io.sockets.in(roomid).emit('answerCorrect', data);
+    io.sockets.in(roomid).emit('skipp');
+    //io.sockets.in(roomid).emit('answerCorrect');
 
 }
 

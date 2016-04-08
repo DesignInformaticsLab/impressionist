@@ -207,58 +207,6 @@ var GAME = (function($){
             }
         },
         skipp : function() {
-
-
-
-            App.$guessinput.css('background-color', '#ffffff');
-            App.$guessinput.css('background-color', '#f5f5ff');
-            App.$guessinput.html(''); // clean input area
-
-            App.$guessoutput.html(''); // clean output area
-
-            App.object_loaded = false; // stop rendering
-
-            App.$game.hide();
-
-            // stop loops
-            $.each(App.rendering, function(i,rendering) {
-                window.cancelAnimationFrame(rendering);
-            });
-            if(App.autoSelecting){clearInterval(App.autoSelecting);}
-            // clean memory
-            $.each(Obj.object_set, function(i,o){
-                o.desposeMesh();
-            });
-            App.allSelectedIDMaster = [];
-            App.allSelectedID = [];
-            App.selectedStrings = [];
-
-            // do some celebration before moving on...
-            App.celebrate(function() {
-
-                //App.$continue.show();
-                $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
-                App.$wait.show();
-
-                // after the first round, show tutorial again because roles will be switched
-                if (App.currentRound == 1 && !App.playWithComputer) {
-                    if (App.myRole == 'Host') {
-                        $('#instruction .modal-body p').html('<b>Now you switched roles. An object will show up, guess what it is before time runs out!');
-                    }
-                    else {
-                        $('#instruction .modal-body p').html('<b>Now you switched roles.' +
-                            'To reveal the object, use left mouse while pressing S button down.</b>');
-                    }
-                    App.$instruction.modal();
-                }
-                else {
-                    IO.socket.emit('playerReady', App.currentRound);
-                }
-            });
-        },
-
-        // on correct guess
-        onAnswerCorrect : function() {
             //$('#wait.inner.cover p.lead').html('<b>Answer correct! Time bonus!');
             //App.$wait.show();
             //setTimeout(function () {
@@ -271,7 +219,8 @@ var GAME = (function($){
             App.$guessinput.css('background-color', '#f5f5ff');
             App.$guessinput.html(''); // clean input area
 
-            App.currentRound += 1;
+            App.skipednum += 1;
+            App.currentRoundandskip = App.currentRound + App.skipednum;
 
             App.$guessoutput.html(''); // clean output area
 
@@ -342,7 +291,101 @@ var GAME = (function($){
                         App.$instruction.modal();
                     }
                     else{
-                        IO.socket.emit('playerReady', App.currentRound);
+                        IO.socket.emit('playerReady', App.currentRoundandskip);
+                    }
+                }
+            });
+
+        },
+
+
+        // on correct guess
+        onAnswerCorrect : function() {
+            //$('#wait.inner.cover p.lead').html('<b>Answer correct! Time bonus!');
+            //App.$wait.show();
+            //setTimeout(function () {
+            //    App.$wait.hide();
+            //    //App.$menu.css('background-color', '#f5f5ff');
+            //},15000);
+
+
+            App.$guessinput.css('background-color', '#ffffff');
+            App.$guessinput.css('background-color', '#f5f5ff');
+            App.$guessinput.html(''); // clean input area
+
+            App.currentRound += 1;
+            App.currentRoundandskip += 1;
+
+            App.$guessoutput.html(''); // clean output area
+
+            App.object_loaded = false; // stop rendering
+
+            App.$game.hide();
+
+            //IO.getSocketStats();
+
+            //if (!App.playWithComputer){ // give reward if playing with human
+            App.game_score += 2000;
+            App.game_score = Math.min(App.game_score, 9999);
+            //}
+
+            // stop loops
+            $.each(App.rendering, function(i,rendering) {
+                window.cancelAnimationFrame(rendering);
+            });
+            if(App.autoSelecting){clearInterval(App.autoSelecting);}
+            // clean memory
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            });
+            App.allSelectedIDMaster = [];
+            App.allSelectedID = [];
+            App.selectedStrings = [];
+
+            // do some celebration before moving on...
+            App.celebrate(function(){
+                // if playing with a computer now
+                if (App.playWithComputer){
+                    // look for a human player, if none, keep playing with the computer
+                    $('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
+                    App.$wait.show();
+
+                    IO.onNewGameCreated(App);
+                }
+                // if during the tutorial
+                else if (!App.tutorial_shown && App.myRole=='Player'){
+                    if(App.is_touch_device()==false){
+                        $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
+                            'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
+                            'button</b> to reveal parts of the object for the other player to guess.<br>'+
+                            'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
+                            'Selecting more faces will result in time penalty!<br>');
+                    }else{
+                        $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
+                            '<b>Touch</b> the object to reveal parts of it for the other player to guess.<br>'+
+                            'Selecting more faces will result in time penalty!<br>');
+                    }
+                    App.myRole = 'Host'; // use this to switch the action after instruction is closed
+                    App.$instruction.modal();
+                }
+                else{
+                    //App.$continue.show();
+                    $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
+                    App.$wait.show();
+
+                    // after the first round, show tutorial again because roles will be switched
+                    if (App.currentRound==1 && !App.playWithComputer){
+                        if (App.myRole=='Host'){
+                            $('#instruction .modal-body p').html('<b>Now you switched roles. An object will show up, guess what it is before time runs out!');
+                        }
+                        else{
+                            $('#instruction .modal-body p').html('<b>Now you switched roles.' +
+                                'To reveal the object, use left mouse while pressing S button down.</b>' );
+                        }
+                        App.$instruction.modal();
+                    }
+                    else{
+                        IO.socket.emit('playerReady', App.currentRoundandskip);
                     }
                 }
             });
@@ -675,6 +718,8 @@ var GAME = (function($){
              * Identifies the current round.
              */
             App.currentRound = 0;
+            App.skipednum = 0;
+            App.currentRoundandskip = 0;
 
             App.currentTime = Date.now(); // current time
 
@@ -1096,7 +1141,6 @@ var GAME = (function($){
                 }
             });
             App.$cmp_p.click(function(){
-                App.currentRound -= 1;
                 IO.socket.emit('skipp');
             });
 
@@ -1130,7 +1174,7 @@ var GAME = (function($){
                         App.autoSelect();
                     }
                     else{
-                        IO.socket.emit('playerReady', App.currentRound);
+                        IO.socket.emit('playerReady', App.currentRoundandskip);
                     }
                 }
                 else {
