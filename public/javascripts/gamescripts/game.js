@@ -46,6 +46,9 @@ var GAME = (function($){
             IO.socket.on('updateSocketStats', IO.updateSocketStats);
             IO.socket.on('objectGrabbed', IO.onObjectGrabbed);
             IO.socket.on('updateScore', IO.onUpdateScore);
+
+            IO.socket.on('skipp', IO.skipp);
+            IO.socket.on('skipornot', IO.skipornot);
         },
 
         /**
@@ -198,6 +201,62 @@ var GAME = (function($){
             }
         },
 
+        skipornot : function() {
+            if(App.myRole == 'Player'){
+                App.$cmp_p.show();
+            }
+        },
+        skipp : function() {
+
+
+
+            App.$guessinput.css('background-color', '#ffffff');
+            App.$guessinput.css('background-color', '#f5f5ff');
+            App.$guessinput.html(''); // clean input area
+
+            App.$guessoutput.html(''); // clean output area
+
+            App.object_loaded = false; // stop rendering
+
+            App.$game.hide();
+
+            // stop loops
+            $.each(App.rendering, function(i,rendering) {
+                window.cancelAnimationFrame(rendering);
+            });
+            if(App.autoSelecting){clearInterval(App.autoSelecting);}
+            // clean memory
+            $.each(Obj.object_set, function(i,o){
+                o.desposeMesh();
+            });
+            App.allSelectedIDMaster = [];
+            App.allSelectedID = [];
+            App.selectedStrings = [];
+
+            // do some celebration before moving on...
+            App.celebrate(function() {
+
+                //App.$continue.show();
+                $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
+                App.$wait.show();
+
+                // after the first round, show tutorial again because roles will be switched
+                if (App.currentRound == 1 && !App.playWithComputer) {
+                    if (App.myRole == 'Host') {
+                        $('#instruction .modal-body p').html('<b>Now you switched roles. An object will show up, guess what it is before time runs out!');
+                    }
+                    else {
+                        $('#instruction .modal-body p').html('<b>Now you switched roles.' +
+                            'To reveal the object, use left mouse while pressing S button down.</b>');
+                    }
+                    App.$instruction.modal();
+                }
+                else {
+                    IO.socket.emit('playerReady', App.currentRound);
+                }
+            });
+        },
+
         // on correct guess
         onAnswerCorrect : function() {
             //$('#wait.inner.cover p.lead').html('<b>Answer correct! Time bonus!');
@@ -297,6 +356,7 @@ var GAME = (function($){
 
             if(App.myRole == 'Host'){
                 App.$guessoutput.html(data.answer+'?');
+                App.$cmp_u.show();
             }
             else if (App.myRole == 'Player'){
                 //$('#instruction p').html('<b>Nope...please try again');
@@ -383,6 +443,8 @@ var GAME = (function($){
                             App.$guessinput.show();
                             App.$guessinput[0].value='';
                             App.SELECT = false;
+                            App.$cmp_u.hide();
+                            App.$cmp_p.hide();
                         }
                         else if(App.myRole == 'Host'){
                             App.$menu.show();
@@ -391,6 +453,8 @@ var GAME = (function($){
                             App.$guessoutput.html(res);
                             App.$guessoutput.show();
                             App.$guessinput.hide();
+                            App.$cmp_u.hide();
+                            App.$cmp_p.hide();
                         }
                         var str1 = 'What is this object? | '
                         var nn = 6-App.currentRound;
@@ -843,7 +907,7 @@ var GAME = (function($){
                 }
             });
             App.$cmp_u = $('#cmp_skip');
-
+            App.$cmp_p = $('#cmp_p');
 
             window.addEventListener( 'resize', App.onWindowResize, false );
 
@@ -1024,8 +1088,16 @@ var GAME = (function($){
             });
 
             App.$cmp_u.click(function(){
+                //App.currentRound -= 1;
+                //IO.onAnswerCorrect();
+                IO.socket.emit('skipornot');
+                if (App.myRole=='Player'){
+                    App.$cmp_p.show();
+                }
+            });
+            App.$cmp_p.click(function(){
                 App.currentRound -= 1;
-                IO.onAnswerCorrect();
+                IO.socket.emit('skipp');
             });
 
 

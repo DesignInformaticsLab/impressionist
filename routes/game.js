@@ -59,6 +59,10 @@ exports.initGame = function(sio, socket){
     gameSocket.on('getSocketStats', getSocketStats);
     gameSocket.on('grabBestObject', grabBestObject);
     gameSocket.on('synchronizeScore', synchronizeScore);
+
+    gameSocket.on('skipornot', skipornot);
+    gameSocket.on('skipp', skipp);
+
 };
 
 /* *******************************
@@ -324,6 +328,18 @@ function checkAnswer(data) {
     else{
         io.sockets.in(roomid).emit('answerWrong', data);
     }
+}
+
+function skipornot() {
+    var roomid = this.gameId;
+    io.sockets.in(roomid).emit('skipornot');
+}
+function skipp() {
+    var roomid = this.gameId;
+    //io.sockets.in(roomid).emit('skipp');
+    var data;
+    io.sockets.in(roomid).emit('answerCorrect', data);
+
 }
 
 function playerQuit(){
