@@ -126,6 +126,18 @@ var GAME = (function($){
                 }
             }
             App.$instruction.modal();
+            if (App.myRole != 'Player'){
+                var str1 = 'ref: '
+                var res = str1.concat(Obj.object_set[0].correct_answer[0]);
+                App.$guessoutput.html(res);
+                App.$guessoutput.show();
+            }
+            var str1 = 'What is this object? | '
+            var nn = 6-App.currentRound;
+            var str2 = nn.toString();
+            var str3 = ' object(s) to go'
+            var res = str1.concat(str2.concat(str3));
+            $('h3.masthead-brand').html(res);
         },
 
         /**
@@ -271,10 +283,11 @@ var GAME = (function($){
                         App.$instruction.modal();
                     }
                     else{
-                        IO.socket.emit('playerReady');
+                        IO.socket.emit('playerReady', App.currentRound);
                     }
                 }
             });
+
         },
 
         // on wrong guess
@@ -300,6 +313,8 @@ var GAME = (function($){
                     App.$guessinput.html('');
                 },800);
             }
+            //needed skip?
+            //GAME.App.$instruction.modal();
         },
 
         /**
@@ -371,10 +386,19 @@ var GAME = (function($){
                         }
                         else if(App.myRole == 'Host'){
                             App.$menu.show();
+                            var str1 = 'ref: '
+                            var res = str1.concat(Obj.object_set[0].correct_answer[0]);
+                            App.$guessoutput.html(res);
                             App.$guessoutput.show();
-                            App.$guessoutput[0].value='';
                             App.$guessinput.hide();
                         }
+                        var str1 = 'What is this object? | '
+                        var nn = 6-App.currentRound;
+                        var str2 = nn.toString();
+                        var str3 = ' object(s) to go'
+                        var res = str1.concat(str2.concat(str3));
+                        $('h3.masthead-brand').html(res);
+
                         o.object.rotation.y = Math.random()*Math.PI*2;
 
                         // show object when everything is ready
@@ -818,6 +842,7 @@ var GAME = (function($){
                     Obj.object_set[0].global_scale = Math.max(0.8,Obj.object_set[0].global_scale);
                 }
             });
+            App.$cmp_u = $('#cmp_skip');
 
 
             window.addEventListener( 'resize', App.onWindowResize, false );
@@ -998,6 +1023,12 @@ var GAME = (function($){
                 App.$stat_btn.addClass('active');
             });
 
+            App.$cmp_u.click(function(){
+                App.currentRound -= 1;
+                IO.onAnswerCorrect();
+            });
+
+
             App.$stat.on('click', '.object_div', function(){
                 // clean memory
                 $.each(Obj.object_set, function(i,o){
@@ -1027,7 +1058,7 @@ var GAME = (function($){
                         App.autoSelect();
                     }
                     else{
-                        IO.socket.emit('playerReady');
+                        IO.socket.emit('playerReady', App.currentRound);
                     }
                 }
                 else {
@@ -2086,7 +2117,7 @@ var GAME = (function($){
                         }
                         // MAX: penalty on selection is too high on geometries with few faces
                         penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
-                        App.game_score -= penalty;
+                        App.game_score -= penalty/10;
                         App.currentTime = Date.now();
                         App.numSelectedFaces = App.selection_capacity;
                         if (App.game_score<0){
