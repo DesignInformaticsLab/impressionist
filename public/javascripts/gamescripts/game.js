@@ -70,9 +70,9 @@ var GAME = (function($){
             App.playWithComputer = true;
 
             // wait for the player, if no one shows up, play with a computer
-            setTimeout(function () {
-                if(App.playWithComputer){App.playComputer();}
-            },99); // wait long enough to catch another player
+            //setTimeout(function () {
+            //    if(App.playWithComputer){App.playComputer();}
+            //},99); // wait long enough to catch another player
         },
 
         /**
@@ -228,12 +228,12 @@ var GAME = (function($){
 
             App.$game.hide();
 
-            //IO.getSocketStats();
-
-            //if (!App.playWithComputer){ // give reward if playing with human
-            App.game_score += 2000;
-            App.game_score = Math.min(App.game_score, 9999);
-            //}
+            if(App.myRole == 'Host'){
+                App.myRole = 'Player';
+            }
+            else{
+                App.myRole = 'Host';
+            }
 
             // stop loops
             $.each(App.rendering, function(i,rendering) {
@@ -249,32 +249,7 @@ var GAME = (function($){
             App.selectedStrings = [];
 
             // do some celebration before moving on...
-            App.celebrate(function(){
-                // if playing with a computer now
-                if (App.playWithComputer){
-                    // look for a human player, if none, keep playing with the computer
-                    $('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
-                    App.$wait.show();
-
-                    IO.onNewGameCreated(App);
-                }
-                // if during the tutorial
-                else if (!App.tutorial_shown && App.myRole=='Player'){
-                    if(App.is_touch_device()==false){
-                        $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
-                            'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
-                            'button</b> to reveal parts of the object for the other player to guess.<br>'+
-                            'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
-                            'Selecting more faces will result in time penalty!<br>');
-                    }else{
-                        $('#instruction .modal-body p').html('In the next part of the tutorial, you are in charge of revealing the object.<br>' +
-                            '<b>Touch</b> the object to reveal parts of it for the other player to guess.<br>'+
-                            'Selecting more faces will result in time penalty!<br>');
-                    }
-                    App.myRole = 'Host'; // use this to switch the action after instruction is closed
-                    App.$instruction.modal();
-                }
-                else{
+            App.celebratee(function(){
                     //App.$continue.show();
                     $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
                     App.$wait.show();
@@ -293,7 +268,6 @@ var GAME = (function($){
                     else{
                         IO.socket.emit('playerReady', App.currentRoundandskip);
                     }
-                }
             });
 
         },
@@ -1696,6 +1670,8 @@ var GAME = (function($){
             //App.$gameArea.html(App.$templateJoinGame);
 
             console.log('Try finding a player...');
+            App.$cmp_u.hide();
+            App.$cmp_p.hide();
 
             IO.socket.emit('joinGame');
         },
@@ -1752,6 +1728,11 @@ var GAME = (function($){
          */
         celebrate: function(callback){
             $('#wait.inner.cover p.lead').html('Bingo! You get extra time!');
+            App.$wait.show();
+            setTimeout(callback,1000);
+        },
+        celebratee: function(callback){
+            $('#wait.inner.cover p.lead').html('You skipped this geometry!');
             App.$wait.show();
             setTimeout(callback,1000);
         },

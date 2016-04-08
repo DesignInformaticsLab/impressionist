@@ -519,7 +519,7 @@ body {
 #cmp_skip{
     height: 50px;
     width: 200px;
-    left: auto;
+    left: 45%;
     right: auto;
     z-index: 99;
     bottom: 50px;
@@ -531,10 +531,10 @@ body {
 #cmp_p{
     height: 50px;
     width: 200px;
-    left: auto;
+    left: 43%;
     right: auto;
     z-index: 99;
-    bottom: 100px;
+    bottom: 50px;
     position: absolute;
     -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
     transition: background-color 0.5s, transform 0.5s;
@@ -675,35 +675,35 @@ and (max-device-width : 1024px) {
     /*left:inherit;*/
     /*z-index: 2000;*/
 /*}*/
-#cmp_left{
-    height: 50px;
-    width: 200px;
-    z-index: 99;
-    bottom: 50px;
-    position: absolute;
-    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
-    transition: background-color 0.5s, transform 0.5s;
-}
-#cmp_right{
-    height: 50px;
-    width: 200px;
-    z-index: 99;
-    bottom: 50px;
-    position: absolute;
-    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
-    transition: background-color 0.5s, transform 0.5s;
-}
-#cmp_skip{
-    height: 50px;
-    width: 200px;
-    left: auto;
-    right: auto;
-    z-index: 99;
-    bottom: 50px;
-    position: absolute;
-    -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
-    transition: background-color 0.5s, transform 0.5s;
-}
+/*#cmp_left{*/
+    /*height: 50px;*/
+    /*width: 200px;*/
+    /*z-index: 99;*/
+    /*bottom: 50px;*/
+    /*position: absolute;*/
+    /*-webkit-transition: background-color 0.5s, -webkit-transform 0.5s;*/
+    /*transition: background-color 0.5s, transform 0.5s;*/
+/*}*/
+/*#cmp_right{*/
+    /*height: 50px;*/
+    /*width: 200px;*/
+    /*z-index: 99;*/
+    /*bottom: 50px;*/
+    /*position: absolute;*/
+    /*-webkit-transition: background-color 0.5s, -webkit-transform 0.5s;*/
+    /*transition: background-color 0.5s, transform 0.5s;*/
+/*}*/
+/*#cmp_skip{*/
+    /*height: 50px;*/
+    /*width: 200px;*/
+    /*left: auto;*/
+    /*!*right: auto;*!*/
+    /*z-index: 99;*/
+    /*bottom: 50px;*/
+    /*position: absolute;*/
+    /*-webkit-transition: background-color 0.5s, -webkit-transform 0.5s;*/
+    /*transition: background-color 0.5s, transform 0.5s;*/
+/*}*/
 
 #cmp_left:hover{
     cursor: pointer;
