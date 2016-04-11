@@ -6,6 +6,7 @@ var gameSocket;
 var playerReady = []; // room key
 var score = 0; // real-time score to be shared between the two players
 
+var randpool = []
 
 // 27 obj w/ saliency
 var objectstring_set = [
@@ -72,6 +73,8 @@ exports.initGame = function(sio, socket){
  ******************************* */
 
 function createNewGame(data) {
+
+
     // Create a unique Socket.IO Room
     var thisGameId = ( Math.random() * 100000 ) | 0;
 
@@ -94,6 +97,21 @@ function createNewGame(data) {
  */
 function joinGame() {
     //console.log('Player ' + data.playerName + 'attempting to join game: ' + data.gameId );
+
+    var pool = [];
+    for (var i = 0; i < 23; i++) {
+        pool.push(i);
+    }
+    randpool = shuffle(pool);
+    var bkpool = [];
+    for (var i = 0; i < 23; i++) {
+        bkpool.push(i);
+    }
+    var bkrandpool = shuffle(bkpool);
+    randpool.concat(bkrandpool)
+
+
+
 
     // A reference to the player's Socket.IO socket object
     var sock = this;
@@ -300,19 +318,6 @@ function grabBestObject(){
     //objID = 1;
     this.emit('objectGrabbed', {objectAdd: objectstring_set[objID]});
 }
-
-var pool = [];
-for (var i = 0; i < 23; i++) {
-    pool.push(i);
-}
-var randpool = shuffle(pool);
-var bkpool = [];
-for (var i = 0; i < 23; i++) {
-    bkpool.push(i);
-}
-var bkrandpool = shuffle(bkpool);
-randpool.concat(bkrandpool)
-
 
 // player selected meshes, emit to the other player
 function selection(data) {

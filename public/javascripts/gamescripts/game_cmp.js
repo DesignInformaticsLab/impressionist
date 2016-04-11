@@ -275,7 +275,7 @@ var GAME = (function($){
         // on wrong guess
         onAnswerWrong : function(data) {
             App.guess_made += 1;
-            App.game_score -= 200;
+            //App.game_score -= 200;
 
 
             $('#instruction p').html('<b>Time is reduced at wrong guesses!');
@@ -2100,9 +2100,9 @@ var GAME = (function($){
                 if (App.object_loaded){ // to prevent long loading time
                     if (App.game_score > 0 && App.numSelectedFaces > 0){
                         //var penalty = (Date.now()-App.currentTime)*0.10;
-                        var penalty = (Date.now()-App.currentTime)*0;
+                        var penalty = (Date.now()-App.currentTime)*0.1;
                         // MAX: penalty on selection is too high on geometries with few faces
-                        //penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
+                        penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 1000;
                         App.game_score -= penalty;
                         App.currentTime = Date.now();
                         App.numSelectedFaces = App.selection_capacity;
