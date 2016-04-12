@@ -1005,6 +1005,7 @@ var GAME = (function($){
 
             // Player
             App.$guessinput.on('keypress', App.onGuessinputKeyPress);
+            App.$guessinput.focusout(function(e) {App.onGuessinputKeyPress});
 
             App.$entry.click(function(){
                 App.tutorial_shown = true; // skip tutorial
