@@ -2250,7 +2250,7 @@ var GAME = (function($){
                             App.game_score -= penalty/10;
                             App.currentTime = Date.now();
                             App.numSelectedFaces = App.selection_capacity;
-                            if (App.game_score<0 || App.currentRound>=1){
+                            if (App.game_score<0 || App.currentRound>=20){
                                 App.game_score = 0; // only store once
                                 if(App.myRole=='Host'){ // only one of the players needs to submit the score
                                     $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
@@ -2262,7 +2262,7 @@ var GAME = (function($){
                             //App.$score.html(Math.round(App.game_score));
                             App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
                         }
-                        else if ((App.game_score < 0 && App.numSelectedFaces > 0) || App.currentRound>=1){
+                        else if ((App.game_score < 0 && App.numSelectedFaces > 0) || App.currentRound>=20){
                             App.game_score = 0; // only store once
                             if(App.myRole=='Host'){ // only one of the players needs to submit the score
                                 $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
