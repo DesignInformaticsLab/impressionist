@@ -6,10 +6,11 @@ block content
 
     #fb-root
     script.
-        (function(d, s, id) {
+        (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
+            js = d.createElement(s);
+            js.id = id;
             js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
@@ -44,7 +45,7 @@ block content
                     h1.cover-heading
                         | Welcome to Impressionist
                     p.lead.
-                        Your goal is reveal parts of an object for your collaborator to guess.<br>
+                        Your goal is to reveal parts of an object for your collaborator to guess.<br>
                         You win by showing as few pieces as possible:)<br>
                         This game is inspired by Dr. Luis Von Ahn's <a href="https://www.cs.cmu.edu/~biglou/Peekaboom.pdf">Peekaboom game</a>.
                     //#tutorial.btn.btn-lg.btn-default
@@ -134,7 +135,7 @@ block content
                             .modal-body
                                 p
                                 button(type="button", class="btn btn-default", data-dismiss="modal")
-                                    |OK I got it
+                                    | OK I got it
                                 //button(type="button", class="btn btn-default mute", data-dismiss="modal")
                                 //    |Don't show again
                 #scoreboard(class='modal fade',role='dialog')
@@ -142,7 +143,7 @@ block content
                         .modal-content
                             .modal-header
                                 button(type='button',class='close',data-dismiss="modal",aria-hidden="true")
-                                    |&times;
+                                    | &times;
                                 h4.modal-title
                             .modal-body
                                 #myscore
@@ -150,7 +151,7 @@ block content
                                 #amt
                             .modal-footer
                                 button(type="button", class="btn btn-default", data-dismiss="modal")
-                                    |Close
+                                    | Close
                 .mastfoot
                     .inner
                         //div.fb-share-button(data-href="http://impressionist.herokuapp.com/" data-layout="button_count" )
