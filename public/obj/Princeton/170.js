@@ -1,6 +1,6 @@
 var scale = 1400;
 var zheight = 0;
-var answer = ['toy','teddy','teddybear','teddy bear','bear','stuffed toy','stuffed animal','stuffedanimal'];
+var answer = ['teddy','toy','teddybear','teddy bear','bear','stuffed toy','stuffed animal','stuffedanimal'];
 
 var loadobject = function(obj_string,scene,count,callback){
 	var string = obj_string.shift();

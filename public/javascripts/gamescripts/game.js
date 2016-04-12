@@ -157,6 +157,7 @@ var GAME = (function($){
             App.$game.hide();
             App.$model.html('');
             App.myRole = 'Host';
+            $('h3.masthead-brand').html('Impressionist');
             console.log('player '+ data.mySocketId +  ' left room #' + data.gameId);
             App.gameOver();
         },
@@ -324,6 +325,8 @@ var GAME = (function($){
             App.game_score += 2000;
             App.game_score = Math.min(App.game_score, 9999);
             //}
+
+            App.totalFaceSelectionRate += App.allSelectedIDMaster.length/App.selection_capacity;
 
             // stop loops
             $.each(App.rendering, function(i,rendering) {
@@ -809,6 +812,12 @@ var GAME = (function($){
 
             // true if object is loaded and rendering should start
             App.object_loaded = false;
+
+            // sum of face selection rate
+            App.totalFaceSelectionRate = 0;
+
+            // flag to stop rendering
+            App.stopRendering = false;
         },
 
         /**
@@ -1659,13 +1668,14 @@ var GAME = (function($){
 
         // show score board and submit game score
         showScoreBoard: function(){
+            $('h3.masthead-brand').html('Impressionist');
             $.post('/getTotalNumber', {'amt':App.amt}, function(response){
-                var totalplays = response[0].count;
-                $.post('/getRanking',{'score':App.currentRound,'amt':App.amt},function(response){
-                    var worse = response.result[0].count;
-                    var survived = Math.round((Date.now() - App.startingTime)/1000*10)/10;
-                    $('h4.modal-title').html('Congratulations! You survived ' + survived + ' seconds in the game!');
-                    App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
+                var totalplays = parseInt(response[0].count);
+                $.post('/getRanking',{'score':App.totalFaceSelectionRate,'amt':App.amt},function(response){
+                    var better = parseInt(response.result[0].count);
+                    //var survived = Math.round((Date.now() - App.startingTime)/1000*10)/10;
+                    $('h4.modal-title').html('Congratulations! You selected ' + Math.round(App.totalFaceSelectionRate/App.currentRound*100) + '% of faces.');
+                    App.$myrank.html('You are now better than '+Math.round(100-better/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
                         if(App.currentRound>2){
@@ -2136,127 +2146,131 @@ var GAME = (function($){
 
 
             this.render = function() {
-                //default select if in mobile side
-                if( App.is_touch_device() == true) {
-                    App.SELECT = true;
-                }else
-                {
-                    App.$rotation_left.hide();
-                    App.$rotation_right.hide();
-                    App.$rotation_up.hide();
-                    App.$rotation_down.hide();
-                    //App.$zoom_bigger.hide();
-                    //App.$zoom_smaller.hide();
-                }
-                // if in tutorial
-                if(!App.tutorial_shown && App.myRole=='Host'){
-                    // finish tutorial once the player selected a few
-                    if (App.selection_capacity <= Obj.object_set[0].object.FaceArray[0]*0.98){
-                        $('#wait.inner.cover p.lead').html('Nice:) You are done with tutorials. Now moving on to a real game...');
-                        //$('#instruction p').html('');
-
-                        App.$wait.fadeIn();
-
-                        App.$game.hide();
-                        // moving to a real game
-
-                        // clean memory
-                        $.each(Obj.object_set, function(i,o){
-                            o.desposeMesh();
-                        });
-                        $.each(App.rendering, function(i,rendering) {
-                            window.cancelAnimationFrame(rendering);
-                        });
-                        if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
-                        App.setInitParameter();
-                        App.tutorial_shown = true;
-                        Obj.object_set = [];
-
-                        // disable selection if the user is still selecting
-                        App.$game.removeClass('active');
-                        App.SELECT = false;
-
-                        App.onJoinClick();
+                if(!App.stopRendering) {
+                    //default select if in mobile side
+                    if( App.is_touch_device() == true) {
+                        App.SELECT = true;
+                    }else
+                    {
+                        App.$rotation_left.hide();
+                        App.$rotation_right.hide();
+                        App.$rotation_up.hide();
+                        App.$rotation_down.hide();
+                        //App.$zoom_bigger.hide();
+                        //App.$zoom_smaller.hide();
                     }
-                }
+                    // if in tutorial
+                    if(!App.tutorial_shown && App.myRole=='Host'){
+                        // finish tutorial once the player selected a few
+                        if (App.selection_capacity <= Obj.object_set[0].object.FaceArray[0]*0.98){
+                            $('#wait.inner.cover p.lead').html('Nice:) You are done with tutorials. Now moving on to a real game...');
+                            //$('#instruction p').html('');
 
-                if(App.myRole != 'Player'){
-                    if(typeof(d.object)!='undefined'){
-                        //d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
-                        //    d.object.rotation.y + d.theta, 0, 'XYZ' );
-                        d.object.rotation.set( d.object.rotation.x - d.beta, d.object.rotation.y + d.theta, 0, 'XYZ' );
-                        if (d.scale>1){
-                            var scale = d.global_scale* d.scale || 1;
-                            d.object.children[0].scale.set(scale, scale, scale);
+                            App.$wait.fadeIn();
+
+                            App.$game.hide();
+                            // moving to a real game
+
+                            // clean memory
+                            $.each(Obj.object_set, function(i,o){
+                                o.desposeMesh();
+                            });
+                            $.each(App.rendering, function(i,rendering) {
+                                window.cancelAnimationFrame(rendering);
+                            });
+                            if(App.autoSelecting || App.playWithComputer){clearInterval(App.autoSelecting);}
+                            App.setInitParameter();
+                            App.tutorial_shown = true;
+                            Obj.object_set = [];
+
+                            // disable selection if the user is still selecting
+                            App.$game.removeClass('active');
+                            App.SELECT = false;
+
+                            App.onJoinClick();
                         }
-
                     }
-                }
-                else{
-                    if(typeof(d.emptyobject)!='undefined'){
-                        //d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
-                        //    d.object.rotation.y + d.theta, 0, 'XYZ' );
-                        d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta, d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
-                        //if (d.scale>1){
-                        //    var scale = d.global_scale* d.scale || 1;
-                        //    d.emptyobject.scale.set(scale, scale, scale);
-                        //}
 
-                    }
-                }
+                    if(App.myRole != 'Player'){
+                        if(typeof(d.object)!='undefined'){
+                            //d.object.rotation.set( Math.max(-Math.PI/6,Math.min(d.object.rotation.x - d.beta, Math.PI/6)),
+                            //    d.object.rotation.y + d.theta, 0, 'XYZ' );
+                            d.object.rotation.set( d.object.rotation.x - d.beta, d.object.rotation.y + d.theta, 0, 'XYZ' );
+                            if (d.scale>1){
+                                var scale = d.global_scale* d.scale || 1;
+                                d.object.children[0].scale.set(scale, scale, scale);
+                            }
 
-                d.camera.position.x = 0;
-                d.camera.position.y = d.height; //don't change
-                d.camera.position.z = d.radius;
-
-                if (App.VRMODE){
-                    d.headControls.update();
-                    d.vrEffect.render( d.scene, d.camera );
-                }
-                else{
-                    d.renderer.render( d.scene, d.camera);
-                    if(typeof(d.object.getObjectByName("selectable"))!='undefined'){
-                        d.object.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
-                    }
-                }
-
-                //// countdown when object is shown
-                //App.$timebar.css('opacity',1-(Date.now()-App.currentTime)/App.totalTime/60000);
-                //if (1-(Date.now()-App.currentTime)/App.totalTime/60000<=0){
-                //    App.gameOver();
-                //}
-
-                // update score based on selection, time and guesses
-                if (App.object_loaded){ // to prevent long loading time
-                    if (App.game_score > 0 && App.numSelectedFaces > 0){
-
-                        var penalty;
-                        if (App.tutorial_shown == true){
-                            penalty = (Date.now()-App.currentTime)*0.10;
                         }
-                        // MAX: penalty on selection is too high on geometries with few faces
-                        penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
-                        App.game_score -= penalty/10;
-                        App.currentTime = Date.now();
-                        App.numSelectedFaces = App.selection_capacity;
-                        if (App.game_score<0){
+                    }
+                    else{
+                        if(typeof(d.emptyobject)!='undefined'){
+                            //d.emptyobject.rotation.set( Math.max(-Math.PI/6,Math.min(d.emptyobject.rotation.x - d.beta, Math.PI/6)),
+                            //    d.object.rotation.y + d.theta, 0, 'XYZ' );
+                            d.emptyobject.rotation.set( d.emptyobject.rotation.x - d.beta, d.emptyobject.rotation.y + d.theta, 0, 'XYZ' );
+                            //if (d.scale>1){
+                            //    var scale = d.global_scale* d.scale || 1;
+                            //    d.emptyobject.scale.set(scale, scale, scale);
+                            //}
+
+                        }
+                    }
+
+                    d.camera.position.x = 0;
+                    d.camera.position.y = d.height; //don't change
+                    d.camera.position.z = d.radius;
+
+                    if (App.VRMODE){
+                        d.headControls.update();
+                        d.vrEffect.render( d.scene, d.camera );
+                    }
+                    else{
+                        d.renderer.render( d.scene, d.camera);
+                        if(typeof(d.object.getObjectByName("selectable"))!='undefined'){
+                            d.object.getObjectByName("selectable").geometry.colorsNeedUpdate = true;
+                        }
+                    }
+
+                    //// countdown when object is shown
+                    //App.$timebar.css('opacity',1-(Date.now()-App.currentTime)/App.totalTime/60000);
+                    //if (1-(Date.now()-App.currentTime)/App.totalTime/60000<=0){
+                    //    App.gameOver();
+                    //}
+
+                    // update score based on selection, time and guesses
+                    if (App.object_loaded){ // to prevent long loading time
+                        if (App.game_score > 0 && App.numSelectedFaces > 0){
+
+                            var penalty;
+                            if (App.tutorial_shown == true){
+                                penalty = (Date.now()-App.currentTime)*0.10;
+                            }
+                            // MAX: penalty on selection is too high on geometries with few faces
+                            penalty += (1 - App.selection_capacity/App.numSelectedFaces) * 10000;
+                            App.game_score -= penalty/10;
+                            App.currentTime = Date.now();
+                            App.numSelectedFaces = App.selection_capacity;
+                            if (App.game_score<0 || App.currentRound>=1){
+                                App.game_score = 0; // only store once
+                                if(App.myRole=='Host'){ // only one of the players needs to submit the score
+                                    $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
+                                        function(){});
+                                }
+                                App.stopRendering = true;
+                                App.showScoreBoard();
+                            }
+                            //App.$score.html(Math.round(App.game_score));
+                            App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
+                        }
+                        else if ((App.game_score < 0 && App.numSelectedFaces > 0) || App.currentRound>=1){
                             App.game_score = 0; // only store once
-                            if(App.myRole='Host'){ // only one of the players needs to submit the score
+                            if(App.myRole=='Host'){ // only one of the players needs to submit the score
                                 $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
                                     function(){});
                             }
+                            App.stopRendering = true;
                             App.showScoreBoard();
                         }
-                        //App.$score.html(Math.round(App.game_score));
-                        App.$score.css('width',Math.round(App.game_score/9999*10000)/100+'%');
-                    }
-                    else if (App.game_score < 0 && App.numSelectedFaces > 0){
-                        App.game_score = 0; // only store once
-                        if(App.myRole='Host'){ // only one of the players needs to submit the score
-                            $.post('/storeScore',{'score':App.currentRound,'gameId':App.gameId,'amt':App.amt},
-                                function(){});
-                        }
-                        App.showScoreBoard();
                     }
                 }
 
