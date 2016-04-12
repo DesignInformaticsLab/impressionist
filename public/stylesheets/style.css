@@ -480,22 +480,27 @@ body {
     -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
     transition: background-color 0.5s, transform 0.5s;
     z-index: 10;
+    -webkit-transform: scale(0.5,0.5);
+    -moz-transform: scale(0.5,0.5);
+    -ms-transform: scale(0.5,0.5);
+    -o-transform: scale(0.5,0.5);
+    transform: scale(0.5,0.5);
 }
 .rt_left{
-    bottom: 60px;
-    left: 600px;
+    top: 50px;
+    left: 0px;
 }
 .rt_right{
-    bottom: 60px;
-    left: 700px;
+    top: 50px;
+    left: 50px;
 }
 .rt_up{
-    bottom: 100px;
-    left: 650px;
+    top: 35px;
+    left: 25px;
 }
 .rt_down{
-    bottom: 65px;
-    left: 650px;
+    top: 60px;
+    left: 25px;
 }
 
 #cmp_left{
