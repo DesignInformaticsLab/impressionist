@@ -13,18 +13,18 @@ a = [4];
 for idx = a%9 28 30 40 49
     
     cd('C:\doiUsers\Hope\impressionist\analysis');
-dbextract();
+% dbextract();
     DbParser(idx);    
     cd('./FastRWR-out');
     heatmapfile_generator();
     true_selnum = load('../aggregated.txt');
-    
-    cd('C:\doiUsers\Hope\impressionist\analysis');
-false_dbextract();
-    DbParser(idx);  
-    cd('./FastRWR-out');
-    heatmapfile_generator();
-    false_selnum = load('../aggregated.txt');
+
+%     cd('C:\doiUsers\Hope\impressionist\analysis');
+% false_dbextract();
+%     DbParser(idx);  
+%     cd('./FastRWR-out');
+%     heatmapfile_generator();
+%     false_selnum = load('../aggregated.txt');
 
     selnum = true_selnum + 0.1*false_selnum;
     save('../aggregated.txt','selnum','-ascii');

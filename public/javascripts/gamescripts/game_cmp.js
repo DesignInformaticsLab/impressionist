@@ -416,7 +416,7 @@ var GAME = (function($){
                 // read saliency from Chen
                 //TODO: read saliency from database for validation
                 var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
-                $.get('obj/Princeton_saliency_distribution_Chen/' + saliency_distribution_id + '.val', function (response) {
+                $.get('obj/impressionist_saliency_rv/' + saliency_distribution_id + '.val', function (response) {
                     response = response.split('\n');
                     if (response[response.length - 1] == '') {
                         response = response.splice(0, response.length - 1);

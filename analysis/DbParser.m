@@ -173,7 +173,15 @@ for dbname_idx = dont_know_what_to_call:dont_know_what_to_call %THERE IS AN ERRO
         for i=1:length(C)
             face_idx = C(i);
             for j=1:3
-                vtx_idx = B(face_idx,j);
+                try
+                    vtx_idx = B(face_idx,j);
+                catch
+                    vtx_idx = B(face_idx+1,j);
+%                     disp(face_idx)
+%                     disp(j)
+%                     disp(B(face_idx,j))
+%                     error('unknow')
+                end
                 sel_vtx(kk) = vtx_idx;
                 kk = kk + 1;
             end

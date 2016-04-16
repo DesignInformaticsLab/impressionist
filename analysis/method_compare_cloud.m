@@ -11,18 +11,18 @@ close all; fclose all; clear; clc
 pct_sel = method_compare();
 
 
-%% extract info from database
-% object_name in total
-cmd_l2 = '\n\\COPY (SELECT object_name FROM impressionist_object_table_amt  order by object_name ASC) to ''obj_name.txt'' csv';
-% human
-cmd_l3 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND computer_player = false AND correct = true order by object_name ASC) to ''human_idx.txt'' csv';
-% princeton (with random revaled obj skipped)
-cmd_l4 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND computer_player = true AND correct = true AND object_name<>''M002'' AND object_name<>''M055'' AND object_name<>''P392'' AND object_name<>''P398'' order by object_name ASC) to ''princeton_idx.txt'' csv';
-cmd = strcat(cmd_l2,cmd_l3,cmd_l4);
-fileID = fopen('test.sql','w');
-fprintf(fileID,cmd);
-fclose(fileID);
-status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
+% %% extract info from database
+% % object_name in total
+% cmd_l2 = '\n\\COPY (SELECT object_name FROM impressionist_object_table_amt  order by object_name ASC) to ''obj_name.txt'' csv';
+% % human
+% cmd_l3 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND computer_player = false AND correct = true order by object_name ASC) to ''human_idx.txt'' csv';
+% % princeton (with random revaled obj skipped)
+% cmd_l4 = '\n\\COPY (SELECT object_name FROM impressionist_result_table_amt where array_length(all_selected_id, 1)<>0 AND computer_player = true AND correct = true AND object_name<>''M002'' AND object_name<>''M055'' AND object_name<>''P392'' AND object_name<>''P398'' order by object_name ASC) to ''princeton_idx.txt'' csv';
+% cmd = strcat(cmd_l2,cmd_l3,cmd_l4);
+% fileID = fopen('test.sql','w');
+% fprintf(fileID,cmd);
+% fclose(fileID);
+% status = system('psql -U postgres -d mylocaldb1 -a -f TEST.sql','-echo');
 
 %% read database file
 human_idx = importdata('human_idx.txt');
