@@ -9,25 +9,31 @@ for kkk = 1:23;
         'obj\Princeton\379.json', 'obj\Princeton\381.json', 'obj\Princeton\382.json', 'obj\Princeton\383.json',...
         'obj\Princeton\384.json', 'obj\Princeton\386.json', 'obj\Princeton\390.json', 'obj\Princeton\391.json',...
         'obj\Princeton\393.json', 'obj\Princeton\392.json', 'obj\Princeton\398.json'};
+%     object_list = {'obj\Princeton\57.json'};
     idxx = [17,26,57,68,75,111,170,198,221,258,260,378,379,381,382,383,384,386,390,391,393,392,398];
+%     idxx = 57;
     str = ['..\..\public\',object_list{kkk}];
     json2data = loadjson(str);
     v = json2data.parsed.vertexArray;
     f = json2data.parsed.faceArray+1; % index from .json starts from 0, but required to be 1 for meshSaliencyPipeline
     
-    %         valdir = 'C:\doiUsers\Hope\impressionist\public\obj\Princeton_saliency_distribution_Lee05\';
-    valdir = '..\..\public\obj\impressionist_saliency_rv\';
+    valdir = '..\..\public\obj\Princeton_saliency_distribution_Lee05\';
+%     valdir = '..\..\public\obj\impressionist_saliency_rv\';
     C=load(strcat(valdir,num2str(idxx(kkk)),'.val'));
     
     m = struct('v',v,'f',f);
     [im, az, el, az2, el2] = salientViewpoint(m, C);
     
     view(az,el)
-    savefig(strcat('az  ',num2str(idxx(kkk))))
-    saveas(gcf,strcat('az  ',num2str(idxx(kkk)),'.png'))
+%     savefig(strcat('az  ',num2str(idxx(kkk))))
+%     saveas(gcf,strcat('az  ',num2str(idxx(kkk)),'.png'))
+    savefig(strcat('.\LEE\az  ',num2str(idxx(kkk))))
+    saveas(gcf,strcat('.\LEE\az  ',num2str(idxx(kkk)),'.png'))
     view(az2,el2)
     %         view(az2_all{kkk},el2_all{kkk})
-    savefig(strcat('az2  ',num2str(idxx(kkk))))
-    saveas(gcf,strcat('az2  ',num2str(idxx(kkk)),'.png'))
+%     savefig(strcat('az2  ',num2str(idxx(kkk))))
+%     saveas(gcf,strcat('az2  ',num2str(idxx(kkk)),'.png'))
+    savefig(strcat('.\LEE\az2  ',num2str(idxx(kkk))))
+    saveas(gcf,strcat('.\LEE\az2  ',num2str(idxx(kkk)),'.png'))
 end
 
