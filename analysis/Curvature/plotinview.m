@@ -16,34 +16,13 @@ for kkk = 1:23;
     f = json2data.parsed.faceArray+1; % index from .json starts from 0, but required to be 1 for meshSaliencyPipeline
     
     %         valdir = 'C:\doiUsers\Hope\impressionist\public\obj\Princeton_saliency_distribution_Lee05\';
-    valdir = 'C:\doiUsers\Hope\impressionist\public\obj\impressionist_saliency_rv\';
+    valdir = '..\..\public\obj\impressionist_saliency_rv\';
     C=load(strcat(valdir,num2str(idxx(kkk)),'.val'));
     
     m = struct('v',v,'f',f);
-    [az, el, az2, el2] = salientViewpoint(m, C);
-    
-    figure()
-    trisurf(f,v(:,1),v(:,2),v(:,3),C,'LineStyle', 'none', ...
-        'NormalMode','auto',...
-        'BackFaceLighting','reverselit',...
-        'DiffuseStrength', 0.6,...
-        'SpecularExponent', 9);
-    set(gca, 'FontSize', 18);
-    xlabel('X');    ylabel('Y');    zlabel('Z');
-    axis equal
-    grid off
-    %		axis off
-    axis vis3d;
-    axis image;
-    
-    % 	colormap(jet(16))
-    % 	colormap(gray(16))
-    colormap(jet)
-    shading interp
-    axis off
+    [im, az, el, az2, el2] = salientViewpoint(m, C);
     
     view(az,el)
-    %         view(az_all{kkk},el_all{kkk})
     savefig(strcat('az  ',num2str(idxx(kkk))))
     saveas(gcf,strcat('az  ',num2str(idxx(kkk)),'.png'))
     view(az2,el2)
