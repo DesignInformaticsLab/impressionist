@@ -2306,7 +2306,7 @@ var GAME = (function($){
                             // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
                             var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
                             try {
-                                $.get('obj/Princeton_saliency_distribution_Chen/orig/' + saliency_distribution_id + '.val', function (response) {
+                                $.get('obj/impressionist_saliency_rv/' + saliency_distribution_id + '.val', function (response) {
                                     response = response.split('\n');
                                     if (response[response.length - 1] == '') {
                                         response = response.splice(0, response.length - 1);
@@ -2320,7 +2320,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = 0.05*selection.length;
+                                    var num_partial = 0.15*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
@@ -2362,7 +2362,7 @@ var GAME = (function($){
                             // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
                             var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
                             try {
-                                $.get('obj/Princeton_saliency_distribution_Chen/imp/' + saliency_distribution_id + '.val', function (response) {
+                                $.get('obj/Princeton_saliency_distribution_Chen/orig/' + saliency_distribution_id + '.val', function (response) {
                                     response = response.split('\n');
                                     if (response[response.length - 1] == '') {
                                         response = response.splice(0, response.length - 1);
@@ -2376,7 +2376,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = 0.05*selection.length;
+                                    var num_partial = 0.15*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
