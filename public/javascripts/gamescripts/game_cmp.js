@@ -204,72 +204,124 @@ var GAME = (function($){
             //    App.$wait.hide();
             //    //App.$menu.css('background-color', '#f5f5ff');
             //},15000);
-
-
-            App.$guessinput.css('background-color', '#ffffff');
-            App.$guessinput.css('background-color', '#f5f5ff');
-            App.$guessinput.html(''); // clean input area
-            //if(typeof(App.game_score)=='undefined'){App.game_score = 0;}
-            //App.game_score += Math.round(App.current_score); // this needs to change depending on the difficulty of the object
-            App.currentRound += 1;
-            if(App.currentRound>3){
-                App.showScoreBoard();
+            var temp;
+            if (App.salmethod==0){
+                temp = "[0]"
+            }else if (App.salmethod==1){
+                temp = "[1]"
+            }else if (App.salmethod==2){
+                temp = "[2]"
             }
 
-            //App.$gamescore.html(App.game_score); // update score
-            App.$guessoutput.html(''); // clean output area
+            App.$cmp_l.hide();
+            App.$cmp_r.hide();
+            var answer = $('#guessinput')[0].value;
+            var data = {
+                //game_id: App.gameId,
+                game_id : -1,
+                answer: answer,
 
-            App.object_loaded = false; // stop rendering
-
-            App.$game.hide();
-
-            IO.getSocketStats();
-
-            //if (!App.playWithComputer){ // give reward if playing with human
-            App.game_score += 2000;
-            App.game_score = Math.min(App.game_score, 9999);
-            //}
-
-            // stop loops
-            $.each(App.rendering, function(i,rendering) {
-                window.cancelAnimationFrame(rendering);
+                correct: true,
+                round: App.currentRound,
+                duration: Date.now()-App.start_obj_time, // time from start of the object
+                score: Math.round(App.game_score),
+                object_name: Obj.object_set[0].object.name,
+                all_selected_id: temp,
+                computer_player: 0,
+                //weight: JSON.stringify(weight)
+                amt: App.amt,
+                penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+            };
+            if (App.playWithComputer){data.computer_player=1;}
+            $.post('/store_selection',data,function(){
+                IO.socket.emit('checkAnswer',data);
             });
-            if(App.autoSelecting){clearInterval(App.autoSelecting);}
-            // clean memory
+
+            var id =  Math.floor(Math.random() * 23);
             $.each(Obj.object_set, function(i,o){
                 o.desposeMesh();
             });
-            App.allSelectedIDMaster = [];
-            App.allSelectedID = [];
-            App.selectedStrings = [];
+            Obj.object_set = [];
+            App.$comp_model1.html('');
+            App.$comp_model2.html('');
 
-            // do some celebration before moving on...
-            App.celebrate(function(){
-                // if playing with a computer now
-                if (App.playWithComputer){
-                    // look for a human player, if none, keep playing with the computer
-                    //$('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
-                    $('#wait.inner.cover p.lead').html('Loading new objects...');
-                    App.$wait.show();
+            App.currentRound += 1;
+            $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
+            if(App.currentRound>=5){
+                App.showScoreBoard();
+            }
+            else{
+                Obj.showPartialCmp(id,0,App.$comp_model1, function(){
+                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                });
+            }
 
-                    IO.onNewGameCreated(App);
-                }
-                // if during the tutorial
-                else if (!App.tutorial_shown && App.myRole=='Player'){
-                    $('#instruction p').html('Now you are in charge of revealing the object.<br>' +
-                        'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
-                        'button</b> to select parts of the object for the other player to guess.<br>'+
-                        'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
-                        'Selecting more faces will result in time penalty!<br>');
-                    App.tutorialChoose();
-                }
-                else{
-                    //App.$continue.show();
-                    $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
-                    App.$wait.show();
-                    IO.socket.emit('playerReady');
-                }
-            });
+
+            //App.$guessinput.css('background-color', '#ffffff');
+            //App.$guessinput.css('background-color', '#f5f5ff');
+            //App.$guessinput.html(''); // clean input area
+            ////if(typeof(App.game_score)=='undefined'){App.game_score = 0;}
+            ////App.game_score += Math.round(App.current_score); // this needs to change depending on the difficulty of the object
+            //App.currentRound += 1;
+            //if(App.currentRound>3){
+            //    App.showScoreBoard();
+            //}
+            //
+            ////App.$gamescore.html(App.game_score); // update score
+            //App.$guessoutput.html(''); // clean output area
+            //
+            //App.object_loaded = false; // stop rendering
+            //App.salmethod = 0; //choose saliency method
+            //
+            //App.$game.hide();
+            //
+            //IO.getSocketStats();
+            //
+            ////if (!App.playWithComputer){ // give reward if playing with human
+            //App.game_score += 2000;
+            //App.game_score = Math.min(App.game_score, 9999);
+            ////}
+            //
+            //// stop loops
+            //$.each(App.rendering, function(i,rendering) {
+            //    window.cancelAnimationFrame(rendering);
+            //});
+            //if(App.autoSelecting){clearInterval(App.autoSelecting);}
+            //// clean memory
+            //$.each(Obj.object_set, function(i,o){
+            //    o.desposeMesh();
+            //});
+            //App.allSelectedIDMaster = [];
+            //App.allSelectedID = [];
+            //App.selectedStrings = [];
+            //
+            //// do some celebration before moving on...
+            //App.celebrate(function(){
+            //    // if playing with a computer now
+            //    if (App.playWithComputer){
+            //        // look for a human player, if none, keep playing with the computer
+            //        //$('#wait.inner.cover p.lead').html('Looking for another player...Please wait');
+            //        $('#wait.inner.cover p.lead').html('Loading new objects...');
+            //        App.$wait.show();
+            //
+            //        IO.onNewGameCreated(App);
+            //    }
+            //    // if during the tutorial
+            //    else if (!App.tutorial_shown && App.myRole=='Player'){
+            //        $('#instruction p').html('Now you are in charge of revealing the object.<br>' +
+            //            'Hold down <b>S</b> on your keyboard and use your <b>left mouse ' +
+            //            'button</b> to select parts of the object for the other player to guess.<br>'+
+            //            'In this mode, you can also <b>scroll</b> your mouse wheel to <b>zoom</b>.<br>'+
+            //            'Selecting more faces will result in time penalty!<br>');
+            //        App.tutorialChoose();
+            //    }
+            //    else{
+            //        //App.$continue.show();
+            //        $('#wait.inner.cover p.lead').html('Get ready for the next challenge...');
+            //        App.$wait.show();
+            //        IO.socket.emit('playerReady');
+            //    }
+            //});
         },
 
         // on wrong guess
@@ -352,6 +404,8 @@ var GAME = (function($){
          * @param data
          */
         onNewObjData : function(target, callback) {
+            App.salmethod = Math.floor(Math.random() * 3);
+
             $.getScript( App.objectString, function() {
                 // the following happens for a normal game
                 if (typeof(callback) == 'undefined'){
@@ -993,6 +1047,7 @@ var GAME = (function($){
             });
 
 
+
             App.$cmp_r.click(function(){
                 App.$cmp_l.hide();
                 App.$cmp_r.hide();
@@ -1605,12 +1660,13 @@ var GAME = (function($){
             var answer = $('#guessinput')[0].value;
             var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
             if (correct){
-                App.$cmp_u.hide();
-                App.$cmp_l.show();
-                App.$cmp_r.show();
+                IO.onAnswerCorrect();
+                //App.$cmp_u.hide();
+                //App.$cmp_l.show();
+                //App.$cmp_r.show();
                 App.$guessoutput.html(''); // clean output area
                 App.$guessinput[0].value = 'Correct!';
-                $('h3.masthead-brand').html('Which object shows more salient parts of the ' +answer+ '?');
+                //$('h3.masthead-brand').html('Which object shows more salient parts of the ' +answer+ '?');
             }
             else{
                 App.wrongtrial =  App.wrongtrial + 1;
@@ -2235,6 +2291,14 @@ var GAME = (function($){
         },
 
         showPartialCmp: function(id,method,target,callback) {
+            var valdir;
+            if (App.salmethod==0){
+                valdir = 'obj/impressionist_saliency_rv/';
+            }else if(App.salmethod ==1){
+                valdir = 'obj/Princeton_saliency_distribution_Chen/';
+            }else if (App.salmethod==2) {
+                valdir = 'obj/Princeton_saliency_distribution_Lee05/';
+            }
             $.get('/getRawObjectList', function(response) {
                 App.objectstring_set = response.objectstring_set;
                 App.objectString = App.objectstring_set[id];
@@ -2306,7 +2370,7 @@ var GAME = (function($){
                             // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
                             var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
                             try {
-                                $.get('obj/impressionist_saliency_rv/' + saliency_distribution_id + '.val', function (response) {
+                                $.get(valdir + saliency_distribution_id + '.val', function (response) {
                                     response = response.split('\n');
                                     if (response[response.length - 1] == '') {
                                         response = response.splice(0, response.length - 1);
@@ -2362,7 +2426,7 @@ var GAME = (function($){
                             // extract from objectString the saliency index. Note that the actual number starts from the 15th character.
                             var saliency_distribution_id = parseInt(App.objectString.replace(/^\D+|\D+$/g, ""));
                             try {
-                                $.get('obj/Princeton_saliency_distribution_Chen/orig/' + saliency_distribution_id + '.val', function (response) {
+                                $.get(valdir + saliency_distribution_id + '.val', function (response) {
                                     response = response.split('\n');
                                     if (response[response.length - 1] == '') {
                                         response = response.splice(0, response.length - 1);

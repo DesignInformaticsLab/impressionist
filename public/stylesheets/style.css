@@ -506,7 +506,7 @@ body {
 #cmp_left{
     height: 50px;
     width: 200px;
-    z-index: 99;
+    z-index: -99;
     bottom: 50px;
     position: absolute;
     -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
@@ -515,7 +515,7 @@ body {
 #cmp_right{
     height: 50px;
     width: 200px;
-    z-index: 99;
+    z-index: -99;
     bottom: 50px;
     position: absolute;
     -webkit-transition: background-color 0.5s, -webkit-transform 0.5s;
