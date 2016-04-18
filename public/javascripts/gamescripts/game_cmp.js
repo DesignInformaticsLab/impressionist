@@ -516,20 +516,12 @@ var GAME = (function($){
                     if(App.currentRound==0){
                         if(App.is_touch_device()==false){
                             $('#instruction .modal-body p').html(
-                                'You will see a sequence of object pairs.<br>' +
                                 'Your goal is to guess what objects they are by <b>typing</b> your answers down in the text box below and press Enter.<br>' +
-                                'Then please <b>choose one</b> object from the pair that characterizes the object better (i.e., with better saliency).<br>' +
-                                'You can skip a pair if you cannot identify the correct answer.<br>' +
-                                'In total, you will need to correctly guess <b>5</b> objects to complete the survey.<br>' +
                                 'You can always drag to <b> rotate </b> the object.<br>'
                             );
                         }else{
                             $('#instruction .modal-body p').html(
-                                'You will see a sequence of object pairs.<br>' +
                                 'Your goal is to guess what objects they are by <b>typing</b> your answers down in the text box below and press Enter.<br>' +
-                                'Then please <b>choose one</b> object from the pair that characterizes the object better (i.e., with better saliency).<br>' +
-                                'You can skip a pair if you cannot identify the correct answer.<br>' +
-                                'In total, you will need to correctly guess <b>5</b> objects to complete the survey.<br>' +
                                 'You can always drag to <b> rotate </b> the object.<br>'
                             );
                         }
