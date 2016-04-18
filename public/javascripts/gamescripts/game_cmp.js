@@ -230,7 +230,7 @@ var GAME = (function($){
                 computer_player: 0,
                 //weight: JSON.stringify(weight)
                 amt: App.amt,
-                penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+                penalty: JSON.stringify([App.revealper])
             };
             if (App.playWithComputer){data.computer_player=1;}
             $.post('/store_selection',data,function(){
@@ -246,13 +246,13 @@ var GAME = (function($){
             App.$comp_model2.html('');
 
             App.currentRound += 1;
-            $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
-            if(App.currentRound>=5){
+            $('h3.masthead-brand').html('What is this object? | ' + (10-App.currentRound) + ' object(s) to go');
+            if(App.currentRound>=10){
                 App.showScoreBoard();
             }
             else{
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                    //Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
             }
 
@@ -405,6 +405,7 @@ var GAME = (function($){
          */
         onNewObjData : function(target, callback) {
             App.salmethod = Math.floor(Math.random() * 3);
+            App.revealper = Math.floor(Math.random() * 2);
 
             $.getScript( App.objectString, function() {
                 // the following happens for a normal game
@@ -870,7 +871,7 @@ var GAME = (function($){
                 App.$stat_btn.removeClass('active');
                 IO.getSocketStats();
                 App.onJoinClick();
-                $('h3.masthead-brand').html('What is this object? | 5 object(s) to go');
+                $('h3.masthead-brand').html('What is this object? | 10 object(s) to go');
             });
 
             App.$tutorial.click(function(){
@@ -960,7 +961,7 @@ var GAME = (function($){
                 //});
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
                     // show existing saliency
-                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                    //Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
 
             });
@@ -1005,7 +1006,7 @@ var GAME = (function($){
                         App.$comp_model1.html('');
                         App.$comp_model2.html('');
                         Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                            Obj.showPartialCmp(id,1,App.$comp_model2);
+                            //Obj.showPartialCmp(id,1,App.$comp_model2);
                         });
 
 
@@ -1074,13 +1075,13 @@ var GAME = (function($){
                 App.$comp_model2.html('');
 
                 App.currentRound += 1;
-                $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
-                if(App.currentRound>=5){
+                $('h3.masthead-brand').html('What is this object? | ' + (10-App.currentRound) + ' object(s) to go');
+                if(App.currentRound>=10){
                     App.showScoreBoard();
                 }
                 else{
                     Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                        Obj.showPartialCmp(id,1,App.$comp_model2);
+                        //Obj.showPartialCmp(id,1,App.$comp_model2);
                     });
                 }
             });
@@ -1118,13 +1119,13 @@ var GAME = (function($){
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
                 App.currentRound += 1;
-                $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
-                if(App.currentRound>=5){
+                $('h3.masthead-brand').html('What is this object? | ' + (10-App.currentRound) + ' object(s) to go');
+                if(App.currentRound>=10){
                     App.showScoreBoard();
                 }
                 else{
                     Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                        Obj.showPartialCmp(id,1,App.$comp_model2);
+                        //Obj.showPartialCmp(id,1,App.$comp_model2);
                     });
                 }
             });
@@ -1142,9 +1143,9 @@ var GAME = (function($){
                 Obj.object_set = [];
                 App.$comp_model1.html('');
                 App.$comp_model2.html('');
-                $('h3.masthead-brand').html('What is this object? | ' + (5-App.currentRound) + ' object(s) to go');
+                $('h3.masthead-brand').html('What is this object? | ' + (10-App.currentRound) + ' object(s) to go');
                 Obj.showPartialCmp(id,0,App.$comp_model1, function(){
-                    Obj.showPartialCmp(id,1,App.$comp_model2);
+                    //Obj.showPartialCmp(id,1,App.$comp_model2);
                 });
                 App.wrongtrial = 0;
             });
@@ -1591,7 +1592,7 @@ var GAME = (function($){
                     //App.$myrank.html('You are now better than '+Math.round(worse/totalplays*100.0)+'% of all players!');
                     //App.$myscore.html('You identified '+App.currentRound+' object(s)!<br>');
                     if(App.amt){ // show amt code for amt users
-                        if(App.currentRound>4){
+                        if(App.currentRound>9){
                             $.post('/getamtcode',{'score':App.currentRound},function(response){
                                 App.$amt.html('YOUR MTURK CODE:' + response);
                             });
@@ -1626,6 +1627,7 @@ var GAME = (function($){
          */
         onSubmitAnswer: function() {
             App.salmethod = Math.floor(Math.random() * 3);
+            App.revealper = Math.floor(Math.random() * 2);
 
             //var correct_answer;
             //$.getScript( App.objectString, function() {
@@ -1653,13 +1655,14 @@ var GAME = (function($){
                     temp = "[2]"
                 }
 
+
                 var answer = $('#guessinput')[0].value;
                 var data = {
                     //game_id: App.gameId,
                     game_id : -1,
                     answer: answer,
 
-                    correct: true,
+                    correct: false,
                     round: App.currentRound,
                     duration: Date.now()-App.start_obj_time, // time from start of the object
                     score: Math.round(App.game_score),
@@ -1668,7 +1671,7 @@ var GAME = (function($){
                     computer_player: 0,
                     //weight: JSON.stringify(weight)
                     amt: App.amt,
-                    penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+                    penalty: JSON.stringify([App.revealper])
                 };
                 if (App.playWithComputer){data.computer_player=1;}
                 $.post('/store_selection',data,function(){
@@ -2391,7 +2394,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = 0.05*selection.length;
+                                    var num_partial = (App.revealper*0.05+0.05)*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
@@ -2447,7 +2450,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = 0.05*selection.length;
+                                    var num_partial = (App.revealper*0.05+0.05)*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
