@@ -1,5 +1,5 @@
 load curvature_from_Lee05.mat
-
+addpath('./saliency-for-3d-meshes','./saliency-for-3d-meshes/helpers')
 
 for kkk = 1:23;
     
@@ -17,23 +17,29 @@ for kkk = 1:23;
     v = json2data.parsed.vertexArray;
     f = json2data.parsed.faceArray+1; % index from .json starts from 0, but required to be 1 for meshSaliencyPipeline
     
-    valdir = '..\..\public\obj\Princeton_saliency_distribution_Lee05\';
+%     valdir = '..\..\public\obj\Princeton_saliency_distribution_Lee05\';
+    valdir = '..\..\public\obj\Princeton_saliency_distribution_Chen\';
 %     valdir = '..\..\public\obj\impressionist_saliency_rv\';
     C=load(strcat(valdir,num2str(idxx(kkk)),'.val'));
     
     m = struct('v',v,'f',f);
-    [im, az, el, az2, el2] = salientViewpoint(m, C);
+%     [im, az, el, az2, el2] = salientViewpoint(m, C);
+    [az, el, az2, el2] = salientViewpoint(m, C);
     
     view(az,el)
 %     savefig(strcat('az  ',num2str(idxx(kkk))))
 %     saveas(gcf,strcat('az  ',num2str(idxx(kkk)),'.png'))
-    savefig(strcat('.\LEE\az  ',num2str(idxx(kkk))))
-    saveas(gcf,strcat('.\LEE\az  ',num2str(idxx(kkk)),'.png'))
+%     savefig(strcat('.\LEE\az  ',num2str(idxx(kkk))))
+%     saveas(gcf,strcat('.\LEE\az  ',num2str(idxx(kkk)),'.png'))
+    savefig(strcat('.\CHEN\az  ',num2str(idxx(kkk))))
+    saveas(gcf,strcat('.\CHEN\az  ',num2str(idxx(kkk)),'.png'))
     view(az2,el2)
     %         view(az2_all{kkk},el2_all{kkk})
 %     savefig(strcat('az2  ',num2str(idxx(kkk))))
 %     saveas(gcf,strcat('az2  ',num2str(idxx(kkk)),'.png'))
-    savefig(strcat('.\LEE\az2  ',num2str(idxx(kkk))))
-    saveas(gcf,strcat('.\LEE\az2  ',num2str(idxx(kkk)),'.png'))
+%     savefig(strcat('.\LEE\az2  ',num2str(idxx(kkk))))
+%     saveas(gcf,strcat('.\LEE\az2  ',num2str(idxx(kkk)),'.png'))
+    savefig(strcat('.\CHEN\az2  ',num2str(idxx(kkk))))
+    saveas(gcf,strcat('.\CHEN\az2  ',num2str(idxx(kkk)),'.png'))
 end
 
