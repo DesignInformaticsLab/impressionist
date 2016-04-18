@@ -1140,6 +1140,16 @@ var GAME = (function($){
             App.$cmp_u.click(function(){
                 App.$cmp_l.hide();
                 App.$cmp_u.hide();
+
+                var temp;
+                if (App.salmethod==0){
+                    temp = "[0]"
+                }else if (App.salmethod==1){
+                    temp = "[1]"
+                }else if (App.salmethod==2){
+                    temp = "[2]"
+                }
+
                 var answer = $('#guessinput')[0].value;
                 var data = {
                     //game_id: App.gameId,
@@ -1151,7 +1161,7 @@ var GAME = (function($){
                     duration: Date.now()-App.start_obj_time, // time from start of the object
                     score: Math.round(App.game_score),
                     object_name: Obj.object_set[0].object.name,
-                    all_selected_id: "[3]",
+                    all_selected_id: temp,
                     computer_player: 0,
                     //weight: JSON.stringify(weight)
                     amt: App.amt,
@@ -1652,6 +1662,7 @@ var GAME = (function($){
          *  Click handler for the Player to submit and store a guess.
          */
         onSubmitAnswer: function() {
+            App.salmethod = Math.floor(Math.random() * 3);
 
             //var correct_answer;
             //$.getScript( App.objectString, function() {
@@ -1661,7 +1672,7 @@ var GAME = (function($){
             var correct = $.inArray(answer.toLowerCase(), Obj.object_set[0].correct_answer)>=0;
             if (correct){
                 IO.onAnswerCorrect();
-                //App.$cmp_u.hide();
+                App.$cmp_u.hide();
                 //App.$cmp_l.show();
                 //App.$cmp_r.show();
                 App.$guessoutput.html(''); // clean output area
@@ -2384,7 +2395,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = 0.10*selection.length;
+                                    var num_partial = 0.05*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
@@ -2440,7 +2451,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = 0.10*selection.length;
+                                    var num_partial = 0.05*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
