@@ -1133,36 +1133,7 @@ var GAME = (function($){
                 App.$cmp_l.hide();
                 App.$cmp_u.hide();
 
-                var temp;
-                if (App.salmethod==0){
-                    temp = "[0]"
-                }else if (App.salmethod==1){
-                    temp = "[1]"
-                }else if (App.salmethod==2){
-                    temp = "[2]"
-                }
 
-                var answer = $('#guessinput')[0].value;
-                var data = {
-                    //game_id: App.gameId,
-                    game_id : -1,
-                    answer: answer,
-
-                    correct: true,
-                    round: App.currentRound,
-                    duration: Date.now()-App.start_obj_time, // time from start of the object
-                    score: Math.round(App.game_score),
-                    object_name: Obj.object_set[0].object.name,
-                    all_selected_id: temp,
-                    computer_player: 0,
-                    //weight: JSON.stringify(weight)
-                    amt: App.amt,
-                    penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
-                };
-                if (App.playWithComputer){data.computer_player=1;}
-                $.post('/store_selection',data,function(){
-                    IO.socket.emit('checkAnswer',data);
-                });
 
                 var id =  Math.floor(Math.random() * 23);
                 $.each(Obj.object_set, function(i,o){
@@ -1672,9 +1643,42 @@ var GAME = (function($){
                 //$('h3.masthead-brand').html('Which object shows more salient parts of the ' +answer+ '?');
             }
             else{
+
+                var temp;
+                if (App.salmethod==0){
+                    temp = "[0]"
+                }else if (App.salmethod==1){
+                    temp = "[1]"
+                }else if (App.salmethod==2){
+                    temp = "[2]"
+                }
+
+                var answer = $('#guessinput')[0].value;
+                var data = {
+                    //game_id: App.gameId,
+                    game_id : -1,
+                    answer: answer,
+
+                    correct: true,
+                    round: App.currentRound,
+                    duration: Date.now()-App.start_obj_time, // time from start of the object
+                    score: Math.round(App.game_score),
+                    object_name: Obj.object_set[0].object.name,
+                    all_selected_id: temp,
+                    computer_player: 0,
+                    //weight: JSON.stringify(weight)
+                    amt: App.amt,
+                    penalty: JSON.stringify([App.is_touch_device()+0.0]) // use penalty to save whether the device is mobile or not, 1 if mobile
+                };
+                if (App.playWithComputer){data.computer_player=1;}
+                $.post('/store_selection',data,function(){
+                    IO.socket.emit('checkAnswer',data);
+                });
+
+
                 App.wrongtrial =  App.wrongtrial + 1;
                 App.$guessinput.css('background-color', '#000000');
-                App.$guessinput[0].value = 'Nope...';
+                //App.$guessinput[0].value = 'Nope...';
                 setTimeout(function () {
                     App.$guessinput.css('background-color', '#f5f5ff');
                 },800);
