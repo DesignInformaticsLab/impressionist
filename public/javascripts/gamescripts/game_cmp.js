@@ -2394,7 +2394,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = (App.revealper*0.05+0.05)*selection.length;
+                                    var num_partial = (App.revealper*0.13+0.02)*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
