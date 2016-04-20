@@ -405,7 +405,8 @@ var GAME = (function($){
          */
         onNewObjData : function(target, callback) {
             App.salmethod = Math.floor(Math.random() * 3);
-            App.revealper = Math.floor(Math.random() * 2);
+            //App.revealper = Math.floor(Math.random() * 2);
+            App.revealper = 1;
 
             $.getScript( App.objectString, function() {
                 // the following happens for a normal game
@@ -1627,7 +1628,8 @@ var GAME = (function($){
          */
         onSubmitAnswer: function() {
             App.salmethod = Math.floor(Math.random() * 3);
-            App.revealper = Math.floor(Math.random() * 2);
+            //App.revealper = Math.floor(Math.random() * 2);
+            App.revealper = 1;
 
             //var correct_answer;
             //$.getScript( App.objectString, function() {
@@ -2450,7 +2452,7 @@ var GAME = (function($){
                                         selection.push(  (response[f.a]+response[f.b]+response[f.c]) / 3.0  );
                                     });
 
-                                    var num_partial = (App.revealper*0.05+0.05)*selection.length;
+                                    var num_partial = (App.revealper*0.12+0.03)*selection.length;
                                     var partial_selection=[];
                                     App.sortWithIndeces(selection);
                                     for (var i = 0; i < num_partial; ++i) {
